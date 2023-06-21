@@ -1,24 +1,79 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class totalCGPApage extends StatefulWidget {
-  const totalCGPApage({super.key});
+  const totalCGPApage({Key? key}) : super(key: key);
 
   @override
-  State<totalCGPApage> createState() => _totalCGPApageState();
+  _totalCGPApageState createState() => _totalCGPApageState();
 }
 
 class _totalCGPApageState extends State<totalCGPApage> {
-  List<String> semesters = [];
-  List<Map<String, String>> tableData = [];
+  Map<String, List<List<Widget>>> semesterData = {};
 
-  void addTableRow(String subject, String credit, String grade) {
+  void addSubjectRow(String semester) {
     setState(() {
-      tableData.add({
-        'Subject': subject,
-        'Credit': credit,
-        'Grade': grade,
-      });
+      if (!semesterData.containsKey(semester)) {
+        semesterData[semester] = [];
+      }
+      semesterData[semester]!.add([
+        Expanded(
+          child: Container(
+            width: 150,
+            child: TextField(
+              style: TextStyle(fontSize: 12),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Subject Name',
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: Container(
+            width: 150,
+            child: TextField(
+              style: TextStyle(fontSize: 12),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'GPA',
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: Container(
+            width: 150,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    style: TextStyle(fontSize: 12),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Point',
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                IconButton(
+                  padding: EdgeInsets.only(top: 0),
+                  icon: Icon(
+                    Icons.cancel,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      semesterData[semester]!.removeLast();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ]);
     });
   }
 
@@ -26,247 +81,227 @@ class _totalCGPApageState extends State<totalCGPApage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            onPressed: () async {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 30,
-            )),
-        title: const Text(
-          "Jukto",
+        title: Text(
+          'Total CGPA',
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Roboto',
-            fontSize: 40,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: true,
-        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
-        actions: <Widget>[
-          Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: Icon(Icons.menu),
-                color: Colors.white,
-                onPressed: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-              );
-            },
-          ),
-        ],
       ),
-      endDrawer: Drawer(),
       body: ListView.builder(
-          itemCount: semesters.length,
-          itemBuilder: (context, index) {
-            final semester = semesters[index];
-            return Column(
-              children: [
-                Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        itemCount: semesterData.length,
+        itemBuilder: (context, index) {
+          final semester = semesterData.keys.elementAt(index);
+          final subjectRows = semesterData[semester]!;
+
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 20, top: 20),
+                    padding: EdgeInsets.only(left: 10),
+                    height: 25,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        width: 2,
+                        color: Color.fromRGBO(162, 158, 158, 1),
+                      ),
+                    ),
+                    child: Text(
+                      semester,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Roboto',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Container(
+                margin: EdgeInsets.only(left: 20, right: 20),
+                child: Column(
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 20, top: 20),
-                      padding: EdgeInsets.only(
-                        left: 10,
+                    for (var i = 0; i < subjectRows.length; i++)
+                      Column(
+                        children: [
+                          Container(
+                            height: 25,
+                            child: Row(children: subjectRows[i]),
+                          ),
+                          SizedBox(height: 10), // Adjust the height as needed
+                        ],
                       ),
-                      height: 25,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.amber,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          width: 2,
-                          color: Color.fromRGBO(162, 158, 158, 1),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 30,
+                          child: TextButton(
+                            onPressed: () {
+                              addSubjectRow(semester);
+                            },
+                            style: TextButton.styleFrom(
+                              primary: Colors.blue,
+                              minimumSize: Size(100, 30),
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.add,
+                                  size: 18,
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Add Subject',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1.0,
+                              color: Colors.blue,
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        semester,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'Roboto',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          height: 30,
+                          child: TextButton(
+                            onPressed: () {
+                              deletedSemesterDialog(context, semester);
+                            },
+                            style: TextButton.styleFrom(
+                              primary: Colors.redAccent,
+                              minimumSize: Size(100, 30),
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.delete,
+                                  color: Colors.redAccent,
+                                  size: 18,
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Deleted Semester',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1.0,
+                              color: Colors.redAccent,
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  child: Table(
-                    defaultColumnWidth: FixedColumnWidth(120.0),
-                    border: TableBorder.all(
-                        color: Colors.black,
-                        style: BorderStyle.solid,
-                        width: 2),
-                    children: [
-                      TableRow(children: [
-                        Column(children: [
-                          Text('Subject Name', style: TextStyle(fontSize: 18.0))
-                        ]),
-                        Column(children: [
-                          Text('Credit', style: TextStyle(fontSize: 18.0))
-                        ]),
-                        Column(children: [
-                          Text('Greade', style: TextStyle(fontSize: 18.0))
-                        ]),
-                      ]),
-                      TableRow(children: [
-                        Column(children: [Text('')]),
-                        Column(children: [Text('')]),
-                        Column(children: [Text('')]),
-                      ]),
-                      TableRow(children: [
-                        Column(children: [Text('')]),
-                        Column(children: [Text('')]),
-                        Column(children: [Text('')]),
-                      ]),
-                      TableRow(children: [
-                        Column(children: [Text('')]),
-                        Column(children: [Text('')]),
-                        Column(children: [Text('')]),
-                      ]),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    deletedSemesterDialog(context, (String deletedSemester) {
-                      setState(() {
-                        semesters.removeAt(index);
-                      });
-                    });
-                  },
-                ),
-              ],
-            );
-          }),
+              ),
+            ],
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          addSemesterDialog(context, (String addSemester) {
-            setState(() {
-              semesters.add(addSemester);
-            });
-          });
+          addSemesterDialog(context);
         },
         child: Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-}
 
-addSemesterDialog(BuildContext context, Function(String) addSemester) {
-  TextEditingController semesterController = TextEditingController();
-  // Create button
-  Widget addButton = TextButton(
-    child: Text("Add",
-        style: TextStyle(
-          color: Colors.black,
-        )),
-    onPressed: () {
-      String semester = semesterController.text;
-      // Add the item to the list
-      addSemester(semester);
-      Navigator.of(context).pop();
-    },
-  );
+  void addSemesterDialog(BuildContext context) {
+    TextEditingController semesterController = TextEditingController();
 
-  // Create AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text(
-      "Add Semester",
-      style: TextStyle(color: Color.fromRGBO(58, 150, 255, 1)),
-    ),
-    content: Container(
-      margin: EdgeInsets.only(left: 20, right: 20),
-      padding: EdgeInsets.only(left: 20, right: 20),
-      height: 50,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          width: 2,
-          color: Color.fromRGBO(162, 158, 158, 1),
-        ),
-      ),
-      alignment: Alignment.center,
-      child: TextField(
+    AlertDialog alertDialog = AlertDialog(
+      title: Text("Add Semester"),
+      content: TextField(
         controller: semesterController,
-        style: TextStyle(
-          fontFamily: 'Roboto',
-          color: Colors.black54,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-        keyboardType: TextInputType.emailAddress,
-        cursorColor: Color.fromRGBO(58, 150, 255, 1),
         decoration: InputDecoration(
-          hintText: 'Semester',
-          hintStyle: TextStyle(
-            fontFamily: 'Roboto',
-            color: Color.fromRGBO(162, 158, 158, 1),
-            fontSize: 18,
-          ),
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
+          labelText: "Semester",
+          border: OutlineInputBorder(),
         ),
       ),
-    ),
-    actions: [
-      addButton,
-    ],
-  );
+      actions: [
+        TextButton(
+          child: Text("Cancel"),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text("Add"),
+          onPressed: () {
+            String semester = semesterController.text.trim();
+            if (semester.isNotEmpty) {
+              addSubjectRow(semester);
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+      ],
+    );
 
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      },
+    );
+  }
 
-// deleted semester dialog box
+  void deletedSemesterDialog(BuildContext context, String semester) {
+    AlertDialog alertDialog = AlertDialog(
+      title: Text("Delete Semester"),
+      content:
+          Text("Are you sure you want to delete the semester '$semester'?"),
+      actions: [
+        TextButton(
+          child: Text("No"),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text("Yes"),
+          onPressed: () {
+            setState(() {
+              semesterData.remove(semester);
+            });
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
 
-deletedSemesterDialog(BuildContext context, Function(String) deletedSemester) {
-  // Create button
-  Widget okButton = TextButton(
-    child:
-        Text("Yes", style: TextStyle(color: Theme.of(context).iconTheme.color)),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
-
-  // Create AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("⚠ Warning",
-        style: TextStyle(color: Color.fromRGBO(58, 150, 255, 1))),
-    content: Text("Are You want to deleted This Semester?",
-        style: TextStyle(color: Colors.black)),
-    actions: [
-      okButton,
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      },
+    );
+  }
 }

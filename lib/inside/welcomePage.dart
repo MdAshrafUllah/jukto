@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../theme/theme.dart';
 import 'homePage.dart';
 import 'messagePage.dart';
 import 'profilePage.dart';
@@ -17,6 +20,9 @@ class welcomePage extends StatefulWidget {
   @override
   State<welcomePage> createState() => _welcomePageState();
 }
+
+IconData _iconLight = Icons.light_mode;
+IconData _iconDark = Icons.dark_mode;
 
 class _welcomePageState extends State<welcomePage> {
   int _selectedIndex = 0;
@@ -50,6 +56,7 @@ class _welcomePageState extends State<welcomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return WillPopScope(
       onWillPop: () async => _onBackbuttonpressed(context),
       child: Scaffold(
@@ -75,18 +82,6 @@ class _welcomePageState extends State<welcomePage> {
                   icon: Icon(Icons.menu),
                   color: Colors.white,
                   onPressed: () {
-                    // FirebaseFirestore.instance
-                    //     .collection('users')
-                    //     .get()
-                    //     .then((QuerySnapshot querySnapshot) {
-                    //   querySnapshot.docs.forEach((doc) {
-                    //     if (doc["email"] == user?.email) {
-                    //       setState(() {
-                    //         CurrentPic = doc["profileImage"];
-                    //       });
-                    //     }
-                    //   });
-                    // });
                     Scaffold.of(context).openEndDrawer();
                   },
                 );
@@ -95,7 +90,49 @@ class _welcomePageState extends State<welcomePage> {
           ],
         ),
         /* drawer here */
-        endDrawer: Drawer(),
+        endDrawer: Drawer(
+          child: ListView(children: [
+            ListTile(
+              leading: Icon(themeProvider.isDarkMode ? _iconDark : _iconLight),
+              title: Text(
+                'Dark Mode',
+                style: TextStyle(
+                    color:
+                        themeProvider.isDarkMode ? Colors.white : Colors.black),
+              ),
+              trailing: ChangeThemeButtonWidget(),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.people,
+              ),
+              title: Text(
+                'Your Friends',
+                style: TextStyle(
+                    color:
+                        themeProvider.isDarkMode ? Colors.white : Colors.black),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.logout,
+              ),
+              title: Text(
+                'Logout',
+                style: TextStyle(
+                    color:
+                        themeProvider.isDarkMode ? Colors.white : Colors.black),
+              ),
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushNamed(context, '/');
+              },
+            ),
+          ]),
+        ),
         /* body srart here*/
         body: Center(
           child: _pages[_selectedIndex],

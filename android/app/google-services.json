@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "278225724157",
+    "project_id": "jukto-ef36d",
+    "storage_bucket": "jukto-ef36d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278225724157:android:06cb9de3c8359c131c9494",
+        "android_client_info": {
+          "package_name": "com.example.jukto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278225724157-fi5cmb0gsofru4fd8pb6hpkap2umc8o6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHdp3gnQoEMuCskiB423sV8pTFLQEQDGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278225724157-fi5cmb0gsofru4fd8pb6hpkap2umc8o6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,11 @@
+import 'dart:io';
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,7 +19,95 @@ class profilePage extends StatefulWidget {
   State<profilePage> createState() => _profilePageState();
 }
 
+String imageurl = ' ';
+String CurrentPic = ' ';
+String addbio = ' ';
+String Currentbio = ' ';
+
 class _profilePageState extends State<profilePage> {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    if (auth.currentUser != null) {
+      user = auth.currentUser;
+    }
+  }
+
+  // FirebaseFirestore.instance
+  //     .collection('users')
+  //     .get()
+  //     .then((QuerySnapshot querySnapshot) {
+  //   querySnapshot.docs.forEach((doc) {
+  //     if (doc["email"] == user?.email) {
+  //       setState(() {
+  //         CurrentPic = doc["profileImage"];
+  //       });
+  //     }
+  //   });
+  // });
+
+  void uploadCameraImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
+        '_' +
+        Random().nextInt(10000).toString() +
+        '.jpg';
+    Reference ref = FirebaseStorage.instance.ref().child(fileName);
+    await ref.putFile(File(image!.path));
+    ref.getDownloadURL().then((pImage) {
+      print(pImage);
+      setState(() {
+        imageurl = pImage;
+      });
+    });
+    String downloadUrl = await ref.getDownloadURL();
+    FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if (doc["email"] == user?.email) {
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(doc.id)
+              .update({'profileImage': downloadUrl.toString()});
+        }
+      });
+    });
+  }
+
+  void uploadGalleryImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
+        '_' +
+        Random().nextInt(10000).toString() +
+        '.jpg';
+    Reference ref = FirebaseStorage.instance.ref().child(fileName);
+    await ref.putFile(File(image!.path));
+    ref.getDownloadURL().then((pImage) {
+      setState(() {
+        imageurl = pImage;
+      });
+    });
+    String downloadUrl = await ref.getDownloadURL();
+    FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if (doc["email"] == user?.email) {
+          FirebaseFirestore.instance
+              .collection("users")
+              .doc(doc.id)
+              .update({'profileImage': downloadUrl.toString()});
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,21 +118,82 @@ class _profilePageState extends State<profilePage> {
             SizedBox(
               height: 25,
             ),
-            Container(
-              height: 150,
-              width: 150,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: NetworkImage(
-                      'https://img.freepik.com/free-photo/young-bearded-man-with-striped-shirt_273609-5677.jpg?w=2000'),
+            CircleAvatar(
+              child: ClipOval(
+                child: Stack(
+                  children: <Widget>[
+                    Image.network('https://via.placeholder.com/300'),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      left: 0,
+                      height: 33,
+                      child: GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Container(
+                                    height: 120,
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          onTap: () {
+                                            uploadCameraImage();
+                                            Navigator.pop(context);
+                                          },
+                                          leading: Icon(
+                                            Icons.camera,
+                                            color:
+                                                Color.fromRGBO(58, 150, 255, 1),
+                                          ),
+                                          title: Text('Camera'),
+                                        ),
+                                        ListTile(
+                                          onTap: () {
+                                            uploadGalleryImage();
+                                            Navigator.pop(context);
+                                          },
+                                          leading: Icon(
+                                            Icons.image,
+                                            color:
+                                                Color.fromRGBO(58, 150, 255, 1),
+                                          ),
+                                          title: Text('Gallery'),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              });
+                        },
+                        child: Container(
+                          height: 20,
+                          width: 30,
+                          color: Colors.black26,
+                          child: Center(
+                            child: Icon(
+                              Icons.photo_camera,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              radius: 50.0,
+              backgroundImage: imageurl != " "
+                  ? NetworkImage(imageurl)
+                  : NetworkImage(CurrentPic),
+              backgroundColor: Colors.transparent,
             ),
             const SizedBox(height: 20),
             Center(
               child: Text(
-                'Md Jakir Hossen',
+                '${user?.displayName}',
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 24,
@@ -47,7 +204,7 @@ class _profilePageState extends State<profilePage> {
             const SizedBox(height: 10),
             Center(
               child: Text(
-                'CSE Department',
+                'bio',
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 18,
