@@ -213,9 +213,6 @@ class _loginpageState extends State<loginpage> {
                     ),
                   ),
                   onTap: () async {
-                    setState(() {
-                      showSpinner = true;
-                    });
                     try {
                       UserCredential userCredential =
                           await auth.signInWithEmailAndPassword(
@@ -224,6 +221,9 @@ class _loginpageState extends State<loginpage> {
                       );
                       user = userCredential.user;
                       if (user != null) {
+                        setState(() {
+                          showSpinner = true;
+                        });
                         Navigator.push(
                             context,
                             MaterialPageRoute(

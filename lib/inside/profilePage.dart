@@ -33,21 +33,20 @@ class _profilePageState extends State<profilePage> {
     super.initState();
     if (auth.currentUser != null) {
       user = auth.currentUser;
+      FirebaseFirestore.instance
+          .collection('users')
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          if (doc["email"] == user?.email) {
+            setState(() {
+              CurrentPic = doc["profileImage"];
+            });
+          }
+        });
+      });
     }
   }
-
-  // FirebaseFirestore.instance
-  //     .collection('users')
-  //     .get()
-  //     .then((QuerySnapshot querySnapshot) {
-  //   querySnapshot.docs.forEach((doc) {
-  //     if (doc["email"] == user?.email) {
-  //       setState(() {
-  //         CurrentPic = doc["profileImage"];
-  //       });
-  //     }
-  //   });
-  // });
 
   void uploadCameraImage() async {
     final image = await ImagePicker().pickImage(source: ImageSource.camera);
@@ -119,76 +118,69 @@ class _profilePageState extends State<profilePage> {
               height: 25,
             ),
             CircleAvatar(
-              child: ClipOval(
-                child: Stack(
-                  children: <Widget>[
-                    Image.network('https://via.placeholder.com/300'),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      left: 0,
-                      height: 33,
-                      child: GestureDetector(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Container(
-                                    height: 120,
-                                    child: Column(
-                                      children: [
-                                        ListTile(
-                                          onTap: () {
-                                            uploadCameraImage();
-                                            Navigator.pop(context);
-                                          },
-                                          leading: Icon(
-                                            Icons.camera,
-                                            color:
-                                                Color.fromRGBO(58, 150, 255, 1),
-                                          ),
-                                          title: Text('Camera'),
-                                        ),
-                                        ListTile(
-                                          onTap: () {
-                                            uploadGalleryImage();
-                                            Navigator.pop(context);
-                                          },
-                                          leading: Icon(
-                                            Icons.image,
-                                            color:
-                                                Color.fromRGBO(58, 150, 255, 1),
-                                          ),
-                                          title: Text('Gallery'),
-                                        )
-                                      ],
+              radius: 50.0,
+              backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+              child: CircleAvatar(
+                radius: 48.0,
+                backgroundImage: imageurl != " "
+                    ? NetworkImage(imageurl)
+                    : NetworkImage(CurrentPic),
+                child: Transform.translate(
+                  offset: Offset(30, 35),
+                  child: IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Container(
+                                height: 120,
+                                child: Column(
+                                  children: [
+                                    ListTile(
+                                      onTap: () {
+                                        uploadCameraImage();
+                                        Navigator.pop(context);
+                                      },
+                                      leading: Icon(
+                                        Icons.camera,
+                                        color: Color.fromRGBO(58, 150, 255, 1),
+                                      ),
+                                      title: Text('Camera'),
                                     ),
-                                  ),
-                                );
-                              });
-                        },
-                        child: Container(
-                          height: 20,
-                          width: 30,
-                          color: Colors.black26,
-                          child: Center(
-                            child: Icon(
-                              Icons.photo_camera,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                                    ListTile(
+                                      onTap: () {
+                                        uploadGalleryImage();
+                                        Navigator.pop(context);
+                                      },
+                                      leading: Icon(
+                                        Icons.image,
+                                        color: Color.fromRGBO(58, 150, 255, 1),
+                                      ),
+                                      title: Text('Gallery'),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          });
+                    },
+                    icon: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(
+                            58, 150, 255, 1), // set the background color here
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-              radius: 50.0,
-              backgroundImage: imageurl != " "
-                  ? NetworkImage(imageurl)
-                  : NetworkImage(CurrentPic),
-              backgroundColor: Colors.transparent,
             ),
             const SizedBox(height: 20),
             Center(
