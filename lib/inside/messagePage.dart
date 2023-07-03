@@ -10,6 +10,6 @@ class messagePage extends StatefulWidget {
 class _messagePageState extends State<messagePage> {
   @override
   Widget build(BuildContext context) {
-    return Column();
+    return Scaffold();
   }
 }

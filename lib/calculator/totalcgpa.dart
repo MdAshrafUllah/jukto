@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class totalCGPApage extends StatefulWidget {
   const totalCGPApage({Key? key}) : super(key: key);
@@ -9,73 +11,6 @@ class totalCGPApage extends StatefulWidget {
 
 class _totalCGPApageState extends State<totalCGPApage> {
   Map<String, List<List<Widget>>> semesterData = {};
-
-  void addSubjectRow(String semester) {
-    setState(() {
-      if (!semesterData.containsKey(semester)) {
-        semesterData[semester] = [];
-      }
-      semesterData[semester]!.add([
-        Expanded(
-          child: Container(
-            width: 150,
-            child: TextField(
-              style: TextStyle(fontSize: 12),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Subject Name',
-              ),
-            ),
-          ),
-        ),
-        SizedBox(width: 10),
-        Expanded(
-          child: Container(
-            width: 150,
-            child: TextField(
-              style: TextStyle(fontSize: 12),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'GPA',
-              ),
-            ),
-          ),
-        ),
-        SizedBox(width: 10),
-        Expanded(
-          child: Container(
-            width: 150,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(fontSize: 12),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Point',
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                IconButton(
-                  padding: EdgeInsets.only(top: 0),
-                  icon: Icon(
-                    Icons.cancel,
-                    color: Colors.redAccent,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      semesterData[semester]!.removeLast();
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ]);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +174,9 @@ class _totalCGPApageState extends State<totalCGPApage> {
     AlertDialog alertDialog = AlertDialog(
       title: Text("Add Semester"),
       content: TextField(
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]'))
+        ],
         controller: semesterController,
         decoration: InputDecoration(
           labelText: "Semester",
@@ -303,5 +241,87 @@ class _totalCGPApageState extends State<totalCGPApage> {
         return alertDialog;
       },
     );
+  }
+
+  void addSubjectRow(String semester) {
+    setState(() {
+      if (!semesterData.containsKey(semester)) {
+        semesterData[semester] = [];
+      }
+      semesterData[semester]!.add([
+        Expanded(
+          child: Container(
+            width: 150,
+            child: TextField(
+              keyboardType: TextInputType.text,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp('[a-zA-Z]'))
+              ],
+              style: TextStyle(fontSize: 12),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Subject Name',
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: Container(
+            width: 150,
+            child: TextField(
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp('[A-F,a-f,+-]'))
+              ],
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.characters,
+              style: TextStyle(fontSize: 12),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'GPA',
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+          child: Container(
+            width: 150,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^([0-3](\.[0-9]{1,2})?|4(\.00?)?)$')),
+                    ],
+                    style: TextStyle(fontSize: 12),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Point',
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                IconButton(
+                  padding: EdgeInsets.only(top: 0),
+                  icon: Icon(
+                    Icons.cancel,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      semesterData[semester]!.removeLast();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ]);
+    });
   }
 }

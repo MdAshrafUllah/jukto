@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import '../inside/welcomePage.dart';
 import 'loginPage.dart';
@@ -106,6 +107,9 @@ class _signupPageState extends State<signupPage> {
                       fontWeight: FontWeight.bold,
                     ),
                     keyboardType: TextInputType.name,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp('[A-Z,a-z,]'))
+                    ],
                     cursorColor: Color.fromRGBO(58, 150, 255, 1),
                     decoration: InputDecoration(
                       hintText: 'Name',
