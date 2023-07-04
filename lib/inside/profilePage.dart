@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../authentication/loginPage.dart';
+import '../calculator/controllers/total_cgpa_controller.dart';
 import '../calculator/totalcgpa.dart';
 
 class profilePage extends StatefulWidget {
@@ -213,27 +214,29 @@ class _profilePageState extends State<profilePage> {
                     MaterialPageRoute(builder: (Context) => totalCGPApage()));
               },
               child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20),
-                padding: EdgeInsets.only(left: 20, right: 20),
-                height: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    width: 4,
-                    color: Color.fromRGBO(58, 150, 255, 1),
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  height: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      width: 4,
+                      color: Color.fromRGBO(58, 150, 255, 1),
+                    ),
                   ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Total CGPA: 3.33',
-                  style: TextStyle(
-                    color: Color.fromRGBO(58, 150, 255, 1),
-                    fontFamily: 'Roboto',
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+                  alignment: Alignment.center,
+                  child: Selector<TotalCGPAController, double>(
+                    selector: (context, controller) => controller.totalCGPA,
+                    builder: (context, totalCGPA, child) => Text(
+                      'Total CGPA: $totalCGPA',
+                      style: TextStyle(
+                        color: Color.fromRGBO(58, 150, 255, 1),
+                        fontFamily: 'Roboto',
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )),
             ),
             SizedBox(
               height: 10,

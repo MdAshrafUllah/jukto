@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jukto/inside/profilePage.dart';
+import 'package:jukto/inside/welcomePage.dart';
+import 'package:provider/provider.dart';
+
+import 'controllers/total_cgpa_controller.dart';
 
 class totalCGPApage extends StatefulWidget {
   const totalCGPApage({Key? key}) : super(key: key);
@@ -14,6 +19,7 @@ class _totalCGPApageState extends State<totalCGPApage> {
 
   @override
   Widget build(BuildContext context) {
+    final totalCGPAController = context.read<TotalCGPAController>();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -56,6 +62,31 @@ class _totalCGPApageState extends State<totalCGPApage> {
                         fontFamily: 'Roboto',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Container(
+                    margin: EdgeInsets.only(right: 20, top: 20),
+                    height: 25,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        width: 2,
+                        color: Color.fromRGBO(162, 158, 158, 1),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Gpa",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Roboto',
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -159,11 +190,29 @@ class _totalCGPApageState extends State<totalCGPApage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          addSemesterDialog(context);
-        },
-        child: Icon(Icons.add),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        child: Row(
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                totalCGPAController.calculateTotalCGPA([]);
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (Context) => welcomePage()));
+              },
+              backgroundColor: Colors.green,
+              child: Icon(Icons.check),
+            ),
+            Spacer(),
+            FloatingActionButton(
+              onPressed: () {
+                addSemesterDialog(context);
+              },
+              child: Icon(Icons.add),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -271,14 +320,14 @@ class _totalCGPApageState extends State<totalCGPApage> {
             width: 150,
             child: TextField(
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp('[A-F,a-f,+-]'))
+                FilteringTextInputFormatter.allow(RegExp('[0-9]'))
               ],
               keyboardType: TextInputType.text,
               textCapitalization: TextCapitalization.characters,
               style: TextStyle(fontSize: 12),
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'GPA',
+                labelText: 'Course Credit',
               ),
             ),
           ),
