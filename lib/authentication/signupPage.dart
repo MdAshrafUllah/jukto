@@ -31,6 +31,9 @@ class _signupPageState extends State<signupPage> {
     await FirebaseFirestore.instance.collection("users").add({
       'name': name,
       'email': email,
+      'status': 'Unavalible',
+      'uid': auth.currentUser?.uid,
+      'profileImage': 'https://i.stack.imgur.com/YaL3s.jpg'
     });
   }
 
@@ -108,7 +111,7 @@ class _signupPageState extends State<signupPage> {
                     ),
                     keyboardType: TextInputType.name,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp('[A-Z,a-z,]'))
+                      FilteringTextInputFormatter.allow(RegExp('[A-Za-z ]'))
                     ],
                     cursorColor: Color.fromRGBO(58, 150, 255, 1),
                     decoration: InputDecoration(
@@ -357,12 +360,15 @@ class _signupPageState extends State<signupPage> {
                           email: _emailController.text,
                           password: _passwordController.text,
                         );
-                        userdata(_nameController.text.trim(),
-                            _emailController.text.trim());
+                        userdata(
+                          _nameController.text.trim(),
+                          _emailController.text.trim(),
+                        );
                         user = userCredential.user;
                         await user!.updateDisplayName(_nameController.text);
                         await user!.reload();
                         user = auth.currentUser;
+
                         if (user != null) {
                           Navigator.push(
                               context,

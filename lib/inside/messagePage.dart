@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:jukto/group_chats/group_chat_screen.dart';
 
 class messagePage extends StatefulWidget {
-  const messagePage({Key? key}) : super(key: key);
+  const messagePage({super.key});
 
   @override
   State<messagePage> createState() => _messagePageState();
 }
 
 class _messagePageState extends State<messagePage> {
-  List<String> semesters = [];
-  String? currentSemester;
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.group),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => GroupChatHomeScreen(),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -4,20 +4,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:jukto/inside/classRemineder.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../authentication/loginPage.dart';
-import '../calculator/controllers/total_cgpa_controller.dart';
+import '../calculator/totalPayment.dart';
 import '../calculator/totalcgpa.dart';
 
-class profilePage extends StatefulWidget {
-  const profilePage({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  State<profilePage> createState() => _profilePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
 String imageurl = ' ';
@@ -25,24 +26,37 @@ String CurrentPic = ' ';
 String addbio = ' ';
 String Currentbio = ' ';
 
-class _profilePageState extends State<profilePage> {
+class _ProfilePageState extends State<ProfilePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
   User? user;
+
+  double totalCGPA = 3.27;
+  double totalCredit = 127;
 
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
     if (auth.currentUser != null) {
       user = auth.currentUser;
-      FirebaseFirestore.instance
+      final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .get()
-          .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
-          if (doc["email"] == user?.email) {
-            setState(() {
-              CurrentPic = doc["profileImage"];
-            });
+          .where('email', isEqualTo: user?.email)
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          CurrentPic = doc["profileImage"];
+          final totalPoint = doc["totalPoint"];
+          final totalCreditValue = doc["totalCredit"];
+          if (totalPoint is num) {
+            totalCGPA = totalPoint.toDouble();
+          }
+          if (totalCreditValue is num) {
+            totalCredit = totalCreditValue.toDouble();
           }
         });
       });
@@ -208,133 +222,83 @@ class _profilePageState extends State<profilePage> {
             SizedBox(
               height: 25,
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (Context) => totalCGPApage()));
-              },
-              child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  height: 70,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      width: 4,
-                      color: Color.fromRGBO(58, 150, 255, 1),
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Selector<TotalCGPAController, double>(
-                    selector: (context, controller) => controller.totalCGPA,
-                    builder: (context, totalCGPA, child) => Text(
-                      'Total CGPA: $totalCGPA',
-                      style: TextStyle(
-                        color: Color.fromRGBO(58, 150, 255, 1),
-                        fontFamily: 'Roboto',
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (Context) => const TotalCGPApage()));
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(left: 20, right: 20),
+                      padding: EdgeInsets.only(left: 5, right: 5),
+                      height: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          width: 4,
+                          color: Color.fromRGBO(58, 150, 255, 1),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Total CGPA',
+                        style: TextStyle(
+                          color: Color.fromRGBO(58, 150, 255, 1),
+                          fontFamily: 'Roboto',
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  )),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (Context) => TotalPayments()));
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(left: 20, right: 20),
+                      padding: EdgeInsets.only(left: 5, right: 5),
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(58, 150, 255, 1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Total Payments',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Roboto',
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             SizedBox(
               height: 10,
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (Context) => loginpage()));
-              },
-              child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20),
-                padding: EdgeInsets.only(left: 20, right: 20),
-                height: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    width: 4,
-                    color: Color.fromRGBO(58, 150, 255, 1),
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Complete Credits: 129',
-                  style: TextStyle(
-                    color: Color.fromRGBO(58, 150, 255, 1),
-                    fontFamily: 'Roboto',
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (Context) => loginpage()));
-              },
-              child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20),
-                padding: EdgeInsets.only(left: 20, right: 20),
-                height: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    width: 4,
-                    color: Color.fromRGBO(58, 150, 255, 1),
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Complete Subjects: 43',
-                  style: TextStyle(
-                    color: Color.fromRGBO(58, 150, 255, 1),
-                    fontFamily: 'Roboto',
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (Context) => loginpage()));
-              },
-              child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20),
-                padding: EdgeInsets.only(left: 20, right: 20),
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(58, 150, 255, 1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Total Payments',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Roboto',
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (Context) => loginpage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (Context) => ClassReminderPage()));
               },
               child: Container(
                 margin: EdgeInsets.only(left: 20, right: 20),
