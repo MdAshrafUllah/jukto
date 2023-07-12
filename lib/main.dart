@@ -5,12 +5,14 @@ import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'authentication/loginPage.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 FlutterLocalNotificationsPlugin notificationsPlugin =
     FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  tz.initializeTimeZones();
   AndroidInitializationSettings androidSetting =
       AndroidInitializationSettings("@mipmap/ic_launcher");
 

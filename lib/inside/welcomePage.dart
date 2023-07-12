@@ -95,7 +95,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
   ];
 
   final List<Widget> _pages = [
-    homePage(),
+    HomePage(),
     messagePage(),
     SearchPerson(),
     NotificationPage(),

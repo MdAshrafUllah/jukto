@@ -4,11 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:jukto/inside/classRemineder.dart';
-import 'package:provider/provider.dart';
+import 'package:jukto/alarm/classRemineder.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../authentication/loginPage.dart';
 import '../calculator/totalPayment.dart';
@@ -47,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
           .where('email', isEqualTo: user?.email)
           .get();
 
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         setState(() {
           CurrentPic = doc["profileImage"];
           final totalPoint = doc["totalPoint"];
@@ -59,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
             totalCredit = totalCreditValue.toDouble();
           }
         });
-      });
+      }
     }
   }
 
@@ -72,7 +69,6 @@ class _ProfilePageState extends State<ProfilePage> {
     Reference ref = FirebaseStorage.instance.ref().child(fileName);
     await ref.putFile(File(image!.path));
     ref.getDownloadURL().then((pImage) {
-      print(pImage);
       setState(() {
         imageurl = pImage;
       });
