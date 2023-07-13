@@ -1,24 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../inside/welcomePage.dart';
 import 'signupPage.dart';
 
-class loginpage extends StatefulWidget {
-  const loginpage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<loginpage> createState() => _loginpageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _loginpageState extends State<loginpage> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   bool showSpinner = false;
   bool _passwordVisible = true;
@@ -294,7 +291,7 @@ nouserAlertDialog(BuildContext context) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => loginpage(),
+          builder: (BuildContext context) => LoginPage(),
         ),
       );
     },
@@ -330,7 +327,7 @@ wrongpassAlertDialog(BuildContext context) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => loginpage(),
+          builder: (BuildContext context) => LoginPage(),
         ),
       );
     },

@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jukto/inside/notificationPage.dart';
+
 import 'package:provider/provider.dart';
 
 import '../theme/theme.dart';
@@ -24,12 +26,53 @@ class welcomePage extends StatefulWidget {
 IconData _iconLight = Icons.light_mode;
 IconData _iconDark = Icons.dark_mode;
 
-class _welcomePageState extends State<welcomePage> {
+class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
   int _selectedIndex = 0;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? user;
+  String userID = '';
+
+  @override
+  void initState() {
+    super.initState();
+    setStatus("Online");
+    WidgetsBinding.instance.addObserver(this);
+    if (auth.currentUser != null) {
+      user = auth.currentUser;
+      FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: user?.email)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          String documentId = doc.id;
+          userID = documentId;
+        });
+      });
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void setStatus(String status) async {
+    await FirebaseFirestore.instance.collection('users').doc(userID).update({
+      "status": status,
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // online
+      setStatus("Online");
+    } else {
+      // offline
+      setStatus("Offline");
+    }
   }
 
   static const List<TabItem> items = [
@@ -37,10 +80,13 @@ class _welcomePageState extends State<welcomePage> {
       icon: FontAwesomeIcons.house,
     ),
     TabItem(
+      icon: FontAwesomeIcons.solidComment,
+    ),
+    TabItem(
       icon: FontAwesomeIcons.magnifyingGlass,
     ),
     TabItem(
-      icon: FontAwesomeIcons.solidComment,
+      icon: Icons.notifications,
     ),
     TabItem(
       icon: FontAwesomeIcons.solidUser,
@@ -48,10 +94,11 @@ class _welcomePageState extends State<welcomePage> {
   ];
 
   final List<Widget> _pages = [
-    homePage(),
-    searchPerson(),
+    HomePage(),
     messagePage(),
-    profilePage(),
+    SearchPerson(),
+    NotificationPage(),
+    ProfilePage(),
   ];
 
   @override
