@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TotalPayments extends StatefulWidget {
@@ -71,7 +70,6 @@ class _TotalPaymentsState extends State<TotalPayments> {
   }
 
   void addPaymentDialog(BuildContext context) async {
-    double amount = 0.0;
     date = '';
 
     final result = await showDialog(

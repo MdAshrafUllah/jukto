@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
    <application
-        android:label="jukto"
+        android:label="Jukto"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
