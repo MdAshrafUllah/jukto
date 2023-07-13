@@ -322,7 +322,7 @@ class _ProfilePageState extends State<ProfilePage> {
             GestureDetector(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (Context) => loginpage()));
+                    MaterialPageRoute(builder: (Context) => LoginPage()));
               },
               child: Container(
                 margin: EdgeInsets.only(left: 20, right: 20),

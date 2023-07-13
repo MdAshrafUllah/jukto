@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.themeMode,
-            home: const loginpage(),
+            home: const LoginPage(),
             theme: ThemeData(
               brightness: Brightness.light,
               textTheme: GoogleFonts.robotoTextTheme(textTheme).copyWith(

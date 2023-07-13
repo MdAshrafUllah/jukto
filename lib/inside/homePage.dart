@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rxdart/rxdart.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,21 +17,27 @@ class _HomePageState extends State<HomePage> {
   final postController = TextEditingController();
   final CollectionReference postsCollection =
       FirebaseFirestore.instance.collection('posts');
-  late User currentUser;
+  late User? currentUser;
 
-  late Stream<DateTime> timeStream;
+  late BehaviorSubject<DateTime> timeStream =
+      BehaviorSubject<DateTime>.seeded(DateTime.now());
 
-  StreamBuilder<QuerySnapshot>? postsStreamBuilder; // Add this line
+  StreamSubscription<QuerySnapshot>? postsSubscription;
+  StreamBuilder<QuerySnapshot>? postsStreamBuilder;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     initializeCurrentUser();
-    createPostsStreamBuilder(); // Add this line
+    createPostsStreamBuilder();
   }
 
   @override
   void dispose() {
+    postController.dispose();
+    timeStream.close();
+    postsSubscription?.cancel();
     super.dispose();
   }
 
@@ -55,103 +62,183 @@ class _HomePageState extends State<HomePage> {
     }
 
     timeStream =
-        Stream<DateTime>.periodic(Duration(seconds: 1), (_) => DateTime.now());
+        BehaviorSubject<DateTime>.seeded(DateTime.now()); // Use BehaviorSubject
   }
 
   void createPostsStreamBuilder() {
-    postsStreamBuilder = StreamBuilder<QuerySnapshot>(
-      stream: postsCollection.orderBy('postTime', descending: true).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
+    if (postsSubscription != null) {
+      return;
+    }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        }
+    postsSubscription = postsCollection
+        .orderBy('postTime', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      setState(() {
+        postsStreamBuilder = StreamBuilder<QuerySnapshot>(
+          stream: Stream.value(snapshot), // Use a new stream instance
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
 
-        List<DocumentSnapshot> posts = snapshot.data!.docs;
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-        return ListView.builder(
-          itemCount: posts.length,
-          itemBuilder: (context, index) {
-            Map<String, dynamic> postData =
-                posts[index].data() as Map<String, dynamic>;
-            DateTime postTime = postData['postTime'].toDate();
+            if (!snapshot.hasData) {
+              return SizedBox();
+            }
 
-            return Container(
-              margin: EdgeInsets.all(10),
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.blueGrey[50],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ListTile(
-                contentPadding: EdgeInsets.symmetric(vertical: 4),
-                title: Row(
-                  children: [
-                    Text(
-                      postData['userName'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+            List<DocumentSnapshot> posts = snapshot.data!.docs;
+
+            return ListView.builder(
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                Map<String, dynamic> postData =
+                    posts[index].data() as Map<String, dynamic>;
+                DateTime postTime = postData['postTime'].toDate();
+                String postId = posts[index].id;
+
+                bool isCurrentUserPost = currentUser?.uid == postData['userId'];
+
+                return Container(
+                  margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey[50],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(vertical: 4),
+                    title: Row(
+                      children: [
+                        Text(
+                          postData['name'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        Spacer(),
+                        if (isCurrentUserPost)
+                          PopupMenuButton<String>(
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                                // Handle edit post here
+                                // You can navigate to an edit screen and pass the postId
+                              } else if (value == 'delete') {
+                                // Handle delete post here
+                                showDeleteConfirmationDialog(postId);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem<String>(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit),
+                                    SizedBox(width: 8),
+                                    Text('Edit'),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem<String>(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete),
+                                    SizedBox(width: 8),
+                                    Text('Delete'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          PopupMenuButton<String>(
+                            onSelected: (value) {
+                              if (value == 'message') {
+                                // Implement the logic for the "Message" option here
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem<String>(
+                                value: 'message',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.message),
+                                    SizedBox(width: 8),
+                                    Text('Message'),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
-                    Spacer(),
-                    // IconButton(onPressed: () {}, icon: Icon(Icons.more_horiz))
-                  ],
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    StreamBuilder<DateTime>(
-                      stream: timeStream,
-                      initialData: DateTime.now(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          DateTime currentTime = snapshot.data!;
-                          String formattedTime = formatPostTime(postTime);
-                          return Text(formattedTime);
-                        } else {
-                          return SizedBox();
-                        }
-                      },
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        StreamBuilder<DateTime>(
+                          stream: timeStream,
+                          initialData: DateTime.now(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              String formattedTime = formatPostTime(postTime);
+                              return Text(formattedTime);
+                            } else {
+                              return SizedBox();
+                            }
+                          },
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Text(
+                          postData['postText'],
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 15,
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(postData['profileImage']),
                     ),
-                    Text(
-                      postData['postText'],
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(postData['profileImage']),
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         );
-      },
-    );
+      });
+    });
   }
 
   Future<void> addPost() async {
     String postText = postController.text;
-    String? userName = currentUser.displayName;
+    String? name =
+        currentUser?.displayName; // Update to currentUser?.displayName
     DateTime postTime = DateTime.now();
 
     await postsCollection.add({
       'postText': postText,
-      'userName': userName,
+      'name': name,
       'profileImage': postimg,
       'postTime': postTime,
+      'userId': currentUser?.uid, // Update to currentUser?.uid
     });
 
     postController.clear();
+
+    setState(() {});
+  }
+
+  Future<void> deletePost(String postId) async {
+    await postsCollection.doc(postId).delete();
   }
 
   String formatPostTime(DateTime postTime) {
@@ -169,11 +256,42 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void showDeleteConfirmationDialog(String postId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete Post'),
+          content: Text('Are you sure you want to delete this post?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                deletePost(postId);
+                Navigator.pop(context);
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Scaffold(
-        body: Column(
+    return Scaffold(
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss the keyboard when tapping outside the text field
+          FocusScope.of(context).unfocus();
+        },
+        child: Column(
           children: [
             Container(
               margin: EdgeInsets.all(10),
@@ -239,8 +357,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: postsStreamBuilder ??
-                  Container(), // Use the created StreamBuilder
+              child: postsStreamBuilder ?? Container(),
             ),
           ],
         ),
