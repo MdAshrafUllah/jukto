@@ -5,7 +5,6 @@ import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jukto/inside/notificationPage.dart';
 
@@ -95,7 +94,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
   ];
 
   final List<Widget> _pages = [
-    homePage(),
+    HomePage(),
     messagePage(),
     SearchPerson(),
     NotificationPage(),

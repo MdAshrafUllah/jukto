@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:jukto/group_chats/group_chat_screen.dart';
 import 'package:jukto/inside/ChatRoom.dart';
 
 class SearchPerson extends StatefulWidget {

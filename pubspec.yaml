@@ -45,7 +45,6 @@ dependencies:
   firebase_storage: ^11.2.3
   image_picker:
   firebase_database: ^10.2.3
-  fluttertoast: ^8.2.1
   shared_preferences: ^2.1.0
   firebase_messaging: ^14.4.0
   flutter_local_notifications: ^15.0.1
@@ -56,6 +55,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   firebase_core: ^2.14.0
+  rxdart: ^0.27.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
