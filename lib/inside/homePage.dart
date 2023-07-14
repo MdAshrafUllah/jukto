@@ -1,8 +1,13 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
+import '../theme/theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 String? postimg;
+String? selectimg;
 
 class Post {
   final String postId;
@@ -25,6 +31,7 @@ class Post {
   int commentCount;
   List<Comment> comments = [];
   bool showComments = false;
+  String? imageUrl;
 
   Post({
     required this.postId,
@@ -37,6 +44,7 @@ class Post {
     this.likeCount = 0,
     this.commentCount = 0,
     required List<Comment> comments,
+    this.imageUrl,
   });
 
   List<String> get likes =>
@@ -159,6 +167,7 @@ class _HomePageState extends State<HomePage> {
             likeCount: postData['likeCount'] ?? 0,
             commentCount: commentCount,
             comments: comments,
+            imageUrl: postData['imageUrl'],
           );
         }).toList();
       });
@@ -170,17 +179,35 @@ class _HomePageState extends State<HomePage> {
     String? name = currentUser?.displayName;
     DateTime postTime = DateTime.now();
 
-    await postsCollection.add({
-      'postText': postText,
-      'name': name,
-      'profileImage': postimg,
-      'postTime': postTime,
-      'userId': currentUser?.uid,
-      'likeCount': 0,
-      'commentCount': 0,
-      'comments': [],
-      'likes': [],
-    });
+    // Upload the image to Firebase Storage if an image is selected
+    String? imageUrl;
+    if (selectimg != null) {
+      Reference storageReference =
+          FirebaseStorage.instance.ref().child('posts/${DateTime.now()}.jpg');
+      UploadTask uploadTask = storageReference.putFile(File(selectimg!));
+      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+
+      // Get the download URL of the uploaded image
+      imageUrl = await storageReference.getDownloadURL();
+    }
+
+    if (selectimg != null || postText.isNotEmpty) {
+      await postsCollection.add({
+        'imageUrl': imageUrl,
+        'postText': postText,
+        'name': name,
+        'profileImage': postimg,
+        'postTime': postTime,
+        'userId': currentUser?.uid,
+        'likeCount': 0,
+        'commentCount': 0,
+        'comments': [],
+        'likes': [],
+      });
+      setState(() {
+        selectimg = null;
+      });
+    }
 
     postController.clear();
 
@@ -310,8 +337,16 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Delete Post'),
-          content: Text('Are you sure you want to delete this post?'),
+          title: Text('Delete Post',
+              style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black)),
+          content: Text('Are you sure you want to delete this post?',
+              style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black)),
           actions: [
             TextButton(
               onPressed: () {
@@ -354,6 +389,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       body: GestureDetector(
         onTap: () {
@@ -365,7 +401,9 @@ class _HomePageState extends State<HomePage> {
               margin: EdgeInsets.all(10),
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: Colors.blueGrey[50],
+                color: themeProvider.isDarkMode
+                    ? Colors.black54
+                    : Colors.blueGrey[50],
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
@@ -383,40 +421,63 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 10),
                   TextField(
+                    style: TextStyle(
+                        color: themeProvider.isDarkMode
+                            ? Colors.white
+                            : Colors.black),
                     controller: postController,
                     decoration: InputDecoration(
                       hintText: "What's on your mind...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      suffixIcon: selectimg != null
+                          ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  selectimg = null;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.cancel,
+                                color: Colors.red,
+                              ))
+                          : IconButton(
+                              padding: EdgeInsets.all(5),
+                              onPressed: () async {
+                                FilePickerResult? result =
+                                    await FilePicker.platform.pickFiles(
+                                  type: FileType.image,
+                                  allowMultiple: false,
+                                );
+
+                                if (result != null && result.files.isNotEmpty) {
+                                  File file = File(result.files.first.path!);
+                                  setState(() {
+                                    selectimg = file.path;
+                                  });
+                                }
+                              },
+                              icon: Icon(
+                                Icons.image,
+                                color: Color.fromRGBO(58, 150, 255, 1),
+                              ),
+                            ),
                     ),
                   ),
                   SizedBox(height: 5),
-                  Row(
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.all(5),
-                        onPressed: () {
-                          // Add your onPressed logic here
-                        },
-                        iconSize: 30,
-                        icon: Icon(
-                          Icons.image,
-                          color: Color.fromRGBO(58, 150, 255, 1),
-                        ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      onPressed: addPost,
+                      icon: Icon(
+                        Icons.send_rounded,
+                        color: Color.fromRGBO(58, 150, 255, 1),
                       ),
-                      Spacer(),
-                      IconButton(
-                        onPressed: addPost,
-                        icon: Icon(
-                          Icons.send_rounded,
-                          color: Color.fromRGBO(58, 150, 255, 1),
-                        ),
-                        iconSize: 30,
-                        splashColor: Color.fromRGBO(58, 150, 255, 1),
-                      ),
-                    ],
-                  ),
+                      iconSize: 30,
+                      splashColor: Color.fromRGBO(58, 150, 255, 1),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -425,278 +486,372 @@ class _HomePageState extends State<HomePage> {
                 itemCount: posts.length,
                 itemBuilder: (context, index) {
                   Post post = posts[index];
-                  return Container(
-                    margin: EdgeInsets.all(10),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[50],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(vertical: 4),
-                      title: Row(
-                        children: [
-                          Text(
-                            post.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullScreenImagePage(
+                            imageUrl: post.imageUrl,
                           ),
-                          Spacer(),
-                          if (currentUser?.uid == post.userId)
-                            PopupMenuButton<String>(
-                              onSelected: (value) {
-                                if (value == 'edit_post') {
-                                  // Handle edit post here
-                                  // You can navigate to an edit screen and pass the postId
-                                } else if (value == 'delete_post') {
-                                  showDeleteConfirmationDialog(post.postId);
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem<String>(
-                                  value: 'edit',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.edit),
-                                      SizedBox(width: 8),
-                                      Text('Edit_post'),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<String>(
-                                  value: 'delete_post',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.delete),
-                                      SizedBox(width: 8),
-                                      Text('Delete'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )
-                          else
-                            PopupMenuButton<String>(
-                              onSelected: (value) {
-                                if (value == 'message') {
-                                  // Implement the logic for the "Message" option here
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem<String>(
-                                  value: 'message',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.message),
-                                      SizedBox(width: 8),
-                                      Text('Message'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: themeProvider.isDarkMode
+                            ? Colors.black54
+                            : Colors.blueGrey[50],
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          StreamBuilder<DateTime>(
-                            stream: timeStream,
-                            initialData: DateTime.now(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                String formattedTime =
-                                    formatPostTime(post.postTime);
-                                return Text(formattedTime);
-                              } else {
-                                return SizedBox();
-                              }
-                            },
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            post.postText,
-                            style: TextStyle(
-                              fontSize: 18,
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(vertical: 4),
+                        title: Row(
+                          children: [
+                            Text(
+                              post.name,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: themeProvider.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black),
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      toggleLike(post);
-                                    },
-                                    icon: Icon(
-                                      post.isLiked
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: post.isLiked ? Colors.red : null,
+                            Spacer(),
+                            if (currentUser?.uid == post.userId)
+                              PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  if (value == 'edit_post') {
+                                    // Handle edit post here
+                                    // You can navigate to an edit screen and pass the postId
+                                  } else if (value == 'delete_post') {
+                                    showDeleteConfirmationDialog(post.postId);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem<String>(
+                                    value: 'edit_post',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'Edit post',
+                                          style: TextStyle(
+                                              color: themeProvider.isDarkMode
+                                                  ? Colors.white
+                                                  : Colors.black),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Text('${post.likeCount}'),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        post.showComments = !post.showComments;
-                                        toggleComments(post);
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.comment,
-                                      color: Color.fromRGBO(58, 150, 255, 1),
+                                  PopupMenuItem<String>(
+                                    value: 'delete_post',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete),
+                                        SizedBox(width: 8),
+                                        Text('Delete',
+                                            style: TextStyle(
+                                                color: themeProvider.isDarkMode
+                                                    ? Colors.white
+                                                    : Colors.black)),
+                                      ],
                                     ),
                                   ),
-                                  Text('${post.commentCount}'),
+                                ],
+                              )
+                            else
+                              PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  if (value == 'message') {
+                                    // Implement the logic for the "Message" option here
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem<String>(
+                                    value: 'message',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.message),
+                                        SizedBox(width: 8),
+                                        Text('Message',
+                                            style: TextStyle(
+                                                color: themeProvider.isDarkMode
+                                                    ? Colors.white
+                                                    : Colors.black)),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
-                          if (post.showComments)
-                            Column(
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            StreamBuilder<DateTime>(
+                              stream: timeStream,
+                              initialData: DateTime.now(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  String formattedTime =
+                                      formatPostTime(post.postTime);
+                                  return Text(formattedTime,
+                                      style: TextStyle(
+                                          color: themeProvider.isDarkMode
+                                              ? Colors.white
+                                              : Colors.black));
+                                } else {
+                                  return SizedBox();
+                                }
+                              },
+                            ),
+                            SizedBox(height: 15),
+                            Text(
+                              post.postText,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: themeProvider.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black),
+                            ),
+                            if (post.imageUrl != null)
+                              Image.network(
+                                post.imageUrl!,
+                                fit: BoxFit.cover,
+                                height: 200,
+                                width: double.infinity,
+                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Divider(),
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: post.comments.length,
-                                  itemBuilder: (context, commentIndex) {
-                                    Comment comment =
-                                        post.comments[commentIndex];
-
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                            comment.commenterProfileImage),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        toggleLike(post);
+                                      },
+                                      icon: Icon(
+                                        post.isLiked
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: post.isLiked ? Colors.red : null,
                                       ),
-                                      title: Row(children: [
-                                        Text(comment.commenterName),
-                                        Spacer(),
-                                        if (currentUser?.displayName ==
-                                            comment.commenterName)
-                                          PopupMenuButton<String>(
-                                            onSelected: (value) {
-                                              if (value == 'edit_comment') {
-                                                // Handle edit post here
-                                                // You can navigate to an edit screen and pass the postId
-                                              } else if (value ==
-                                                  'delete_comment') {
-                                                showDeleteConfirmationDialog(
-                                                    post.postId);
-                                              }
-                                            },
-                                            itemBuilder: (context) => [
-                                              PopupMenuItem<String>(
-                                                value: 'edit_comment',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.edit),
-                                                    SizedBox(width: 8),
-                                                    Text('Edit'),
-                                                  ],
-                                                ),
-                                              ),
-                                              PopupMenuItem<String>(
-                                                value: 'delete_comment',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.delete),
-                                                    SizedBox(width: 8),
-                                                    Text('Delete'),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        else if (currentUser?.uid ==
-                                            post.userId)
-                                          PopupMenuButton<String>(
-                                            onSelected: (value) {
-                                              if (value == 'message') {
-                                                // Handle edit post here
-                                                // You can navigate to an edit screen and pass the postId
-                                              } else if (value == 'message') {
-                                                showDeleteConfirmationDialog(
-                                                    post.postId);
-                                              }
-                                            },
-                                            itemBuilder: (context) => [
-                                              PopupMenuItem<String>(
-                                                value: 'message',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.message),
-                                                    SizedBox(width: 8),
-                                                    Text('message'),
-                                                  ],
-                                                ),
-                                              ),
-                                              PopupMenuItem<String>(
-                                                value: 'delete_comment',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.delete),
-                                                    SizedBox(width: 8),
-                                                    Text('Delete'),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        else
-                                          PopupMenuButton<String>(
-                                            onSelected: (value) {
-                                              if (value == 'message') {
-                                                // Implement the logic for the "Message" option here
-                                              }
-                                            },
-                                            itemBuilder: (context) => [
-                                              PopupMenuItem<String>(
-                                                value: 'message',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.message),
-                                                    SizedBox(width: 8),
-                                                    Text('Message'),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ]),
-                                      subtitle: Text(comment.commentText),
-                                    );
-                                  },
+                                    ),
+                                    Text('${post.likeCount}',
+                                        style: TextStyle(
+                                            color: themeProvider.isDarkMode
+                                                ? Colors.white
+                                                : Colors.black)),
+                                  ],
                                 ),
-                                TextField(
-                                  controller: commentController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Add a comment...',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (commentController.text.isNotEmpty) {
-                                      addComment(post);
-                                    }
-                                  },
-                                  child: Text('Add Comment'),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          post.showComments =
+                                              !post.showComments;
+                                          toggleComments(post);
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.comment,
+                                        color: Color.fromRGBO(58, 150, 255, 1),
+                                      ),
+                                    ),
+                                    Text('${post.commentCount}',
+                                        style: TextStyle(
+                                            color: themeProvider.isDarkMode
+                                                ? Colors.white
+                                                : Colors.black)),
+                                  ],
                                 ),
                               ],
                             ),
-                        ],
-                      ),
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(post.profileImage),
+                            if (post.showComments)
+                              Column(
+                                children: [
+                                  Divider(),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: post.comments.length,
+                                    itemBuilder: (context, commentIndex) {
+                                      Comment comment =
+                                          post.comments[commentIndex];
+
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              comment.commenterProfileImage),
+                                        ),
+                                        title: Row(children: [
+                                          Text(comment.commenterName,
+                                              style: TextStyle(
+                                                  color:
+                                                      themeProvider.isDarkMode
+                                                          ? Colors.white
+                                                          : Colors.black)),
+                                          Spacer(),
+                                          if (currentUser?.displayName ==
+                                              comment.commenterName)
+                                            PopupMenuButton<String>(
+                                              onSelected: (value) {
+                                                if (value == 'edit_comment') {
+                                                  // Handle edit post here
+                                                  // You can navigate to an edit screen and pass the postId
+                                                } else if (value ==
+                                                    'delete_comment') {
+                                                  showDeleteConfirmationDialog(
+                                                      post.postId);
+                                                }
+                                              },
+                                              itemBuilder: (context) => [
+                                                PopupMenuItem<String>(
+                                                  value: 'edit_comment',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.edit),
+                                                      SizedBox(width: 8),
+                                                      Text('Edit',
+                                                          style: TextStyle(
+                                                              color: themeProvider
+                                                                      .isDarkMode
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black)),
+                                                    ],
+                                                  ),
+                                                ),
+                                                PopupMenuItem<String>(
+                                                  value: 'delete_comment',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.delete),
+                                                      SizedBox(width: 8),
+                                                      Text('Delete',
+                                                          style: TextStyle(
+                                                              color: themeProvider
+                                                                      .isDarkMode
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black)),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          else if (currentUser?.uid ==
+                                              post.userId)
+                                            PopupMenuButton<String>(
+                                              onSelected: (value) {
+                                                if (value == 'message') {
+                                                  // Handle edit post here
+                                                  // You can navigate to an edit screen and pass the postId
+                                                } else if (value == 'message') {
+                                                  showDeleteConfirmationDialog(
+                                                      post.postId);
+                                                }
+                                              },
+                                              itemBuilder: (context) => [
+                                                PopupMenuItem<String>(
+                                                  value: 'message',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.message),
+                                                      SizedBox(width: 8),
+                                                      Text('message',
+                                                          style: TextStyle(
+                                                              color: themeProvider
+                                                                      .isDarkMode
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black)),
+                                                    ],
+                                                  ),
+                                                ),
+                                                PopupMenuItem<String>(
+                                                  value: 'delete_comment',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.delete),
+                                                      SizedBox(width: 8),
+                                                      Text('Delete',
+                                                          style: TextStyle(
+                                                              color: themeProvider
+                                                                      .isDarkMode
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black)),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          else
+                                            PopupMenuButton<String>(
+                                              onSelected: (value) {
+                                                if (value == 'message') {
+                                                  // Implement the logic for the "Message" option here
+                                                }
+                                              },
+                                              itemBuilder: (context) => [
+                                                PopupMenuItem<String>(
+                                                  value: 'message',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.message),
+                                                      SizedBox(width: 8),
+                                                      Text('Message',
+                                                          style: TextStyle(
+                                                              color: themeProvider
+                                                                      .isDarkMode
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black)),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                        ]),
+                                        subtitle: Text(comment.commentText,
+                                            style: TextStyle(
+                                                color: themeProvider.isDarkMode
+                                                    ? Colors.white
+                                                    : Colors.black)),
+                                      );
+                                    },
+                                  ),
+                                  TextField(
+                                      controller: commentController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Add a comment...',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      style: TextStyle(
+                                          color: themeProvider.isDarkMode
+                                              ? Colors.white
+                                              : Colors.black)),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (commentController.text.isNotEmpty) {
+                                        addComment(post);
+                                      }
+                                    },
+                                    child: Text('Add Comment'),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(post.profileImage),
+                        ),
                       ),
                     ),
                   );
@@ -705,6 +860,57 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class FullScreenImagePage extends StatelessWidget {
+  final String? imageUrl;
+
+  const FullScreenImagePage({Key? key, required this.imageUrl})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Jukto",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+            fontSize: 40,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        actions: <Widget>[
+          Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: Icon(Icons.menu),
+                color: Colors.white,
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: Container(
+            child: Image.network(
+              imageUrl!,
+              fit: BoxFit.contain,
+              height: double.infinity,
+              width: double.infinity,
+            ),
+            color: themeProvider.isDarkMode ? Colors.white : Colors.black),
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jukto/inside/ChatRoom.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class SearchPerson extends StatefulWidget {
   @override
@@ -49,6 +51,7 @@ class _SearchPersonState extends State<SearchPerson> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -70,7 +73,7 @@ class _SearchPersonState extends State<SearchPerson> {
             child: TextField(
               style: TextStyle(
                 fontFamily: 'Roboto',
-                color: Colors.black54,
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -142,6 +145,9 @@ class _SearchPersonState extends State<SearchPerson> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
+                                  color: themeProvider.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -153,6 +159,9 @@ class _SearchPersonState extends State<SearchPerson> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  color: themeProvider.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
                               ),
                               leading: CircleAvatar(

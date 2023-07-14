@@ -39,8 +39,8 @@ class ChangeThemeButtonWidget extends StatelessWidget {
         final provider = Provider.of<ThemeProvider>(context, listen: false);
         provider.toggleTheme(value);
       },
-      activeTrackColor: Colors.lightGreenAccent,
-      activeColor: Colors.green,
+      activeTrackColor: Colors.blueAccent,
+      activeColor: Color.fromRGBO(58, 150, 255, 1),
     );
   }
 }

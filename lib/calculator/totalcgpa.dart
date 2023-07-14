@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class TotalCGPApage extends StatefulWidget {
   const TotalCGPApage({
@@ -104,6 +106,7 @@ class TotalCGPApageState extends State<TotalCGPApage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -115,6 +118,9 @@ class TotalCGPApageState extends State<TotalCGPApage> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -139,7 +145,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterOneCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -157,7 +168,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterOnePointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -195,7 +211,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterTwoCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -213,7 +234,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterTwoPointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -251,7 +277,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterThreeCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -269,7 +300,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterThreePointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -307,7 +343,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterFourCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -325,7 +366,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterFourPointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -363,7 +409,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterFiveCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -381,7 +432,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterFivePointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -419,7 +475,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterSixCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -437,7 +498,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterSixPointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -475,7 +541,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterSevenCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -493,7 +564,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterSevenPointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -531,7 +607,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterEightCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -549,7 +630,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       width: 150,
                       child: TextField(
                         controller: semesterEightPointController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',
@@ -588,7 +674,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       child: TextField(
                         enabled: false,
                         controller: totalCreditController,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Credit',
@@ -603,7 +694,12 @@ class TotalCGPApageState extends State<TotalCGPApage> {
                       child: TextField(
                         enabled: false,
                         controller: totalPointController,
-                        style: const TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black),
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Point',

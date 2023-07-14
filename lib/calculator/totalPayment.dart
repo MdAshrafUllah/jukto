@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class TotalPayments extends StatefulWidget {
   const TotalPayments({Key? key}) : super(key: key);
@@ -134,6 +136,9 @@ class _TotalPaymentsState extends State<TotalPayments> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Column(
         children: [
@@ -176,10 +181,16 @@ class _TotalPaymentsState extends State<TotalPayments> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
         onPressed: () {
           addPaymentDialog(context);
         },
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Provider.of<ThemeProvider>(context).isDarkMode
+              ? Colors.white
+              : Colors.black,
+        ),
       ),
     );
   }

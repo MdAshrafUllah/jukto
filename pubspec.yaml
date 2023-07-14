@@ -50,6 +50,7 @@ dependencies:
   flutter_local_notifications: ^15.0.1
   photo_view: ^0.14.0
   uuid: ^3.0.7
+  file_picker:
 
 dev_dependencies:
   flutter_test:
