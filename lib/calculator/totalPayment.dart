@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +21,9 @@ class _TotalPaymentsState extends State<TotalPayments> {
 
   List<Payment> payments = [];
   String date = '';
+
+  SharedPreferences? _prefs;
+  final String _cacheKey = 'cachedPayments';
 
   @override
   void initState() {
@@ -52,6 +58,10 @@ class _TotalPaymentsState extends State<TotalPayments> {
         payments =
             fetchedPayments; // Update the payments list with fetched data
       });
+
+      // Save fetched data to the cache
+      _prefs ??= await SharedPreferences.getInstance();
+      _prefs!.setStringList(_cacheKey, paymentListToJson(fetchedPayments));
     }
   }
 
@@ -60,15 +70,19 @@ class _TotalPaymentsState extends State<TotalPayments> {
         .collection('users')
         .doc(userID) // Use the UserID obtained from the fetchData() method
         .update({
-          'payments': payments.map((payment) {
-            return {
-              'date': payment.date,
-              'amount': payment.amount,
-            };
-          }).toList(),
-        })
-        .then((value) => print('Data saved successfully.'))
-        .catchError((error) => print('Failed to save data: $error'));
+      'payments': payments.map((payment) {
+        return {
+          'date': payment.date,
+          'amount': payment.amount,
+        };
+      }).toList(),
+    }).then((value) async {
+      print('Data saved successfully.');
+
+      // Update the cache after saving to Firestore
+      _prefs ??= await SharedPreferences.getInstance();
+      _prefs!.setStringList(_cacheKey, paymentListToJson(payments));
+    }).catchError((error) => print('Failed to save data: $error'));
   }
 
   void addPaymentDialog(BuildContext context) async {
@@ -200,6 +214,14 @@ class _TotalPaymentsState extends State<TotalPayments> {
     final String day = date.day.toString().padLeft(2, '0');
     return '${date.year}-$month-$day';
   }
+
+  List<String> paymentListToJson(List<Payment> payments) {
+    return payments.map((payment) => payment.toJson()).toList();
+  }
+
+  List<Payment> paymentListFromJson(List<String> jsonList) {
+    return jsonList.map((json) => Payment.fromJson(json)).toList();
+  }
 }
 
 class Payment {
@@ -207,6 +229,18 @@ class Payment {
   final double amount;
 
   Payment({required this.date, required this.amount});
+
+  String toJson() {
+    return '{"date": "$date", "amount": $amount}';
+  }
+
+  factory Payment.fromJson(String json) {
+    final Map<String, dynamic> data = jsonDecode(json);
+    return Payment(
+      date: data['date'],
+      amount: data['amount'],
+    );
+  }
 }
 
 class AddPaymentDialog extends StatefulWidget {
