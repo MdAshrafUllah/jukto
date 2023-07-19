@@ -1,7 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/inside/ChatRoom.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -37,16 +38,6 @@ class _SearchPersonState extends State<SearchPerson> {
       });
     }
     addFriendMap = {};
-  }
-
-  String chatRoomId(String uid1, String uid2) {
-    String channelId;
-    if (uid1.compareTo(uid2) < 0) {
-      channelId = "$uid1-$uid2";
-    } else {
-      channelId = "$uid2-$uid1";
-    }
-    return channelId;
   }
 
   @override
@@ -111,87 +102,143 @@ class _SearchPersonState extends State<SearchPerson> {
                   );
                 } else {
                   return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      var data = snapshot.data!.docs[index].data()
-                          as Map<String, dynamic>;
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        var data = snapshot.data!.docs[index].data()
+                            as Map<String, dynamic>;
 
-                      if (data['email'] != user?.email) {
-                        if (name.isEmpty) {
-                          return Container();
-                        }
-                        if (data['name']
-                            .toString()
-                            .toLowerCase()
-                            .startsWith(name.toLowerCase())) {
-                          return Card(
-                            child: ListTile(
-                              onTap: () {
-                                String roomId = chatRoomId(
-                                    auth.currentUser!.displayName!,
-                                    data['name']);
+                        if (data['email'] != user?.email) {
+                          if (name.isEmpty) {
+                            return Container();
+                          }
+                          if (data['name']
+                              .toString()
+                              .toLowerCase()
+                              .startsWith(name.toLowerCase())) {
+                            IconData trailingIcon;
+                            Color trailingIconColor;
 
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => ChatRoom(
-                                      chatRoomId: roomId,
-                                      userMap: data,
-                                    ),
+                            // Check if the user is already a friend
+                            if (data['friends'] != null &&
+                                data['friends'].any((friends) =>
+                                    friends['email'] == user?.email)) {
+                              trailingIcon = Icons.people;
+                              trailingIconColor = Colors.grey;
+                            }
+                            // Check if the user is in the sent friend request list
+                            else if (data['sentRequest'] != null &&
+                                data['sentRequest'].any((request) =>
+                                    request['email'] == user?.email)) {
+                              trailingIcon = Icons.arrow_downward_rounded;
+                              trailingIconColor = Colors.blue;
+                            }
+                            // Check if the user is in the received friend request list
+                            else if (data['friendRequest'] != null &&
+                                data['friendRequest'].any((request) =>
+                                    request['email'] == user?.email)) {
+                              trailingIcon = Icons.arrow_upward_rounded;
+                              trailingIconColor = Colors.grey;
+                            }
+                            // Default case: user is not a friend and no friend request is sent or received
+                            else {
+                              trailingIcon = Icons.person_add;
+                              trailingIconColor = Colors.blue;
+                            }
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                  data['name'] ?? ' ',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: themeProvider.isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                );
-                              },
-                              title: Text(
-                                data['name'] ?? ' ',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: themeProvider.isDarkMode
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                ),
+                                subtitle: Text(
+                                  data['email'] ?? ' ',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: themeProvider.isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                leading: CircleAvatar(
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      data['profileImage'] ?? ' '),
+                                ),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    trailingIcon,
+                                    color: trailingIconColor,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (data['friends'] != null &&
+                                          data['friends'].any((friends) =>
+                                              friends['email'] ==
+                                              user?.email)) {
+                                        // User is already a friend, do not send friend request
+                                        return;
+                                      }
+                                      // Toggle the addFriend state for the current user
+                                      addFriendMap[data['email']] =
+                                          !(addFriendMap[data['email']] ??
+                                              false);
+
+                                      // Add or remove the friend from the user's friend request list in Firestore
+                                      if (addFriendMap[data['email']] == true) {
+                                        FirebaseFirestore.instance
+                                            .collection('users')
+                                            .where('email',
+                                                isEqualTo: data['email'])
+                                            .get()
+                                            .then(
+                                                (QuerySnapshot querySnapshot) {
+                                          querySnapshot.docs.forEach((doc) {
+                                            FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(doc.id)
+                                                .update({
+                                              'friendRequest':
+                                                  FieldValue.arrayUnion([
+                                                {
+                                                  'name': user?.displayName,
+                                                  'email': user?.email,
+                                                }
+                                              ])
+                                            });
+                                          });
+                                        });
+                                        FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(
+                                                userID) // Assuming userID is the document ID of the current user
+                                            .update({
+                                          'sentRequest': FieldValue.arrayUnion([
+                                            {
+                                              'name': data['name'],
+                                              'email': data['email']
+                                            }
+                                          ])
+                                        });
+                                      }
+                                    });
+                                  },
                                 ),
                               ),
-                              subtitle: Text(
-                                data['email'] ?? ' ',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: themeProvider.isDarkMode
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                              leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(data['profileImage'] ?? ' '),
-                              ),
-                              trailing: IconButton(
-                                icon: Icon(
-                                  addFriendMap[data['email']] == true
-                                      ? Icons.person_add_alt_1
-                                      : Icons.person_add,
-                                  color: addFriendMap[data['email']] == true
-                                      ? Colors.grey
-                                      : Colors.blue,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    // Toggle the addFriend state for the current user
-                                    addFriendMap[data['email']] =
-                                        !(addFriendMap[data['email']] ?? false);
-                                  });
-                                },
-                              ),
-                            ),
-                          );
+                            );
+                          }
                         }
-                      }
-                      return Container();
-                    },
-                  );
+                        return Container();
+                      });
                 }
               },
             ),

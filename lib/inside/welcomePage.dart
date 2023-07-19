@@ -6,13 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jukto/inside/friendList.dart';
 import 'package:jukto/inside/notificationPage.dart';
-
 import 'package:provider/provider.dart';
 
 import '../theme/theme.dart';
 import 'homePage.dart';
-import 'messagePage.dart';
+import '../message/messagePage.dart';
 import 'profilePage.dart';
 import 'searchPage.dart';
 
@@ -21,6 +21,8 @@ class welcomePage extends StatefulWidget {
 
   @override
   State<welcomePage> createState() => _welcomePageState();
+
+  static void setStatus(String s) {}
 }
 
 IconData _iconLight = Icons.light_mode;
@@ -35,7 +37,6 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    setStatus("Online");
     WidgetsBinding.instance.addObserver(this);
     if (auth.currentUser != null) {
       user = auth.currentUser;
@@ -47,6 +48,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
         querySnapshot.docs.forEach((doc) {
           String documentId = doc.id;
           userID = documentId;
+          setStatus("Online");
         });
       });
     }
@@ -59,9 +61,11 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
   }
 
   void setStatus(String status) async {
-    await FirebaseFirestore.instance.collection('users').doc(userID).update({
-      "status": status,
-    });
+    if (auth.currentUser != null) {
+      await FirebaseFirestore.instance.collection('users').doc(userID).update({
+        "status": status,
+      });
+    }
   }
 
   @override
@@ -70,7 +74,6 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
       // online
       setStatus("Online");
     } else {
-      // offline
       setStatus("Offline");
     }
   }
@@ -95,7 +98,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
 
   final List<Widget> _pages = [
     HomePage(),
-    messagePage(),
+    MessagePage(),
     SearchPerson(),
     NotificationPage(),
     ProfilePage(),
@@ -138,49 +141,76 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
         ),
         /* drawer here */
         endDrawer: Drawer(
-          child: ListView(children: [
-            ListTile(
-              leading: Icon(themeProvider.isDarkMode ? _iconDark : _iconLight),
-              title: Text(
-                'Dark Mode',
-                style: TextStyle(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    ListTile(
+                      leading: Icon(
+                          themeProvider.isDarkMode ? _iconDark : _iconLight),
+                      title: Text(
+                        'Dark Mode',
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      trailing: ChangeThemeButtonWidget(),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.people,
+                      ),
+                      title: Text(
+                        'Your Friends',
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => FriendList(),
+                          ),
+                        ).then((_) {
+                          Navigator.pop(
+                              context); // Close the drawer when returning to the page
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                splashColor: Colors.red,
+                leading: Icon(
+                  Icons.logout,
+                  color: Colors.red,
+                ),
+                title: Text(
+                  'Logout',
+                  style: TextStyle(
+                    fontSize: 18,
                     color:
-                        themeProvider.isDarkMode ? Colors.white : Colors.black),
+                        themeProvider.isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+                onTap: () async {
+                  setStatus("Offline");
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushNamed(context, '/');
+                },
               ),
-              trailing: ChangeThemeButtonWidget(),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.people,
-              ),
-              title: Text(
-                'Your Friends',
-                style: TextStyle(
-                    color:
-                        themeProvider.isDarkMode ? Colors.white : Colors.black),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.logout,
-              ),
-              title: Text(
-                'Logout',
-                style: TextStyle(
-                    color:
-                        themeProvider.isDarkMode ? Colors.white : Colors.black),
-              ),
-              onTap: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushNamed(context, '/');
-              },
-            ),
-          ]),
+            ],
+          ),
         ),
-        /* body srart here*/
+
+        /* body start here*/
         body: Center(
           child: _pages[_selectedIndex],
         ),

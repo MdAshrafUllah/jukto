@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/group_chats/create_group/add_members.dart';
-import 'package:jukto/group_chats/group_chat_room.dart';
+import 'package:jukto/message/group_chats/create_group/add_members.dart';
+import 'package:jukto/message/group_chats/group_chat_room.dart';
 
 class GroupChatHomeScreen extends StatefulWidget {
   const GroupChatHomeScreen({Key? key}) : super(key: key);

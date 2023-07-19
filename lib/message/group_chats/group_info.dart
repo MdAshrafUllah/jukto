@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/group_chats/add_members.dart';
+import 'package:jukto/message/group_chats/add_members.dart';
 import 'package:jukto/inside/searchPage.dart';
 
 class GroupInfo extends StatefulWidget {

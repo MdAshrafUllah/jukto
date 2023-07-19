@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -47,14 +48,6 @@ class _ProfilePageState extends State<ProfilePage> {
       for (var doc in querySnapshot.docs) {
         setState(() {
           CurrentPic = doc["profileImage"];
-          final totalPoint = doc["totalPoint"];
-          final totalCreditValue = doc["totalCredit"];
-          if (totalPoint is num) {
-            totalCGPA = totalPoint.toDouble();
-          }
-          if (totalCreditValue is num) {
-            totalCredit = totalCreditValue.toDouble();
-          }
         });
       }
     }
@@ -134,8 +127,8 @@ class _ProfilePageState extends State<ProfilePage> {
               child: CircleAvatar(
                 radius: 48.0,
                 backgroundImage: imageurl != " "
-                    ? NetworkImage(imageurl)
-                    : NetworkImage(CurrentPic),
+                    ? CachedNetworkImageProvider(imageurl)
+                    : CachedNetworkImageProvider(CurrentPic),
                 child: Transform.translate(
                   offset: Offset(30, 35),
                   child: IconButton(

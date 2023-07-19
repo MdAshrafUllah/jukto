@@ -1,16 +1,18 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatRoom extends StatefulWidget {
   final Map<String, dynamic> userMap;
   final String chatRoomId;
-  String? lastMessage;
 
   ChatRoom({required this.chatRoomId, required this.userMap});
 
@@ -126,7 +128,7 @@ class ChatRoomState extends State<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: StreamBuilder<QuerySnapshot>(
@@ -148,8 +150,8 @@ class ChatRoomState extends State<ChatRoom> {
                         children: [
                           CircleAvatar(
                             backgroundColor: Colors.grey,
-                            backgroundImage:
-                                NetworkImage(client['profileImage']),
+                            backgroundImage: CachedNetworkImageProvider(
+                                client['profileImage']),
                           ),
                           SizedBox(
                             width: 5,
@@ -246,18 +248,22 @@ class ChatRoomState extends State<ChatRoom> {
                         height: size.height / 15,
                         width: size.width / 1.3,
                         child: TextField(
-                          controller: _message,
-                          decoration: InputDecoration(
-                              suffixIcon: IconButton(
-                                onPressed: () => getImage(),
-                                icon: Icon(Icons.photo,
-                                    color: Color.fromRGBO(58, 150, 255, 1)),
-                              ),
-                              hintText: "Send Message",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              )),
-                        ),
+                            controller: _message,
+                            decoration: InputDecoration(
+                                suffixIcon: IconButton(
+                                  onPressed: () => getImage(),
+                                  icon: Icon(Icons.photo,
+                                      color: Color.fromRGBO(58, 150, 255, 1)),
+                                ),
+                                hintText: "Send Message",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                )),
+                            style: TextStyle(
+                              color: themeProvider.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
+                            )),
                       ),
                       IconButton(
                           icon: Icon(
@@ -352,7 +358,7 @@ class ShowImage extends StatelessWidget {
         height: size.height,
         width: size.width,
         color: Colors.black,
-        child: Image.network(imageUrl),
+        child: CachedNetworkImage(imageUrl: imageUrl),
       ),
     );
   }

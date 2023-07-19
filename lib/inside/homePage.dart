@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -56,12 +57,14 @@ class Comment {
   final String commentText;
   final String commenterName;
   final String commenterProfileImage;
+  final String commenterEmail;
 
   Comment({
     required this.commentId,
     required this.commentText,
     required this.commenterName,
     required this.commenterProfileImage,
+    required this.commenterEmail,
   });
 }
 
@@ -142,18 +145,18 @@ class _HomePageState extends State<HomePage> {
             List<dynamic> commentData = postData['comments'];
             comments = commentData.map((comment) {
               return Comment(
-                commentId: comment['commentId'],
-                commentText: comment['commentText'],
-                commenterName: comment['commenterName'],
-                commenterProfileImage: comment['commenterProfileImage'],
-              );
+                  commentId: comment['commentId'],
+                  commentText: comment['commentText'],
+                  commenterName: comment['commenterName'],
+                  commenterProfileImage: comment['commenterProfileImage'],
+                  commenterEmail: comment['commenterEmail']);
             }).toList();
           }
 
           bool isLiked = false;
           if (postData['likes'] != null) {
             List<dynamic> likesData = postData['likes'];
-            isLiked = likesData.contains(currentUser?.uid);
+            isLiked = likesData.contains(currentUser?.email);
           }
 
           return Post(
@@ -232,6 +235,7 @@ class _HomePageState extends State<HomePage> {
     String commentText = commentController.text;
     String? commenterName = currentUser?.displayName;
     String? commenterProfileImage = postimg;
+    String? commenterEmail = currentUser?.email;
 
     DocumentReference commentRef =
         postsCollection.doc(post.postId).collection('comments').doc();
@@ -241,6 +245,7 @@ class _HomePageState extends State<HomePage> {
       'commentText': commentText,
       'commenterName': commenterName,
       'commenterProfileImage': commenterProfileImage,
+      'commenterEmail': commenterEmail,
     });
 
     await postsCollection.doc(post.postId).update({
@@ -253,6 +258,7 @@ class _HomePageState extends State<HomePage> {
         commentText: commentText,
         commenterName: commenterName ?? '',
         commenterProfileImage: commenterProfileImage ?? '',
+        commenterEmail: commenterEmail ?? '',
       );
       post.comments.add(newComment);
       post.commentCount++;
@@ -279,17 +285,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> toggleLike(Post post) async {
-    String userId = currentUser?.uid ?? '';
+    String email = currentUser?.email ?? '';
 
     if (post.isLiked) {
       await postsCollection.doc(post.postId).update({
         'likeCount': FieldValue.increment(-1),
-        'likes': FieldValue.arrayRemove([userId]),
+        'likes': FieldValue.arrayRemove([email]),
       });
     } else {
       await postsCollection.doc(post.postId).update({
         'likeCount': FieldValue.increment(1),
-        'likes': FieldValue.arrayUnion([userId]),
+        'likes': FieldValue.arrayUnion([email]),
       });
     }
   }
@@ -308,6 +314,7 @@ class _HomePageState extends State<HomePage> {
           commentText: commentData['commentText'],
           commenterName: commentData['commenterName'],
           commenterProfileImage: commentData['commenterProfileImage'],
+          commenterEmail: commentData['commenterEmail'],
         );
       }).toList();
 
@@ -332,7 +339,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void showDeleteConfirmationDialog(String postId) {
+  void showDeletePostDialog(String postId) {
     showDialog(
       context: context,
       builder: (context) {
@@ -367,6 +374,41 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void showDeleteCommentDialog(Post post, Comment comment) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete Comment',
+              style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black)),
+          content: Text('Are you sure you want to delete this Comment?',
+              style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteComment(post, comment);
+                Navigator.pop(context);
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<List<Comment>> fetchComments(String postId) async {
     CollectionReference commentsCollection =
         postsCollection.doc(postId).collection('comments');
@@ -381,6 +423,7 @@ class _HomePageState extends State<HomePage> {
         commentText: commentData['commentText'],
         commenterName: commentData['commenterName'],
         commenterProfileImage: commentData['commenterProfileImage'],
+        commenterEmail: commentData['commenterEmail'],
       );
     }).toList();
 
@@ -516,7 +559,7 @@ class _HomePageState extends State<HomePage> {
                                   // Handle edit post here
                                   // You can navigate to an edit screen and pass the postId
                                 } else if (value == 'delete_post') {
-                                  showDeleteConfirmationDialog(post.postId);
+                                  showDeletePostDialog(post.postId);
                                 }
                               },
                               itemBuilder: (context) => [
@@ -619,8 +662,8 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 );
                               },
-                              child: Image.network(
-                                post.imageUrl!,
+                              child: CachedNetworkImage(
+                                imageUrl: post.imageUrl!,
                                 fit: BoxFit.cover,
                                 height: 200,
                                 width: double.infinity,
@@ -686,8 +729,9 @@ class _HomePageState extends State<HomePage> {
 
                                     return ListTile(
                                       leading: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                            comment.commenterProfileImage),
+                                        backgroundImage:
+                                            CachedNetworkImageProvider(
+                                                comment.commenterProfileImage),
                                       ),
                                       title: Row(children: [
                                         Text(comment.commenterName,
@@ -705,8 +749,8 @@ class _HomePageState extends State<HomePage> {
                                                 // You can navigate to an edit screen and pass the postId
                                               } else if (value ==
                                                   'delete_comment') {
-                                                showDeleteConfirmationDialog(
-                                                    post.postId);
+                                                showDeleteCommentDialog(
+                                                    post, comment);
                                               }
                                             },
                                             itemBuilder: (context) => [
@@ -752,8 +796,8 @@ class _HomePageState extends State<HomePage> {
                                                 // Handle edit post here
                                                 // You can navigate to an edit screen and pass the postId
                                               } else if (value == 'message') {
-                                                showDeleteConfirmationDialog(
-                                                    post.postId);
+                                                showDeleteCommentDialog(
+                                                    post, comment);
                                               }
                                             },
                                             itemBuilder: (context) => [
@@ -849,7 +893,8 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(post.profileImage),
+                        backgroundImage:
+                            CachedNetworkImageProvider(post.profileImage),
                       ),
                     ),
                   );
@@ -889,8 +934,8 @@ class FullScreenImagePage extends StatelessWidget {
       ),
       body: Center(
         child: Container(
-            child: Image.network(
-              imageUrl!,
+            child: CachedNetworkImage(
+              imageUrl: imageUrl!,
               fit: BoxFit.contain,
               height: double.infinity,
               width: double.infinity,

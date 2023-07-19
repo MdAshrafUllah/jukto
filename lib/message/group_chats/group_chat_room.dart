@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/group_chats/group_info.dart';
+import 'package:jukto/message/group_chats/group_info.dart';
 
 class GroupChatRoom extends StatelessWidget {
   final String groupChatId, groupName;
