@@ -287,7 +287,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (Context) => ClassReminderPage()));
+                        builder: (Context) => ClassRoutinePage()));
               },
               child: Container(
                 margin: EdgeInsets.only(left: 20, right: 20),

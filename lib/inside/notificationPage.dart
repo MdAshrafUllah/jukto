@@ -105,6 +105,9 @@ class _NotificationPageState extends State<NotificationPage> {
                                     .data() as Map<String, dynamic>;
 
                                 return Card(
+                                  color: themeProvider.isDarkMode
+                                      ? Colors.black54
+                                      : Colors.white,
                                   child: ListTile(
                                     title: Text(
                                       '${friendData['name']} Sent you a Friend Request',
@@ -345,6 +348,9 @@ class _NotificationPageState extends State<NotificationPage> {
               children: [
                 // Liked users data
                 Card(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.black54
+                      : Colors.white,
                   child: Column(
                     children: [
                       ListView.builder(
@@ -354,7 +360,13 @@ class _NotificationPageState extends State<NotificationPage> {
                         itemBuilder: (context, index) {
                           final user = likedUsersData[index];
                           return ListTile(
-                            title: Text('${user.name} Liked Your Post'),
+                            title: Text('${user.name} Liked Your Post',
+                                style: TextStyle(
+                                  color: Provider.of<ThemeProvider>(context)
+                                          .isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
+                                )),
                             leading: CircleAvatar(
                               backgroundImage: CachedNetworkImageProvider(
                                 user.profileImageUrl,
@@ -368,6 +380,9 @@ class _NotificationPageState extends State<NotificationPage> {
                 ),
                 // Commenters data
                 Card(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.black54
+                      : Colors.grey[50],
                   child: Column(
                     children: [
                       ListView.builder(
@@ -378,8 +393,13 @@ class _NotificationPageState extends State<NotificationPage> {
                           final commenterData = commentersData[index];
                           return ListTile(
                             title: Text(
-                              '${commenterData.name} Commented on Your Post',
-                            ),
+                                '${commenterData.name} Commented on Your Post',
+                                style: TextStyle(
+                                  color: Provider.of<ThemeProvider>(context)
+                                          .isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
+                                )),
                             leading: CircleAvatar(
                               backgroundImage: CachedNetworkImageProvider(
                                 commenterData.profileImageUrl,
