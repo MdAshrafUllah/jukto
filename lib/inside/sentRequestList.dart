@@ -176,7 +176,7 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                                   .collection('users')
                                                   .doc(doc.id)
                                                   .update({
-                                                'friends':
+                                                'friendRequest':
                                                     FieldValue.arrayRemove([
                                                   {
                                                     'name': user?.displayName,
