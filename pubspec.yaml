@@ -55,6 +55,7 @@ dependencies:
   flutter_offline: ^3.0.0
   timezone:
   intl: ^0.18.1
+  android_alarm_manager_plus: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,7 @@ dev_dependencies:
   firebase_core: ^2.14.0
   rxdart: ^0.27.2
   connectivity: ^3.0.6
+  collection:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

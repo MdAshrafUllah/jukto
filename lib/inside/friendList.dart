@@ -44,12 +44,10 @@ class _FriendListState extends State<FriendList> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Jukto",
+          "All Friends",
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Roboto',
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,

@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 
-import 'classRemineder.dart';
+import 'reminederPage.dart';
 
-class EditClassPage extends StatefulWidget {
+class EditRememberPage extends StatefulWidget {
   final ClassRoutine routine;
 
-  EditClassPage({required this.routine});
+  EditRememberPage({required this.routine});
 
   @override
-  _EditClassPageState createState() => _EditClassPageState();
+  _EditRememberPageState createState() => _EditRememberPageState();
 }
 
-class _EditClassPageState extends State<EditClassPage> {
+class _EditRememberPageState extends State<EditRememberPage> {
   late List<String> _days;
   late TimeOfDay _time;
   late String _subject;
 
   // Define the list of days here
   final List<String> _daysOfWeek = [
-    'Sat',
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
+    "Saturday",
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
   ];
 
   @override
@@ -39,7 +39,16 @@ class _EditClassPageState extends State<EditClassPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Class Routine'),
+        title: Text(
+          'Edit Reminder',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

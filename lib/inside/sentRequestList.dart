@@ -44,12 +44,10 @@ class _SentRequestPageState extends State<SentRequestPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Jukto",
+          "Sent Request",
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Roboto',
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,

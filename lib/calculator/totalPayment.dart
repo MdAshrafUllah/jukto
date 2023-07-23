@@ -146,8 +146,6 @@ class _TotalPaymentsState extends State<TotalPayments> {
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Roboto',
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,

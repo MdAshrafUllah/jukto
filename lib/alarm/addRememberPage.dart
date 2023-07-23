@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-class AddClassPage extends StatefulWidget {
+class AddRememberPage extends StatefulWidget {
   @override
-  _AddClassPageState createState() => _AddClassPageState();
+  _AddRememberPageState createState() => _AddRememberPageState();
 }
 
-class _AddClassPageState extends State<AddClassPage> {
+class _AddRememberPageState extends State<AddRememberPage> {
   final List<String> _daysOfWeek = [
-    'Sat',
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
+    "Saturday",
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
   ];
   final Set<String> _selectedDays = {};
   TimeOfDay? _selectedTime;
@@ -23,7 +23,16 @@ class _AddClassPageState extends State<AddClassPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Class Routine'),
+        title: Text(
+          'Add Reminder',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

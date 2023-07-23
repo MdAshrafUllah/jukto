@@ -5,8 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:jukto/alarm/classRemineder.dart';
+import 'package:jukto/alarm/examRoutine.dart';
+import 'package:jukto/alarm/reminederPage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jukto/alarm/classRoutine.dart';
 
 import '../authentication/loginPage.dart';
 import '../calculator/totalPayment.dart';
@@ -279,9 +281,6 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(
               height: 10,
             ),
-            SizedBox(
-              height: 10,
-            ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -315,7 +314,7 @@ class _ProfilePageState extends State<ProfilePage> {
             GestureDetector(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (Context) => LoginPage()));
+                    MaterialPageRoute(builder: (Context) => ExamRoutinePage()));
               },
               child: Container(
                 margin: EdgeInsets.only(left: 20, right: 20),
@@ -328,6 +327,34 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.center,
                 child: Text(
                   'Exam Routine',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Roboto',
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (Context) => ReminderPage()));
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: 20, right: 20),
+                padding: EdgeInsets.only(left: 20, right: 20),
+                height: 70,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(58, 150, 255, 1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'Reminder',
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Roboto',
