@@ -9,6 +9,7 @@ import 'package:jukto/alarm/examRoutine.dart';
 import 'package:jukto/alarm/reminederPage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jukto/alarm/classRoutine.dart';
+import 'package:jukto/calculator/CGPA.dart';
 
 import '../authentication/loginPage.dart';
 import '../calculator/totalPayment.dart';
@@ -221,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (Context) => const TotalCGPApage()));
+                              builder: (Context) => const CGPAPage()));
                     },
                     child: Container(
                       margin: EdgeInsets.only(left: 20, right: 20),
@@ -236,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        'Total CGPA',
+                        'CGPA',
                         style: TextStyle(
                           color: Color.fromRGBO(58, 150, 255, 1),
                           fontFamily: 'Roboto',
@@ -253,23 +254,26 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (Context) => TotalPayments()));
+                              builder: (Context) => const TotalPayments()));
                     },
                     child: Container(
                       margin: EdgeInsets.only(left: 20, right: 20),
                       padding: EdgeInsets.only(left: 5, right: 5),
                       height: 70,
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(58, 150, 255, 1),
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          width: 4,
+                          color: Color.fromRGBO(58, 150, 255, 1),
+                        ),
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        'Total Payments',
+                        'Payments',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color.fromRGBO(58, 150, 255, 1),
                           fontFamily: 'Roboto',
-                          fontSize: 20,
+                          fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -365,7 +369,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             SizedBox(
-              height: 25,
+              height: 10,
             ),
           ],
         ),

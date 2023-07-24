@@ -135,20 +135,33 @@ class _FriendListState extends State<FriendList> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text('Remove User'),
+                                    title: Text('Remove User',
+                                        style: TextStyle(
+                                          color: themeProvider.isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        )),
                                     content: Text(
-                                        'Do you want to remove ${friend['name']} From your Friend List?'),
+                                        'Do you want to remove ${friend['name']} From your Friend List?',
+                                        style: TextStyle(
+                                          color: themeProvider.isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        )),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: Text('No'),
+                                        child: Text(
+                                          'No',
+                                          style: TextStyle(
+                                              color: Colors.redAccent),
+                                        ),
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
                                       ),
-                                      TextButton(
+                                      ElevatedButton(
                                         child: Text('Yes'),
                                         onPressed: () async {
-                                          Navigator.of(context).pop();
                                           await FirebaseFirestore.instance
                                               .collection('users')
                                               .doc(userID)
@@ -183,6 +196,7 @@ class _FriendListState extends State<FriendList> {
                                               });
                                             });
                                           });
+                                          Navigator.of(context).pop();
                                         },
                                       ),
                                     ],

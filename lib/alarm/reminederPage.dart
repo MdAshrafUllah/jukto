@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'addRememberPage.dart';
@@ -70,6 +72,7 @@ class _ReminderPageState extends State<ReminderPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -92,13 +95,31 @@ class _ReminderPageState extends State<ReminderPage> {
               itemBuilder: (context, index) {
                 final routine = _submittedRoutines[index];
                 return Card(
-                  color: Colors.white70,
+                  color: themeProvider.isDarkMode
+                      ? Colors.black12
+                      : Colors.blueGrey[50],
                   child: ListTile(
-                    title: Text(_getTitle(routine.days)),
+                    title: Text(
+                      _getTitle(routine.days),
+                      style: TextStyle(
+                        color: themeProvider.isDarkMode
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
                     subtitle: Text(
-                        'Time: ${routine.time!.format(context)} | Subject: ${routine.subject}'),
+                      'Time: ${routine.time!.format(context)} | Subject: ${routine.subject}',
+                      style: TextStyle(
+                        color: themeProvider.isDarkMode
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
                     trailing: IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.redAccent,
+                      ),
                       onPressed: () {
                         _deleteRoutine(index);
                       },
@@ -228,8 +249,8 @@ class _ReminderPageState extends State<ReminderPage> {
         await flutterLocalNotificationsPlugin.zonedSchedule(
           id +
               selectedDay, // Add selectedDay to the id to ensure unique IDs for each day
-          'Class Reminder',
-          'It\'s time for ${routine.subject} class.',
+          'Reminder',
+          'It\'s time for ${routine.subject}.',
           scheduledTime,
           platformChannelSpecifics,
           androidAllowWhileIdle: true,

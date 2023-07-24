@@ -135,20 +135,34 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text('Cancel Request'),
+                                    title: Text(
+                                      'Cancel Request',
+                                      style: TextStyle(
+                                          color: themeProvider.isDarkMode
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
                                     content: Text(
-                                        'Do you want to Cancel the Sent Request for ${friend['name']}?'),
+                                      'Do you want to Cancel the Sent Request for ${friend['name']}?',
+                                      style: TextStyle(
+                                          color: themeProvider.isDarkMode
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: Text('No'),
+                                        child: Text(
+                                          'No',
+                                          style: TextStyle(
+                                              color: Colors.redAccent),
+                                        ),
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
                                       ),
-                                      TextButton(
+                                      ElevatedButton(
                                         child: Text('Yes'),
                                         onPressed: () async {
-                                          Navigator.of(context).pop();
                                           await FirebaseFirestore.instance
                                               .collection('users')
                                               .doc(userID)
@@ -184,6 +198,7 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                               });
                                             });
                                           });
+                                          Navigator.of(context).pop();
                                         },
                                       ),
                                     ],

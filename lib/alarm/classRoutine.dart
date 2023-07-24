@@ -204,6 +204,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                     });
                   },
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(),
                     labelText: 'Select day',
                     hintText: 'Select a day',
                   ),
@@ -214,6 +215,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                           ? Colors.white
                           : Colors.black),
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(),
                     hintText: 'Enter subject',
                   ),
                   onChanged: (value) {
@@ -249,12 +251,15 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Cancel'),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
-              TextButton(
+              ElevatedButton(
                 child: Text('Add'),
                 onPressed: () {
                   setState(() {
@@ -344,7 +349,10 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                 onChanged: (value) {
                   updatedSubject = value;
                 },
-                decoration: InputDecoration(hintText: 'Enter subject'),
+                decoration: InputDecoration(
+                  hintText: 'Enter subject',
+                  border: OutlineInputBorder(),
+                ),
                 controller: TextEditingController(text: routine.subject),
               ),
               ListTile(
@@ -376,12 +384,12 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: Colors.redAccent)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
+            ElevatedButton(
               child: Text('Update'),
               onPressed: () {
                 setState(() {

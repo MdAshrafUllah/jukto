@@ -139,6 +139,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -161,11 +162,24 @@ class _TotalPaymentsState extends State<TotalPayments> {
                 Payment payment = payments[index];
                 return Card(
                   margin: EdgeInsets.only(left: 20, right: 20, top: 20),
-                  color: Colors.blue[100],
+                  color: themeProvider.isDarkMode
+                      ? Colors.black12
+                      : Colors.blueGrey[50],
                   child: ListTile(
-                    title:
-                        Text('Amount: ${payment.amount.toStringAsFixed(2)} TK'),
-                    subtitle: Text(payment.date),
+                    title: Text(
+                      'Amount: ${payment.amount.toStringAsFixed(2)} TK',
+                      style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black),
+                    ),
+                    subtitle: Text(
+                      payment.date,
+                      style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black),
+                    ),
                     trailing: IconButton(
                       icon: Icon(
                         Icons.delete,
@@ -199,9 +213,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
         },
         child: Icon(
           Icons.add,
-          color: Provider.of<ThemeProvider>(context).isDarkMode
-              ? Colors.white
-              : Colors.black,
+          color: themeProvider.isDarkMode ? Colors.white : Colors.black,
         ),
       ),
     );
@@ -252,12 +264,17 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return AlertDialog(
-      title: Text('Add Payment'),
+      title: Text('Add Payment',
+          style: TextStyle(
+              color: themeProvider.isDarkMode ? Colors.white : Colors.black)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            style: TextStyle(
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black),
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: 'Amount',
@@ -288,7 +305,11 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(date.isEmpty ? 'Select a date' : date),
+                  Text(date.isEmpty ? 'Select a date' : date,
+                      style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black)),
                   Icon(Icons.calendar_today),
                 ],
               ),
@@ -297,7 +318,7 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
         ],
       ),
       actions: [
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             if (amount != 0.0) {
               Navigator.pop(context, Payment(date: date, amount: amount));
@@ -309,7 +330,10 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text('Cancel'),
+          child: Text(
+            'Cancel',
+            style: TextStyle(color: Colors.redAccent),
+          ),
         ),
       ],
     );

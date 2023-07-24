@@ -121,6 +121,9 @@ class _MessagePageState extends State<MessagePage> {
                           as Map<String, dynamic>;
                       final status = friend['status'];
                       return Card(
+                        color: themeProvider.isDarkMode
+                            ? Colors.black38
+                            : Colors.white,
                         margin: EdgeInsets.only(left: 10, right: 10, top: 10),
                         child: ListTile(
                           onTap: () {

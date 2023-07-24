@@ -206,6 +206,7 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                 GestureDetector(
                   child: InputDecorator(
                     decoration: InputDecoration(
+                      border: OutlineInputBorder(),
                       labelText: 'Date',
                     ),
                     child: Row(
@@ -253,7 +254,10 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                       color: Provider.of<ThemeProvider>(context).isDarkMode
                           ? Colors.white
                           : Colors.black),
-                  decoration: InputDecoration(hintText: 'Enter subject'),
+                  decoration: InputDecoration(
+                    hintText: 'Enter subject',
+                    border: OutlineInputBorder(),
+                  ),
                   onChanged: (value) {
                     newSubject = value;
                   },
@@ -287,12 +291,13 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Cancel'),
+                child:
+                    Text('Cancel', style: TextStyle(color: Colors.redAccent)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
-              TextButton(
+              ElevatedButton(
                 child: Text('Add'),
                 onPressed: () {
                   setState(() {
@@ -374,7 +379,8 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                 onChanged: (value) {
                   updatedSubject = value;
                 },
-                decoration: InputDecoration(hintText: 'Enter subject'),
+                decoration: InputDecoration(
+                    hintText: 'Enter subject', border: OutlineInputBorder()),
                 controller: TextEditingController(text: routine.subject),
               ),
               ListTile(
@@ -406,12 +412,12 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: Text('Cancel', style: TextStyle(color: Colors.redAccent)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
+            ElevatedButton(
               child: Text('Update'),
               onPressed: () {
                 setState(() {

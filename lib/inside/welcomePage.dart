@@ -266,16 +266,29 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text("Really ?"),
-            content: const Text("Do you want to close the app ?"),
+            title: Text(
+              "Really ?",
+              style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black),
+            ),
+            content: Text("Do you want to close the app ?",
+                style: TextStyle(
+                    color: Provider.of<ThemeProvider>(context).isDarkMode
+                        ? Colors.white
+                        : Colors.black)),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
-                child: const Text("No"),
+                child: const Text(
+                  "No",
+                  style: TextStyle(color: Colors.redAccent),
+                ),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () {
                   exit(0);
                 },

@@ -192,6 +192,8 @@ class ChatRoomState extends State<ChatRoom> {
             }
           },
         ),
+        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: SingleChildScrollView(
         child: Column(
