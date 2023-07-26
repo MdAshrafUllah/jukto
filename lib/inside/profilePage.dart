@@ -11,9 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:jukto/alarm/classRoutine.dart';
 import 'package:jukto/calculator/CGPA.dart';
 
-import '../authentication/loginPage.dart';
 import '../calculator/totalPayment.dart';
-import '../calculator/totalcgpa.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
