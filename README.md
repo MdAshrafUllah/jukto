@@ -1,16 +1,10 @@
 # jukto
 
-A new Flutter project.
+It's an Android-based application for university Students.
 
-## Getting Started
+About The Application:
 
-This project is a starting point for a Flutter application.
+This is a University-Based Social App. Using the app, all students will be connected to one network. They can send Friend requests, Share posts, give likes and comments, and message their friends. They can store the payment History with the total calculation they give to the university. They can add their subject and the result of their previous semester. After adding, they can see their semester-wise GPA and their running CGPA. They can add Class and exam routines on different pages. They can set an alarm for class or meet any other requirements.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+With this app, you can also use Dark Mood.
