@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jukto/inside/friendList.dart';
 import 'package:jukto/inside/notificationPage.dart';
 import 'package:jukto/inside/sentRequestList.dart';
+import 'package:jukto/inside/settings.dart';
 import 'package:provider/provider.dart';
 
 import '../theme/theme.dart';
@@ -202,6 +203,30 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 SentRequestPage(),
+                          ),
+                        ).then((_) {
+                          Navigator.pop(
+                              context); // Close the drawer when returning to the page
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.settings,
+                      ),
+                      title: Text(
+                        'Settings',
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => SettingsPage(),
                           ),
                         ).then((_) {
                           Navigator.pop(

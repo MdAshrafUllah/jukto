@@ -265,6 +265,19 @@ class _CGPAPageState extends State<CGPAPage> {
                                           onPressed: () async {
                                             _deleteSubject(
                                                 semesterName, subjectIndex);
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    backgroundColor:
+                                                        Colors.redAccent,
+                                                    content: Text(
+                                                      'One Subject is deleted',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily: 'Roboto',
+                                                      ),
+                                                    )));
                                             Navigator.of(context).pop();
                                           },
                                         ),
@@ -334,6 +347,19 @@ class _CGPAPageState extends State<CGPAPage> {
                                       child: Text('Yes'),
                                       onPressed: () async {
                                         _deleteSemester(semesterName);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                                content: Text(
+                                                  'Semester $semesterName is deleted',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: 'Roboto',
+                                                  ),
+                                                )));
                                         Navigator.of(context).pop();
                                       },
                                     ),
@@ -650,15 +676,31 @@ class _CGPAPageState extends State<CGPAPage> {
           .update({
             "CGPA": semesterData,
           })
-          .then((value) => print('Data saved successfully Online.'))
-          .catchError((error) => print('Failed to save data Offline: $error'));
+          .then((value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.green,
+              content: Text(
+                'Data saved successfully',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Roboto',
+                ),
+              ))))
+          .catchError(
+              (error) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Colors.redAccent,
+                  content: Text(
+                    'Failed to save data',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Roboto',
+                    ),
+                  ))));
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String semesterDataJson = json.encode(semesterData);
       await prefs.setString('semesterData', semesterDataJson);
-      print('Data saved successfully Offline.');
-    } catch (error) {
-      print('Failed to save data Offline: $error');
-    }
+    } catch (error) {}
   }
 }

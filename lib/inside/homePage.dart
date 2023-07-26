@@ -5,8 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import '../theme/theme.dart';
 
@@ -195,6 +195,16 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (selectimg != null || postText.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.green,
+          content: Text(
+            'You Share a Post',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
       await postsCollection.add({
         'imageUrl': imageUrl,
         'postText': postText,
@@ -228,6 +238,16 @@ class _HomePageState extends State<HomePage> {
       commentsSnapshot.docs.forEach((commentDoc) {
         commentDoc.reference.delete();
       });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'You Delete a Post',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
     }
   }
 
@@ -265,6 +285,16 @@ class _HomePageState extends State<HomePage> {
     });
 
     commentController.clear();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+        content: Text(
+          'You add a Comment',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+        )));
   }
 
   Future<void> deleteComment(Post post, Comment comment) async {
@@ -282,6 +312,16 @@ class _HomePageState extends State<HomePage> {
       post.comments.remove(comment);
       post.commentCount--;
     });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.redAccent,
+        content: Text(
+          'You Delete a Comment',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+        )));
   }
 
   Future<void> toggleLike(Post post) async {
@@ -488,14 +528,11 @@ class _HomePageState extends State<HomePage> {
                           : IconButton(
                               padding: EdgeInsets.all(5),
                               onPressed: () async {
-                                FilePickerResult? result =
-                                    await FilePicker.platform.pickFiles(
-                                  type: FileType.image,
-                                  allowMultiple: false,
-                                );
+                                final pickedFile = await ImagePicker()
+                                    .pickImage(source: ImageSource.gallery);
 
-                                if (result != null && result.files.isNotEmpty) {
-                                  File file = File(result.files.first.path!);
+                                if (pickedFile != null) {
+                                  File file = File(pickedFile.path);
                                   setState(() {
                                     selectimg = file.path;
                                   });
@@ -509,18 +546,30 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 5),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      onPressed: addPost,
-                      icon: Icon(
-                        Icons.send_rounded,
-                        color: Color.fromRGBO(58, 150, 255, 1),
+                  Row(
+                    children: [
+                      Container(
+                        child: selectimg != null
+                            ? Text(
+                                "Image is selected",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromRGBO(58, 150, 255, 1)),
+                              )
+                            : null,
                       ),
-                      iconSize: 30,
-                      splashColor: Color.fromRGBO(58, 150, 255, 1),
-                    ),
-                  )
+                      Spacer(),
+                      IconButton(
+                        onPressed: addPost,
+                        icon: Icon(
+                          Icons.send_rounded,
+                          color: Color.fromRGBO(58, 150, 255, 1),
+                        ),
+                        iconSize: 30,
+                        splashColor: Color.fromRGBO(58, 150, 255, 1),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -563,22 +612,22 @@ class _HomePageState extends State<HomePage> {
                                 }
                               },
                               itemBuilder: (context) => [
-                                PopupMenuItem<String>(
-                                  value: 'edit_post',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.edit),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Edit post',
-                                        style: TextStyle(
-                                            color: themeProvider.isDarkMode
-                                                ? Colors.white
-                                                : Colors.black),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                // PopupMenuItem<String>(
+                                //   value: 'edit_post',
+                                //   child: Row(
+                                //     children: [
+                                //       Icon(Icons.edit),
+                                //       SizedBox(width: 8),
+                                //       Text(
+                                //         'Edit post',
+                                //         style: TextStyle(
+                                //             color: themeProvider.isDarkMode
+                                //                 ? Colors.white
+                                //                 : Colors.black),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
                                 PopupMenuItem<String>(
                                   value: 'delete_post',
                                   child: Row(
@@ -754,22 +803,22 @@ class _HomePageState extends State<HomePage> {
                                               }
                                             },
                                             itemBuilder: (context) => [
-                                              PopupMenuItem<String>(
-                                                value: 'edit_comment',
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.edit),
-                                                    SizedBox(width: 8),
-                                                    Text('Edit',
-                                                        style: TextStyle(
-                                                            color: themeProvider
-                                                                    .isDarkMode
-                                                                ? Colors.white
-                                                                : Colors
-                                                                    .black)),
-                                                  ],
-                                                ),
-                                              ),
+                                              // PopupMenuItem<String>(
+                                              //   value: 'edit_comment',
+                                              //   child: Row(
+                                              //     children: [
+                                              //       Icon(Icons.edit),
+                                              //       SizedBox(width: 8),
+                                              //       Text('Edit',
+                                              //           style: TextStyle(
+                                              //               color: themeProvider
+                                              //                       .isDarkMode
+                                              //                   ? Colors.white
+                                              //                   : Colors
+                                              //                       .black)),
+                                              //     ],
+                                              //   ),
+                                              // ),
                                               PopupMenuItem<String>(
                                                 value: 'delete_comment',
                                                 child: Row(

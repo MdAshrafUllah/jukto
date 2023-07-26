@@ -26,6 +26,7 @@ String imageurl = ' ';
 String CurrentPic = ' ';
 String addbio = ' ';
 String Currentbio = ' ';
+String bio = '';
 
 class _ProfilePageState extends State<ProfilePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -51,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
       for (var doc in querySnapshot.docs) {
         setState(() {
           CurrentPic = doc["profileImage"];
+          bio = doc['bio'];
         });
       }
     }
@@ -203,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 10),
             Center(
               child: Text(
-                'bio',
+                '$bio',
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 18,

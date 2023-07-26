@@ -181,54 +181,70 @@ class _SearchPersonState extends State<SearchPerson> {
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      if (data['friends'] != null &&
-                                          data['friends'].any((friends) =>
-                                              friends['email'] ==
-                                              user?.email)) {
-                                        // User is already a friend, do not send friend request
-                                        return;
-                                      }
-                                      // Toggle the addFriend state for the current user
-                                      addFriendMap[data['email']] =
-                                          !(addFriendMap[data['email']] ??
-                                              false);
+                                      if (trailingIcon == Icons.person_add) {
+                                        if (data['friends'] != null &&
+                                            data['friends'].any((friends) =>
+                                                friends['email'] ==
+                                                user?.email)) {
+                                          // User is already a friend, do not send friend request
+                                          return;
+                                        }
+                                        // Toggle the addFriend state for the current user
+                                        addFriendMap[data['email']] =
+                                            !(addFriendMap[data['email']] ??
+                                                false);
 
-                                      // Add or remove the friend from the user's friend request list in Firestore
-                                      if (addFriendMap[data['email']] == true) {
-                                        FirebaseFirestore.instance
-                                            .collection('users')
-                                            .where('email',
-                                                isEqualTo: data['email'])
-                                            .get()
-                                            .then(
-                                                (QuerySnapshot querySnapshot) {
-                                          querySnapshot.docs.forEach((doc) {
-                                            FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc(doc.id)
-                                                .update({
-                                              'friendRequest':
-                                                  FieldValue.arrayUnion([
-                                                {
-                                                  'name': user?.displayName,
-                                                  'email': user?.email,
-                                                }
-                                              ])
+                                        // Add or remove the friend from the user's friend request list in Firestore
+                                        if (addFriendMap[data['email']] ==
+                                            true) {
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .where('email',
+                                                  isEqualTo: data['email'])
+                                              .get()
+                                              .then((QuerySnapshot
+                                                  querySnapshot) {
+                                            querySnapshot.docs.forEach((doc) {
+                                              FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(doc.id)
+                                                  .update({
+                                                'friendRequest':
+                                                    FieldValue.arrayUnion([
+                                                  {
+                                                    'name': user?.displayName,
+                                                    'email': user?.email,
+                                                  }
+                                                ])
+                                              });
                                             });
                                           });
-                                        });
-                                        FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(
-                                                userID) // Assuming userID is the document ID of the current user
-                                            .update({
-                                          'sentRequest': FieldValue.arrayUnion([
-                                            {
-                                              'name': data['name'],
-                                              'email': data['email']
-                                            }
-                                          ])
-                                        });
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(
+                                                  userID) // Assuming userID is the document ID of the current user
+                                              .update({
+                                            'sentRequest':
+                                                FieldValue.arrayUnion([
+                                              {
+                                                'name': data['name'],
+                                                'email': data['email']
+                                              }
+                                            ])
+                                          });
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  backgroundColor: Colors.green,
+                                                  content: Text(
+                                                    'Friend Request Sent',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontFamily: 'Roboto',
+                                                    ),
+                                                  )));
+                                        }
                                       }
                                     });
                                   },

@@ -145,7 +145,54 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                       color: Colors.red,
                     ),
                     onPressed: () {
-                      _deleteSubject(routine);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Delete Subject',
+                                style: TextStyle(
+                                  color: themeProvider.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
+                                )),
+                            content: Text('Do you want to Delete This Subject?',
+                                style: TextStyle(
+                                  color: themeProvider.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
+                                )),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text(
+                                  'No',
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              ElevatedButton(
+                                child: Text('Yes'),
+                                onPressed: () async {
+                                  _deleteSubject(routine);
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          backgroundColor: Colors.redAccent,
+                                          content: Text(
+                                            'One Subject is deleted',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Roboto',
+                                            ),
+                                          )));
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
@@ -399,7 +446,16 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
 
                 // Save the updated classRoutine list to storage
                 _saveClassRoutine();
-
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.green,
+                    content: Text(
+                      'Class Routine is Updated',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Roboto',
+                      ),
+                    )));
                 Navigator.of(context).pop();
               },
             ),

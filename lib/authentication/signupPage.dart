@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
 import '../inside/welcomePage.dart';
 import 'loginPage.dart';
 
@@ -33,12 +35,14 @@ class _signupPageState extends State<signupPage> {
       'email': email,
       'status': 'Unavalible',
       'uid': auth.currentUser?.uid,
-      'profileImage': 'https://i.stack.imgur.com/YaL3s.jpg'
+      'profileImage': 'https://i.stack.imgur.com/YaL3s.jpg',
+      'bio': ''
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
@@ -105,7 +109,9 @@ class _signupPageState extends State<signupPage> {
                     controller: _nameController,
                     style: TextStyle(
                       fontFamily: 'Roboto',
-                      color: Colors.black54,
+                      color: themeProvider.isDarkMode
+                          ? Colors.white
+                          : Colors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -145,7 +151,9 @@ class _signupPageState extends State<signupPage> {
                     controller: _emailController,
                     style: TextStyle(
                       fontFamily: 'Roboto',
-                      color: Colors.black54,
+                      color: themeProvider.isDarkMode
+                          ? Colors.white
+                          : Colors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -182,7 +190,9 @@ class _signupPageState extends State<signupPage> {
                     controller: _passwordController,
                     style: TextStyle(
                       fontFamily: 'Roboto',
-                      color: Colors.black54,
+                      color: themeProvider.isDarkMode
+                          ? Colors.white
+                          : Colors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -232,7 +242,9 @@ class _signupPageState extends State<signupPage> {
                     controller: _passwordController2,
                     style: TextStyle(
                       fontFamily: 'Roboto',
-                      color: Colors.black54,
+                      color: themeProvider.isDarkMode
+                          ? Colors.white
+                          : Colors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -347,48 +359,122 @@ class _signupPageState extends State<signupPage> {
                   ),
                   onTap: () async {
                     if (isChecked == false) {
-                      print('Agree With Out terms and conditions');
-                    } else if (_passwordController.text ==
-                        _passwordController2.text) {
-                      setState(() {
-                        showSpinner = true;
-                      });
-                      try {
-                        UserCredential userCredential = await FirebaseAuth
-                            .instance
-                            .createUserWithEmailAndPassword(
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                        );
-                        userdata(
-                          _nameController.text.trim(),
-                          _emailController.text.trim(),
-                        );
-                        user = userCredential.user;
-                        await user!.updateDisplayName(_nameController.text);
-                        await user!.reload();
-                        user = auth.currentUser;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.redAccent,
+                          content: Text(
+                            'Agree With Our terms and conditions',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                            ),
+                          )));
+                    } else if (_nameController.text != "" &&
+                        _emailController.text != "" &&
+                        _passwordController.text != "" &&
+                        _passwordController2.text != "") {
+                      if (_passwordController.text ==
+                          _passwordController2.text) {
+                        setState(() {
+                          showSpinner = true;
+                        });
+                        try {
+                          UserCredential userCredential = await FirebaseAuth
+                              .instance
+                              .createUserWithEmailAndPassword(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
+                          userdata(
+                            _nameController.text.trim(),
+                            _emailController.text.trim(),
+                          );
+                          user = userCredential.user;
+                          await user!.updateDisplayName(_nameController.text);
+                          await user!.reload();
+                          user = auth.currentUser;
 
-                        if (user != null) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (Context) => welcomePage()));
+                          if (user != null) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (Context) => welcomePage()));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.green,
+                                content: Text(
+                                  '${user!.displayName} Welcome To Jukto',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
+                          }
+                          setState(() {
+                            showSpinner = false;
+                          });
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'weak-password') {
+                            setState(() {
+                              showSpinner = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'The password provided is too weak.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
+                          } else if (e.code == 'email-already-in-use') {
+                            setState(() {
+                              showSpinner = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'The email already used by another user.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
+                          }
+                        } catch (e) {
+                          print(e);
                         }
+                      } else {
                         setState(() {
                           showSpinner = false;
                         });
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'weak-password') {
-                          print('The password provided is too weak.');
-                        } else if (e.code == 'email-already-in-use') {
-                          print('The account already exists for that email.');
-                        }
-                      } catch (e) {
-                        print(e);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: Colors.redAccent,
+                            content: Text(
+                              'password does not match each other',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Roboto',
+                              ),
+                            )));
                       }
                     } else {
-                      print("password does not match each other");
+                      setState(() {
+                        showSpinner = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.redAccent,
+                          content: Text(
+                            'All field required',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                            ),
+                          )));
                     }
                   },
                 ),

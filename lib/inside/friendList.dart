@@ -162,6 +162,21 @@ class _FriendListState extends State<FriendList> {
                                       ElevatedButton(
                                         child: Text('Yes'),
                                         onPressed: () async {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  backgroundColor:
+                                                      Color.fromRGBO(
+                                                          58, 150, 255, 1),
+                                                  content: Text(
+                                                    'Friend Remove Successfully!',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontFamily: 'Roboto',
+                                                    ),
+                                                  )));
+                                          Navigator.of(context).pop();
                                           await FirebaseFirestore.instance
                                               .collection('users')
                                               .doc(userID)
@@ -196,7 +211,6 @@ class _FriendListState extends State<FriendList> {
                                               });
                                             });
                                           });
-                                          Navigator.of(context).pop();
                                         },
                                       ),
                                     ],

@@ -171,7 +171,55 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                 color: Colors.red,
               ),
               onPressed: () {
-                _deleteSubject(routine);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Delete Subject',
+                          style: TextStyle(
+                            color:
+                                Provider.of<ThemeProvider>(context).isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                          )),
+                      content: Text('Do you want to Delete This Subject?',
+                          style: TextStyle(
+                            color:
+                                Provider.of<ThemeProvider>(context).isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                          )),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text(
+                            'No',
+                            style: TextStyle(color: Colors.redAccent),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ElevatedButton(
+                          child: Text('Yes'),
+                          onPressed: () async {
+                            _deleteSubject(routine);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'One Subject is deleted',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ],
@@ -427,7 +475,16 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
 
                 // Save the updated ExamRoutine list to storage
                 _saveExamRoutine();
-
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.green,
+                    content: Text(
+                      'Exam Routine is Updated',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Roboto',
+                      ),
+                    )));
                 Navigator.of(context).pop();
               },
             ),
