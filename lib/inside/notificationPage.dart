@@ -135,12 +135,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                                   'name': friendData['name'],
                                                   'email': friendData['email'],
                                                 }
-                                              ])
-                                            });
-                                            await FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc(_userID)
-                                                .update({
+                                              ]),
                                               'friendRequest':
                                                   FieldValue.arrayRemove([
                                                 {
@@ -149,6 +144,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                                 }
                                               ])
                                             });
+
                                             await FirebaseFirestore.instance
                                                 .collection('users')
                                                 .where('email',
@@ -169,23 +165,7 @@ class _NotificationPageState extends State<NotificationPage> {
                                                           _user?.displayName,
                                                       'email': _user?.email,
                                                     }
-                                                  ])
-                                                });
-                                              });
-                                            });
-                                            await FirebaseFirestore.instance
-                                                .collection('users')
-                                                .where('email',
-                                                    isEqualTo:
-                                                        friendData['email'])
-                                                .get()
-                                                .then((QuerySnapshot
-                                                    querySnapshot) {
-                                              querySnapshot.docs.forEach((doc) {
-                                                FirebaseFirestore.instance
-                                                    .collection('users')
-                                                    .doc(doc.id)
-                                                    .update({
+                                                  ]),
                                                   'sentRequest':
                                                       FieldValue.arrayRemove([
                                                     {

@@ -112,8 +112,6 @@ class ChatRoomState extends State<ChatRoom> {
         duration: Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
-    } else {
-      print("Enter Some Text");
     }
   }
 
@@ -140,8 +138,13 @@ class ChatRoomState extends State<ChatRoom> {
             if (snapshot.hasData) {
               final clients = snapshot.data!.docs;
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: clients.map((client) {
                   final status = client['status'];
+
+                  String fullName = client['name'];
+                  List<String> words = fullName.split(' ');
+                  String firstName = words.take(2).join(' ');
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +162,9 @@ class ChatRoomState extends State<ChatRoom> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(client['name']),
+                              Text(
+                                firstName, // Display the first two words only
+                              ),
                               const SizedBox(height: 2),
                               Row(
                                 children: [
@@ -288,6 +293,7 @@ class ChatRoomState extends State<ChatRoom> {
       ScrollController scrollController) {
     return map['type'] == "text"
         ? Container(
+            margin: EdgeInsets.only(top: 10),
             width: size.width,
             alignment: map['sendby'] == auth.currentUser!.displayName
                 ? Alignment.centerRight
@@ -295,13 +301,22 @@ class ChatRoomState extends State<ChatRoom> {
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
               margin: EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: map['sendby'] == auth.currentUser!.displayName
-                    ? Colors.grey
-                    : Color.fromRGBO(
-                        58, 150, 255, 1), // Change the background color here
-              ),
+              decoration: map['sendby'] == auth.currentUser!.displayName
+                  ? BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          bottomLeft: Radius.circular(15),
+                          topRight: Radius.circular(10)),
+                      color: Colors.grey,
+                    )
+                  : BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                          topLeft: Radius.circular(10)),
+                      color: Color.fromRGBO(
+                          58, 150, 255, 1), // Change the background color here
+                    ),
               child: Text(
                 map['message'],
                 style: TextStyle(

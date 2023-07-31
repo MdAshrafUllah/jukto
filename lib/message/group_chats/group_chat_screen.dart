@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jukto/message/group_chats/create_group/add_members.dart';
 import 'package:jukto/message/group_chats/group_chat_room.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class GroupChatHomeScreen extends StatefulWidget {
   const GroupChatHomeScreen({Key? key}) : super(key: key);
@@ -29,13 +31,21 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
 
     await _firestore
         .collection('users')
-        .doc(uid)
-        .collection('groups')
+        .where('uid', isEqualTo: uid)
         .get()
-        .then((value) {
-      setState(() {
-        groupList = value.docs;
-        isLoading = false;
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(doc.id)
+            .collection('groups')
+            .get()
+            .then((value) {
+          setState(() {
+            groupList = value.docs;
+            isLoading = false;
+          });
+        });
       });
     });
   }
@@ -43,10 +53,13 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Groups"),
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: isLoading
           ? Container(
@@ -68,12 +81,22 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
                     ),
                   ),
                   leading: Icon(Icons.group),
-                  title: Text(groupList[index]['name']),
+                  title: Text(
+                    groupList[index]['name'],
+                    style: TextStyle(
+                        color: themeProvider.isDarkMode
+                            ? Colors.white
+                            : Colors.black),
+                  ),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.create),
+        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+        child: Icon(
+          Icons.create,
+          color: Colors.white,
+        ),
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => AddMembersInGroup(),

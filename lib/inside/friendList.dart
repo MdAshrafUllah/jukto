@@ -167,8 +167,7 @@ class _FriendListState extends State<FriendList> {
                                                   behavior:
                                                       SnackBarBehavior.floating,
                                                   backgroundColor:
-                                                      Color.fromRGBO(
-                                                          58, 150, 255, 1),
+                                                      Colors.redAccent,
                                                   content: Text(
                                                     'Friend Remove Successfully!',
                                                     style: TextStyle(

@@ -1,12 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jukto/message/group_chats/add_members.dart';
 import 'package:jukto/inside/searchPage.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 
 class GroupInfo extends StatefulWidget {
-  final String groupId, groupName;
-  const GroupInfo({required this.groupId, required this.groupName, Key? key})
+  final String groupId, groupName, memberpic, membername;
+  const GroupInfo(
+      {required this.groupId,
+      required this.groupName,
+      required this.memberpic,
+      required this.membername,
+      Key? key})
       : super(key: key);
 
   @override
@@ -27,17 +35,43 @@ class _GroupInfoState extends State<GroupInfo> {
     getGroupDetails();
   }
 
-  Future getGroupDetails() async {
-    await _firestore
-        .collection('groups')
-        .doc(widget.groupId)
-        .get()
-        .then((chatMap) {
-      membersList = chatMap['members'];
-      print(membersList);
-      isLoading = false;
-      setState(() {});
+  Future<void> getGroupDetails() async {
+    DocumentSnapshot groupDoc =
+        await _firestore.collection('groups').doc(widget.groupId).get();
+    membersList = (groupDoc.data() as Map<String, dynamic>?)?['members'] ?? [];
+
+    bool currentUserFound = false;
+    String? currentUserEmail = _auth.currentUser!.email;
+
+    for (int i = 0; i < membersList.length; i++) {
+      Map<String, dynamic> member = membersList[i];
+      if (member['email'] == currentUserEmail) {
+        // Update existing member information
+        member['name'] = widget.membername;
+        member['profileImage'] = widget.memberpic;
+        membersList[i] = member;
+        currentUserFound = true;
+        break;
+      }
+    }
+
+    if (!currentUserFound) {
+      // Add new member with updated information
+      Map<String, dynamic> newMember = {
+        'name': _auth.currentUser!.displayName,
+        'email': currentUserEmail,
+        'profileImage': widget.memberpic,
+      };
+      membersList.add(newMember);
+    }
+
+    // Update the 'members' field in the Firestore document
+    await _firestore.collection('groups').doc(widget.groupId).update({
+      'members': membersList,
     });
+
+    isLoading = false;
+    setState(() {});
   }
 
   bool checkAdmin() {
@@ -109,7 +143,7 @@ class _GroupInfoState extends State<GroupInfo> {
       });
 
       await _firestore
-          .collection('users')
+          .collection('')
           .doc(_auth.currentUser!.uid)
           .collection('groups')
           .doc(widget.groupId)
@@ -125,6 +159,7 @@ class _GroupInfoState extends State<GroupInfo> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -205,21 +240,24 @@ class _GroupInfoState extends State<GroupInfo> {
 
                     checkAdmin()
                         ? ListTile(
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => AddMembersINGroup(
-                                  groupChatId: widget.groupId,
-                                  name: widget.groupName,
-                                  membersList: membersList,
-                                ),
-                              ),
-                            ),
+                            // onTap: () => Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (_) => AddMembersINGroup(
+                            //       groupChatId: widget.groupId,
+                            //       name: widget.groupName,
+                            //       membersList: membersList,
+                            //     ),
+                            //   ),
+                            // ),
                             leading: Icon(
                               Icons.add,
                             ),
                             title: Text(
                               "Add Members",
                               style: TextStyle(
+                                color: themeProvider.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontSize: size.width / 22,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -235,15 +273,28 @@ class _GroupInfoState extends State<GroupInfo> {
                         itemBuilder: (context, index) {
                           return ListTile(
                             onTap: () => showDialogBox(index),
-                            leading: Icon(Icons.account_circle),
+                            leading: CircleAvatar(
+                                backgroundImage: CachedNetworkImageProvider(
+                              membersList[index]['profileImage'],
+                            )),
                             title: Text(
                               membersList[index]['name'],
                               style: TextStyle(
+                                color: themeProvider.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontSize: size.width / 22,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            subtitle: Text(membersList[index]['email']),
+                            subtitle: Text(
+                              membersList[index]['email'],
+                              style: TextStyle(
+                                color: themeProvider.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
                             trailing: Text(
                                 membersList[index]['isAdmin'] ? "Admin" : ""),
                           );

@@ -493,20 +493,20 @@ class _signupPageState extends State<signupPage> {
                             fontSize: 18,
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {
+                        GestureDetector(
+                          onTap: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (Context) => LoginPage()));
                           },
                           child: Text(
-                            'Sign in',
+                            ' Sign in',
                             style: TextStyle(
-                              fontFamily: 'Roboto',
-                              color: Color.fromRGBO(58, 150, 255, 1),
-                              fontSize: 18,
-                            ),
+                                fontFamily: 'Roboto',
+                                color: Color.fromRGBO(58, 150, 255, 1),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ]),

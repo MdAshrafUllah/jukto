@@ -168,8 +168,7 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                                   behavior:
                                                       SnackBarBehavior.floating,
                                                   backgroundColor:
-                                                      Color.fromRGBO(
-                                                          58, 150, 255, 1),
+                                                      Colors.redAccent,
                                                   content: Text(
                                                     'Friend Request Cancel',
                                                     style: TextStyle(

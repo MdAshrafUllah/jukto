@@ -54,6 +54,77 @@ class _SettingsPageState extends State<SettingsPage> {
           'bio': bioCngController.text,
         });
 
+        FirebaseFirestore.instance
+            .collection('posts')
+            .where('userId', isEqualTo: user?.uid)
+            .get()
+            .then((QuerySnapshot postQuerySnapshot) {
+          postQuerySnapshot.docs.forEach((postDoc) {
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .update({'name': nameCngController.text});
+          });
+        });
+
+        // Update user's profile image in the 'posts' collection
+        FirebaseFirestore.instance
+            .collection('posts')
+            .where('userId', isEqualTo: user?.uid)
+            .get()
+            .then((QuerySnapshot postQuerySnapshot) {
+          postQuerySnapshot.docs.forEach((postDoc) {
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .update({'name': nameCngController.text});
+
+            // Update commenter's profile image in the 'comments' subcollection
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .collection('comments')
+                .get()
+                .then((QuerySnapshot commentQuerySnapshot) {
+              commentQuerySnapshot.docs.forEach((commentDoc) {
+                if (commentDoc["commenterEmail"] == user?.email) {
+                  FirebaseFirestore.instance
+                      .collection('posts')
+                      .doc(postDoc.id)
+                      .collection('comments')
+                      .doc(commentDoc.id)
+                      .update({'commenterName': nameCngController.text});
+                }
+              });
+            });
+          });
+        });
+
+        // Update commenter's profile image in the 'comments' subcollection
+        FirebaseFirestore.instance
+            .collection('posts')
+            .get()
+            .then((QuerySnapshot postQuerySnapshot) {
+          postQuerySnapshot.docs.forEach((postDoc) {
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .collection('comments')
+                .where('commenterEmail', isEqualTo: user?.email)
+                .get()
+                .then((QuerySnapshot commentQuerySnapshot) {
+              commentQuerySnapshot.docs.forEach((commentDoc) {
+                FirebaseFirestore.instance
+                    .collection('posts')
+                    .doc(postDoc.id)
+                    .collection('comments')
+                    .doc(commentDoc.id)
+                    .update({'commenterName': nameCngController.text});
+              });
+            });
+          });
+        });
+
         // Show a success message to the user
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             behavior: SnackBarBehavior.floating,

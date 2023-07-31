@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:jukto/authentication/forgatePassword.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter/material.dart';
@@ -125,6 +126,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 alignment: Alignment.center,
                 child: TextField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.deny(
+                        RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$'))
+                  ],
                   controller: _emailController,
                   style: TextStyle(
                     fontFamily: 'Roboto',
@@ -212,14 +217,23 @@ class _LoginPageState extends State<LoginPage> {
                         fontSize: 18,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {},
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                ForgatePasswordPage(),
+                          ),
+                        );
+                      },
                       child: Text(
-                        'Click Here',
+                        ' Click Here',
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           color: Color.fromRGBO(58, 150, 255, 1),
                           fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -252,89 +266,106 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 onTap: () async {
-                  if (_emailController.text != "" &&
-                      _passwordController.text != "") {
-                    try {
-                      setState(() {
-                        showSpinner = true;
-                      });
-                      UserCredential userCredential =
-                          await auth.signInWithEmailAndPassword(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      );
-                      user = userCredential.user;
-                      if (user != null) {
-                        // Save login status to cache
-                        _prefs ??= await SharedPreferences.getInstance();
-                        _prefs!.setBool(_cacheKey, true);
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => welcomePage()),
+                  if (_emailController.text.length > 5 &&
+                      _emailController.text.contains('@') &&
+                      _emailController.text.endsWith('.com')) {
+                    if (_emailController.text != "" &&
+                        _passwordController.text != "") {
+                      try {
+                        setState(() {
+                          showSpinner = true;
+                        });
+                        UserCredential userCredential =
+                            await auth.signInWithEmailAndPassword(
+                          email: _emailController.text,
+                          password: _passwordController.text,
                         );
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.green,
-                            content: Text(
-                              '${user!.displayName} Welcome Back.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Roboto',
-                              ),
-                            )));
+                        user = userCredential.user;
+                        if (user != null) {
+                          // Save login status to cache
+                          _prefs ??= await SharedPreferences.getInstance();
+                          _prefs!.setBool(_cacheKey, true);
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    welcomePage()),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.green,
+                              content: Text(
+                                '${user!.displayName} Welcome Back.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Roboto',
+                                ),
+                              )));
+                        }
+                        setState(() {
+                          showSpinner = false;
+                        });
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'user-not-found') {
+                          setState(() {
+                            showSpinner = false;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.redAccent,
+                              content: Text(
+                                'User Not Found',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Roboto',
+                                ),
+                              )));
+                        } else if (e.code == 'wrong-password') {
+                          setState(() {
+                            showSpinner = false;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.redAccent,
+                              content: Text(
+                                'Wrong Password',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Roboto',
+                                ),
+                              )));
+                        }
+                      } catch (e) {
+                        print(e);
                       }
+                    } else {
                       setState(() {
                         showSpinner = false;
                       });
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'user-not-found') {
-                        setState(() {
-                          showSpinner = false;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.redAccent,
-                            content: Text(
-                              'User Not Found',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Roboto',
-                              ),
-                            )));
-                      } else if (e.code == 'wrong-password') {
-                        setState(() {
-                          showSpinner = false;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.redAccent,
-                            content: Text(
-                              'Wrong Password',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Roboto',
-                              ),
-                            )));
-                      }
-                    } catch (e) {
-                      print(e);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.redAccent,
+                          content: Text(
+                            'All field required',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                            ),
+                          )));
                     }
                   } else {
-                    setState(() {
-                      showSpinner = false;
-                    });
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.redAccent,
-                        content: Text(
-                          'All field required',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Roboto',
-                          ),
-                        )));
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.redAccent,
+                      content: Text(
+                        'Enter a Valid Email',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Roboto',
+                        ),
+                      ),
+                    ));
                   }
                 },
               ),
@@ -353,8 +384,8 @@ class _LoginPageState extends State<LoginPage> {
                         fontSize: 18,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
+                    GestureDetector(
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -363,12 +394,12 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: Text(
-                        'Sign Up',
+                        ' Sign Up',
                         style: TextStyle(
-                          fontFamily: 'Roboto',
-                          color: Color.fromRGBO(58, 150, 255, 1),
-                          fontSize: 18,
-                        ),
+                            fontFamily: 'Roboto',
+                            color: Color.fromRGBO(58, 150, 255, 1),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],

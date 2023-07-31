@@ -52,7 +52,7 @@ class _MessagePageState extends State<MessagePage> {
 
   Color getDotColor(String status) {
     if (status == 'Online') {
-      return Colors.green;
+      return Colors.greenAccent;
     } else {
       return Colors.red;
     }
@@ -62,70 +62,71 @@ class _MessagePageState extends State<MessagePage> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .where('email', isEqualTo: user?.email)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Container(
-                width: 36,
-                height: 36,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromRGBO(58, 150, 255, 1),
-                  ),
-                  strokeWidth: 2.0,
-                ),
-              ),
-            );
-          } else {
-            var userData =
-                snapshot.data?.docs.first.data() as Map<String, dynamic>;
-            var friends = userData['friends'] as List<dynamic>?;
-
-            if (friends == null || friends.isEmpty) {
+      body: RefreshIndicator(
+        color: Color.fromRGBO(58, 150, 255, 1),
+        onRefresh: () async {
+          getDotColor;
+          return Future<void>.delayed(const Duration(seconds: 1));
+        },
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .where('email', isEqualTo: user?.email)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
-                child: Text("No Friends"),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color.fromRGBO(58, 150, 255, 1),
+                    ),
+                    strokeWidth: 2.0,
+                  ),
+                ),
               );
-            }
+            } else {
+              var userData =
+                  snapshot.data?.docs.first.data() as Map<String, dynamic>;
+              var friends = userData['friends'] as List<dynamic>?;
 
-            return ListView.builder(
-              itemCount: friends.length,
-              itemBuilder: (context, index) {
-                var friend = friends[index] as Map<String, dynamic>;
-                String roomId =
-                    chatRoomId(auth.currentUser!.displayName!, friend['name']);
-                return StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .where('email', isEqualTo: friend['email'])
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Color.fromRGBO(58, 150, 255, 1)),
-                            strokeWidth: 2.0,
+              if (friends == null || friends.isEmpty) {
+                return Center(
+                  child: Text("No Friends"),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: friends.length,
+                itemBuilder: (context, index) {
+                  var friend = friends[index] as Map<String, dynamic>;
+                  String roomId = chatRoomId(
+                      auth.currentUser!.displayName!, friend['name']);
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .where('email', isEqualTo: friend['email'])
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color.fromRGBO(58, 150, 255, 1)),
+                              strokeWidth: 2.0,
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      var friend = snapshot.data?.docs.first.data()
-                          as Map<String, dynamic>;
-                      final status = friend['status'];
-                      return Card(
-                        color: themeProvider.isDarkMode
-                            ? Colors.black38
-                            : Colors.white,
-                        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-                        child: ListTile(
+                        );
+                      } else {
+                        var friend = snapshot.data?.docs.first.data()
+                            as Map<String, dynamic>;
+                        final status = friend['status'];
+                        return ListTile(
                           onTap: () {
                             String roomId = chatRoomId(
                                 auth.currentUser!.displayName!, friend['name']);
@@ -239,15 +240,15 @@ class _MessagePageState extends State<MessagePage> {
                                 friend['profileImage']),
                           ),
                           trailing: Icon(Icons.message),
-                        ),
-                      );
-                    }
-                  },
-                );
-              },
-            );
-          }
-        },
+                        );
+                      }
+                    },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromRGBO(58, 150, 255, 1),

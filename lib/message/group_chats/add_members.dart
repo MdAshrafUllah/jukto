@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AddMembersINGroup extends StatefulWidget {
@@ -18,15 +19,30 @@ class AddMembersINGroup extends StatefulWidget {
 class _AddMembersINGroupState extends State<AddMembersINGroup> {
   final TextEditingController _search = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  User? user;
+  String userID = '';
   Map<String, dynamic>? userMap;
   bool isLoading = false;
   List membersList = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     membersList = widget.membersList;
+    if (auth.currentUser != null) {
+      user = auth.currentUser;
+      FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: user?.email)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          String documentId = doc.id;
+          userID = documentId;
+        });
+      });
+    }
   }
 
   void onSearch() async {
@@ -50,13 +66,17 @@ class _AddMembersINGroupState extends State<AddMembersINGroup> {
   void onAddMembers() async {
     membersList.add(userMap);
 
-    await _firestore.collection('groups').doc(widget.groupChatId).update({
-      "members": membersList,
-    });
+    await _firestore
+        .collection('groups')
+        .doc(widget.groupChatId)
+        .collection(
+            'members') // This will create a subcollection 'members' under the group document
+        .doc(userMap!['uid']) // You can use the user's UID as the document ID
+        .set(userMap!);
 
     await _firestore
         .collection('users')
-        .doc(userMap!['uid'])
+        .doc(userID)
         .collection('groups')
         .doc(widget.groupChatId)
         .set({"name": widget.name, "id": widget.groupChatId});

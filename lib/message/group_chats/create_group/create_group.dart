@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/inside/searchPage.dart';
+import 'package:jukto/inside/welcomePage.dart';
+import 'package:jukto/theme/theme.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateGroup extends StatefulWidget {
@@ -29,6 +31,7 @@ class _CreateGroupState extends State<CreateGroup> {
     await _firestore.collection('groups').doc(groupId).set({
       "members": widget.membersList,
       "id": groupId,
+      "name": _groupName.text,
     });
 
     for (int i = 0; i < widget.membersList.length; i++) {
@@ -36,12 +39,20 @@ class _CreateGroupState extends State<CreateGroup> {
 
       await _firestore
           .collection('users')
-          .doc(uid)
-          .collection('groups')
-          .doc(groupId)
-          .set({
-        "name": _groupName.text,
-        "id": groupId,
+          .where('uid', isEqualTo: uid)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(doc.id)
+              .collection('groups')
+              .doc(groupId)
+              .set({
+            "name": _groupName.text,
+            "id": groupId,
+          });
+        });
       });
     }
 
@@ -51,16 +62,19 @@ class _CreateGroupState extends State<CreateGroup> {
     });
 
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => SearchPerson()), (route) => false);
+        MaterialPageRoute(builder: (_) => welcomePage()), (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Group Name"),
+        centerTitle: true,
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: isLoading
           ? Container(
@@ -75,21 +89,39 @@ class _CreateGroupState extends State<CreateGroup> {
                   height: size.height / 10,
                 ),
                 Container(
-                  height: size.height / 14,
-                  width: size.width,
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  height: size.height / 12,
                   alignment: Alignment.center,
-                  child: Container(
-                    height: size.height / 14,
-                    width: size.width / 1.15,
-                    child: TextField(
-                      controller: _groupName,
-                      decoration: InputDecoration(
-                        hintText: "Enter Group Name",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      width: 2,
+                      color: Color.fromRGBO(162, 158, 158, 1),
                     ),
+                  ),
+                  child: TextField(
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      color: themeProvider.isDarkMode
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    keyboardType: TextInputType.name,
+                    cursorColor: Color.fromRGBO(58, 150, 255, 1),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Group Name',
+                      hintStyle: TextStyle(
+                        fontFamily: 'Roboto',
+                        color: Color.fromRGBO(162, 158, 158, 1),
+                        fontSize: 18,
+                      ),
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                    ),
+                    controller: _groupName,
                   ),
                 ),
                 SizedBox(
