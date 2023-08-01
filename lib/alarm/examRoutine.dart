@@ -539,8 +539,17 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
           examRoutine = loadedExamRoutine;
         });
       } catch (e) {
-        // Error handling for JSON decoding
-        print('Error loading ExamRoutine data: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red,
+            content: Text(
+              'Error loading ExamRoutine data',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Roboto',
+              ),
+            )));
+
         // Handle the error as needed, e.g., clear the invalid data from shared preferences
         await prefs.remove('ExamRoutine');
       }

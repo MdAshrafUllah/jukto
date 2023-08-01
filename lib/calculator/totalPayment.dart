@@ -77,12 +77,32 @@ class _TotalPaymentsState extends State<TotalPayments> {
         };
       }).toList(),
     }).then((value) async {
-      print('Data saved successfully.');
-
       // Update the cache after saving to Firestore
       _prefs ??= await SharedPreferences.getInstance();
       _prefs!.setStringList(_cacheKey, paymentListToJson(payments));
-    }).catchError((error) => print('Failed to save data: $error'));
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.green,
+          content: Text(
+            'Data saved successfully',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          content: Text(
+            'Failed to save data',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
+    });
   }
 
   void addPaymentDialog(BuildContext context) async {
@@ -113,20 +133,36 @@ class _TotalPaymentsState extends State<TotalPayments> {
   }
 
   void deletePaymentFromFirestore(Payment payment) {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userID)
-        .update({
-          'payments': FieldValue.arrayRemove([
-            {
-              'date': payment.date,
-              'amount': payment.amount,
-            }
-          ])
-        })
-        .then((value) => print('Payment deleted from Firestore.'))
-        .catchError((error) =>
-            print('Failed to delete payment from Firestore: $error'));
+    FirebaseFirestore.instance.collection('users').doc(userID).update({
+      'payments': FieldValue.arrayRemove([
+        {
+          'date': payment.date,
+          'amount': payment.amount,
+        }
+      ])
+    }).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          content: Text(
+            'Payment deleted from online',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          content: Text(
+            'Failed to delete payment from online',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
+    });
   }
 
   double calculateTotalAmount() {
