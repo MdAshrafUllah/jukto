@@ -577,7 +577,7 @@ class _HomePageState extends State<HomePage> {
               child: RefreshIndicator(
                 color: Color.fromRGBO(58, 150, 255, 1),
                 onRefresh: () async {
-                  return Future<void>.delayed(const Duration(seconds: 3));
+                  return Future<void>.delayed(const Duration(seconds: 1));
                 },
                 child: ListView.builder(
                   itemCount: posts.length,

@@ -68,28 +68,35 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
               alignment: Alignment.center,
               child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              itemCount: groupList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => GroupChatRoom(
-                        groupName: groupList[index]['name'],
-                        groupChatId: groupList[index]['id'],
+          : RefreshIndicator(
+              color: Color.fromRGBO(58, 150, 255, 1),
+              onRefresh: () {
+                getAvailableGroups();
+                return Future<void>.delayed(const Duration(seconds: 1));
+              },
+              child: ListView.builder(
+                itemCount: groupList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => GroupChatRoom(
+                          groupName: groupList[index]['name'],
+                          groupChatId: groupList[index]['id'],
+                        ),
                       ),
                     ),
-                  ),
-                  leading: Icon(Icons.group),
-                  title: Text(
-                    groupList[index]['name'],
-                    style: TextStyle(
-                        color: themeProvider.isDarkMode
-                            ? Colors.white
-                            : Colors.black),
-                  ),
-                );
-              },
+                    leading: Icon(Icons.group),
+                    title: Text(
+                      groupList[index]['name'],
+                      style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black),
+                    ),
+                  );
+                },
+              ),
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color.fromRGBO(58, 150, 255, 1),

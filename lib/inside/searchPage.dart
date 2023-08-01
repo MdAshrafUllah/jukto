@@ -51,7 +51,7 @@ class _SearchPersonState extends State<SearchPerson> {
           Container(
             margin: EdgeInsets.only(left: 20, right: 20),
             padding: EdgeInsets.only(left: 20, right: 20),
-            height: 70,
+            height: 60,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(

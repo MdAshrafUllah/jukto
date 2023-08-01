@@ -332,288 +332,277 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      body: RefreshIndicator(
-        color: Color.fromRGBO(58, 150, 255, 1),
-        key: _refreshIndicatorKey,
-        onRefresh: () {
-          fetchData;
-          return Future<void>.delayed(const Duration(seconds: 1));
-        },
-        child: ModalProgressHUD(
-          inAsyncCall: isLoading,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: 25,
-                ),
-                CircleAvatar(
-                  radius: 50.0,
-                  backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-                  child: CircleAvatar(
-                    radius: 48.0,
-                    backgroundImage: imageurl != " "
-                        ? CachedNetworkImageProvider(imageurl)
-                        : CachedNetworkImageProvider(CurrentPic),
-                    child: Transform.translate(
-                      offset: Offset(30, 35),
-                      child: IconButton(
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Container(
-                                    height: 120,
-                                    child: Column(
-                                      children: [
-                                        ListTile(
-                                          onTap: () {
-                                            uploadCameraImage();
-                                            Navigator.pop(context);
-                                          },
-                                          leading: Icon(
-                                            Icons.camera,
-                                            color:
-                                                Color.fromRGBO(58, 150, 255, 1),
-                                          ),
-                                          title: Text(
-                                            'Camera',
+      body: ModalProgressHUD(
+        inAsyncCall: isLoading,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 25,
+              ),
+              CircleAvatar(
+                radius: 50.0,
+                backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+                child: CircleAvatar(
+                  radius: 48.0,
+                  backgroundImage: imageurl != " "
+                      ? CachedNetworkImageProvider(imageurl)
+                      : CachedNetworkImageProvider(CurrentPic),
+                  child: Transform.translate(
+                    offset: Offset(30, 35),
+                    child: IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: Container(
+                                  height: 120,
+                                  child: Column(
+                                    children: [
+                                      ListTile(
+                                        onTap: () {
+                                          uploadCameraImage();
+                                          Navigator.pop(context);
+                                        },
+                                        leading: Icon(
+                                          Icons.camera,
+                                          color:
+                                              Color.fromRGBO(58, 150, 255, 1),
+                                        ),
+                                        title: Text(
+                                          'Camera',
+                                          style: TextStyle(
+                                              color: themeProvider.isDarkMode
+                                                  ? Colors.white
+                                                  : Colors.black),
+                                        ),
+                                      ),
+                                      ListTile(
+                                        onTap: () {
+                                          uploadGalleryImage();
+                                          Navigator.pop(context);
+                                        },
+                                        leading: Icon(
+                                          Icons.image,
+                                          color:
+                                              Color.fromRGBO(58, 150, 255, 1),
+                                        ),
+                                        title: Text('Gallery',
                                             style: TextStyle(
                                                 color: themeProvider.isDarkMode
                                                     ? Colors.white
-                                                    : Colors.black),
-                                          ),
-                                        ),
-                                        ListTile(
-                                          onTap: () {
-                                            uploadGalleryImage();
-                                            Navigator.pop(context);
-                                          },
-                                          leading: Icon(
-                                            Icons.image,
-                                            color:
-                                                Color.fromRGBO(58, 150, 255, 1),
-                                          ),
-                                          title: Text('Gallery',
-                                              style: TextStyle(
-                                                  color:
-                                                      themeProvider.isDarkMode
-                                                          ? Colors.white
-                                                          : Colors.black)),
-                                        )
-                                      ],
-                                    ),
+                                                    : Colors.black)),
+                                      )
+                                    ],
                                   ),
-                                );
-                              });
-                        },
-                        icon: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Color.fromRGBO(58, 150, 255,
-                                1), // set the background color here
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                          ),
+                                ),
+                              );
+                            });
+                      },
+                      icon: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(
+                              58, 150, 255, 1), // set the background color here
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Center(
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  '$name',
+                  style: TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: Text(
+                  '$bio',
+                  style: TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 25,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (Context) => const CGPAPage()));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(left: 20, right: 20),
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                        height: 70,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            width: 4,
+                            color: Color.fromRGBO(58, 150, 255, 1),
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'CGPA',
+                          style: TextStyle(
+                            color: Color.fromRGBO(58, 150, 255, 1),
+                            fontFamily: 'Roboto',
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (Context) => const TotalPayments()));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(left: 20, right: 20),
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                        height: 70,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            width: 4,
+                            color: Color.fromRGBO(58, 150, 255, 1),
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Payments',
+                          style: TextStyle(
+                            color: Color.fromRGBO(58, 150, 255, 1),
+                            fontFamily: 'Roboto',
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (Context) => ClassRoutinePage()));
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(58, 150, 255, 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  alignment: Alignment.center,
                   child: Text(
-                    '$name',
+                    'Class Routine',
                     style: TextStyle(
+                      color: Colors.white,
                       fontFamily: 'Roboto',
-                      fontSize: 24,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Center(
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (Context) => ExamRoutinePage()));
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(58, 150, 255, 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  alignment: Alignment.center,
                   child: Text(
-                    '$bio',
+                    'Exam Routine',
                     style: TextStyle(
+                      color: Colors.white,
                       fontFamily: 'Roboto',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w300,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 25,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (Context) => const CGPAPage()));
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: 20, right: 20),
-                          padding: EdgeInsets.only(left: 5, right: 5),
-                          height: 70,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              width: 4,
-                              color: Color.fromRGBO(58, 150, 255, 1),
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'CGPA',
-                            style: TextStyle(
-                              color: Color.fromRGBO(58, 150, 255, 1),
-                              fontFamily: 'Roboto',
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (Context) => const TotalPayments()));
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: 20, right: 20),
-                          padding: EdgeInsets.only(left: 5, right: 5),
-                          height: 70,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              width: 4,
-                              color: Color.fromRGBO(58, 150, 255, 1),
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Payments',
-                            style: TextStyle(
-                              color: Color.fromRGBO(58, 150, 255, 1),
-                              fontFamily: 'Roboto',
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (Context) => ClassRoutinePage()));
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(58, 150, 255, 1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Class Routine',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Roboto',
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (Context) => ReminderPage()));
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(58, 150, 255, 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Reminder',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Roboto',
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (Context) => ExamRoutinePage()));
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(58, 150, 255, 1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Exam Routine',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Roboto',
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (Context) => ReminderPage()));
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    padding: EdgeInsets.only(left: 20, right: 20),
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(58, 150, 255, 1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Reminder',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Roboto',
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
           ),
         ),
       ),

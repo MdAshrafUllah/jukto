@@ -2,8 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jukto/inside/profilePage.dart';
+import 'package:jukto/inside/welcomePage.dart';
 import 'package:jukto/message/group_chats/add_members.dart';
-import 'package:jukto/inside/searchPage.dart';
+import 'package:jukto/message/group_chats/group_chat_screen.dart';
+
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -31,7 +34,6 @@ class _GroupInfoState extends State<GroupInfo> {
   @override
   void initState() {
     super.initState();
-
     getGroupDetails();
   }
 
@@ -56,13 +58,20 @@ class _GroupInfoState extends State<GroupInfo> {
     }
 
     if (!currentUserFound) {
-      // Add new member with updated information
-      Map<String, dynamic> newMember = {
-        'name': _auth.currentUser!.displayName,
-        'email': currentUserEmail,
-        'profileImage': widget.memberpic,
-      };
-      membersList.add(newMember);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => welcomePage()),
+        (route) => false,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'You are Removed From the Group',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
     }
 
     // Update the 'members' field in the Firestore document
@@ -98,10 +107,18 @@ class _GroupInfoState extends State<GroupInfo> {
     }).then((value) async {
       await _firestore
           .collection('users')
-          .doc(uid)
-          .collection('groups')
-          .doc(widget.groupId)
-          .delete();
+          .where('uid', isEqualTo: uid)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(doc.id)
+              .collection('groups')
+              .doc(widget.groupId)
+              .delete();
+        });
+      });
 
       setState(() {
         isLoading = false;
@@ -109,20 +126,158 @@ class _GroupInfoState extends State<GroupInfo> {
     });
   }
 
+  Future deletedGroup() async {
+    String currentUserUid = _auth.currentUser!.uid;
+    if (checkAdmin()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      List<String> memberUids =
+          membersList.map((member) => member['uid']).cast<String>().toList();
+
+      final groupDocRef = _firestore.collection('groups').doc(widget.groupId);
+      final chatQuerySnapshot = await groupDocRef.collection('chats').get();
+      for (final doc in chatQuerySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      await groupDocRef.delete();
+
+      for (String uid in memberUids) {
+        _firestore
+            .collection('users')
+            .where('uid', isEqualTo: uid)
+            .get()
+            .then((QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach((doc) {
+            FirebaseFirestore.instance
+                .collection('users')
+                .doc(doc.id)
+                .collection('groups')
+                .doc(widget.groupId)
+                .delete();
+          });
+        });
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+
+      bool isCurrentUserMember = memberUids.contains(currentUserUid);
+
+      if (isCurrentUserMember) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => welcomePage()),
+          (route) => false,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'The group has been deleted.',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          ),
+        ));
+      } else {
+        // Redirect to welcomePage if the current user was an admin but not a member of this group
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => welcomePage()),
+          (route) => false,
+        );
+      }
+    }
+  }
+
   void showDialogBox(int index) {
     if (checkAdmin()) {
       if (_auth.currentUser!.uid != membersList[index]['uid']) {
         showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                content: ListTile(
-                  onTap: () => removeMembers(index),
-                  title: Text("Remove This Member"),
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Remove This Member',
+                  style: TextStyle(
+                    color: Provider.of<ThemeProvider>(context).isDarkMode
+                        ? Colors.white
+                        : Colors.black,
+                  )),
+              content: Text('Do you want to Remove This Member From the Group?',
+                  style: TextStyle(
+                    color: Provider.of<ThemeProvider>(context).isDarkMode
+                        ? Colors.white
+                        : Colors.black,
+                  )),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    'No',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
-              );
-            });
+                ElevatedButton(
+                  child: Text('Yes'),
+                  onPressed: () {
+                    removeMembers(index);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
+    }
+  }
+
+  void groupDelete() {
+    if (checkAdmin()) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete This Group',
+                style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black,
+                )),
+            content: Text('Do you want to Delete This Group?',
+                style: TextStyle(
+                  color: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black,
+                )),
+            actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'No',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              ElevatedButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  deletedGroup();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -143,14 +298,22 @@ class _GroupInfoState extends State<GroupInfo> {
       });
 
       await _firestore
-          .collection('')
-          .doc(_auth.currentUser!.uid)
-          .collection('groups')
-          .doc(widget.groupId)
-          .delete();
+          .collection('users')
+          .where('email', isEqualTo: _auth.currentUser!.email)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(doc.id)
+              .collection('groups')
+              .doc(widget.groupId)
+              .delete();
+        });
+      });
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => SearchPerson()),
+        MaterialPageRoute(builder: (_) => welcomePage()),
         (route) => false,
       );
     }
@@ -240,15 +403,15 @@ class _GroupInfoState extends State<GroupInfo> {
 
                     checkAdmin()
                         ? ListTile(
-                            // onTap: () => Navigator.of(context).push(
-                            //   MaterialPageRoute(
-                            //     builder: (_) => AddMembersINGroup(
-                            //       groupChatId: widget.groupId,
-                            //       name: widget.groupName,
-                            //       membersList: membersList,
-                            //     ),
-                            //   ),
-                            // ),
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => AddMoreMembers(
+                                  groupChatId: widget.groupId,
+                                  name: widget.groupName,
+                                  membersList: membersList,
+                                ),
+                              ),
+                            ),
                             leading: Icon(
                               Icons.add,
                             ),
@@ -303,7 +466,45 @@ class _GroupInfoState extends State<GroupInfo> {
                     ),
 
                     ListTile(
-                      onTap: onLeaveGroup,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Leave The Group',
+                                  style: TextStyle(
+                                    color: themeProvider.isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )),
+                              content: Text('Do you want to Leave The Group?',
+                                  style: TextStyle(
+                                    color: themeProvider.isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text(
+                                    'No',
+                                    style: TextStyle(color: Colors.redAccent),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                ElevatedButton(
+                                  child: Text('Yes'),
+                                  onPressed: () {
+                                    onLeaveGroup();
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                       leading: Icon(
                         Icons.logout,
                         color: Colors.redAccent,
@@ -317,6 +518,41 @@ class _GroupInfoState extends State<GroupInfo> {
                         ),
                       ),
                     ),
+
+                    checkAdmin()
+                        ? GestureDetector(
+                            child: Container(
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.delete_forever,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Delete Group",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: size.width / 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              groupDelete();
+                            },
+                          )
+                        : SizedBox(),
                   ],
                 ),
               ),
