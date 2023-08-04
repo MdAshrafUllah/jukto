@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,19 @@ class ChatRoomState extends State<ChatRoom> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   File? imageFile;
   final scrollController = ScrollController();
+  bool _isInitialBuild = true;
+  bool _isUserScrolling = false;
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        _isUserScrolling = true;
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -107,11 +121,13 @@ class ChatRoomState extends State<ChatRoom> {
           .collection('chats')
           .add(messages);
 
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      if (!_isUserScrolling) {
+        scrollController.animateTo(
+          scrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     }
   }
 
@@ -200,97 +216,88 @@ class ChatRoomState extends State<ChatRoom> {
         backgroundColor: Color.fromRGBO(58, 150, 255, 1),
         iconTheme: IconThemeData(color: Colors.white, size: 35.0),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: size.height / 1.25,
-              width: size.width,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('chatroom')
-                    .doc(widget.chatRoomId)
-                    .collection('chats')
-                    .orderBy("time", descending: false)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.data != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (snapshot.data!.docs.length > 0) {
-                        scrollController.animateTo(
-                          scrollController.position.maxScrollExtent,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeOut,
-                        );
-                      }
-                    });
-                    return ListView.builder(
-                      controller: scrollController,
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> map = snapshot.data!.docs[index]
-                            .data() as Map<String, dynamic>;
-                        return messages(size, map, context, scrollController);
-                      },
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              ),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance
+                  .collection('chatroom')
+                  .doc(widget.chatRoomId)
+                  .collection('chats')
+                  .orderBy("time", descending: false)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+                if (snapshot.hasData) {
+                  final messages = snapshot.data!.docs;
+                  return SingleChildScrollView(
+                    reverse:
+                        true, // Reverse the SingleChildScrollView to show messages from the bottom
+                    child: Column(
+                      children: messages.map((message) {
+                        Map<String, dynamic> map = message.data()!;
+                        return buildMessageWidget(
+                            size, map, context, scrollController);
+                      }).toList(),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              },
             ),
-            Center(
+          ),
+          Center(
+            child: Container(
+              height: size.height / 8,
+              width: size.width,
+              alignment: Alignment.center,
               child: Container(
                 height: size.height / 10,
-                width: size.width,
-                alignment: Alignment.center,
-                child: Container(
-                  height: size.height / 12,
-                  width: size.width / 1.1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: size.height / 15,
-                        width: size.width / 1.3,
-                        child: TextField(
-                            controller: _message,
-                            decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  onPressed: () => getImage(),
-                                  icon: Icon(Icons.photo,
-                                      color: Color.fromRGBO(58, 150, 255, 1)),
-                                ),
-                                hintText: "Send Message",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                )),
-                            style: TextStyle(
-                              color: themeProvider.isDarkMode
-                                  ? Colors.white
-                                  : Colors.black,
-                            )),
-                      ),
-                      IconButton(
-                          icon: Icon(
-                            Icons.send,
-                            color: Color.fromRGBO(58, 150, 255, 1),
-                          ),
-                          onPressed: onSendMessage),
-                    ],
-                  ),
+                width: size.width / 1.1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: size.height / 10,
+                      width: size.width / 1.3,
+                      child: TextField(
+                          controller: _message,
+                          decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                onPressed: () => getImage(),
+                                icon: Icon(Icons.photo,
+                                    color: Color.fromRGBO(58, 150, 255, 1)),
+                              ),
+                              hintText: "Send Message",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              )),
+                          style: TextStyle(
+                            color: themeProvider.isDarkMode
+                                ? Colors.white
+                                : Colors.black,
+                          )),
+                    ),
+                    IconButton(
+                        icon: Icon(
+                          Icons.send,
+                          color: Color.fromRGBO(58, 150, 255, 1),
+                        ),
+                        onPressed: onSendMessage),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget messages(Size size, Map<String, dynamic> map, BuildContext context,
-      ScrollController scrollController) {
+  // Rename the function to buildMessageWidget to avoid naming conflict
+  Widget buildMessageWidget(Size size, Map<String, dynamic> map,
+      BuildContext context, ScrollController scrollController) {
     return map['type'] == "text"
         ? Container(
             margin: EdgeInsets.only(top: 10),
@@ -299,8 +306,8 @@ class ChatRoomState extends State<ChatRoom> {
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-              margin: EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+              padding: EdgeInsets.symmetric(vertical: 9, horizontal: 14),
+              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
               decoration: map['sendby'] == auth.currentUser!.displayName
                   ? BoxDecoration(
                       borderRadius: BorderRadius.only(

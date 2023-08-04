@@ -43,6 +43,7 @@ class _signupPageState extends State<signupPage> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
@@ -169,6 +170,13 @@ class _signupPageState extends State<signupPage> {
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                     ),
+                    onChanged: (value) {
+                      _emailController.value = _emailController.value.copyWith(
+                        text: value.toLowerCase(), // Convert to lowercase
+                        selection: TextSelection.collapsed(
+                            offset: value.length), // Preserve cursor position
+                      );
+                    },
                   ),
                 ),
                 SizedBox(
@@ -292,7 +300,7 @@ class _signupPageState extends State<signupPage> {
                       ),
                       Container(
                         padding: EdgeInsets.only(top: 10, bottom: 1),
-                        width: 310,
+                        width: size.width / 1.29,
                         child: RichText(
                           text: TextSpan(children: <TextSpan>[
                             TextSpan(

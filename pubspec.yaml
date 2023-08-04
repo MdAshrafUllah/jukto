@@ -39,8 +39,8 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   google_fonts: ^4.0.4
   firebase_auth: ^4.6.3
-  cloud_firestore:
-  modal_progress_hud_nsn: ^0.4.0
+  cloud_firestore: ^4.8.4
+  modal_progress_hud_nsn:
   firebase_storage: ^11.2.3
   image_picker:
   firebase_database: ^10.2.3

@@ -150,6 +150,13 @@ class _LoginPageState extends State<LoginPage> {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                   ),
+                  onChanged: (value) {
+                    _emailController.value = _emailController.value.copyWith(
+                      text: value.toLowerCase(), // Convert to lowercase
+                      selection: TextSelection.collapsed(
+                          offset: value.length), // Preserve cursor position
+                    );
+                  },
                 ),
               ),
               SizedBox(

@@ -35,9 +35,6 @@ class _ProfilePageState extends State<ProfilePage> {
   User? user;
   bool isLoading = false;
 
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
-
   @override
   void initState() {
     super.initState();
@@ -173,7 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
         isLoading = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.green,
         content: Text(
@@ -188,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red,
         content: Text(
@@ -299,7 +296,7 @@ class _ProfilePageState extends State<ProfilePage> {
         isLoading = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.green,
         content: Text(
@@ -314,7 +311,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.red,
         content: Text(
@@ -338,19 +335,19 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               CircleAvatar(
                 radius: 50.0,
-                backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+                backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
                 child: CircleAvatar(
                   radius: 48.0,
                   backgroundImage: imageurl != " "
                       ? CachedNetworkImageProvider(imageurl)
                       : CachedNetworkImageProvider(CurrentPic),
                   child: Transform.translate(
-                    offset: Offset(30, 35),
+                    offset: const Offset(30, 35),
                     child: IconButton(
                       onPressed: () {
                         showDialog(
@@ -366,7 +363,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           uploadCameraImage();
                                           Navigator.pop(context);
                                         },
-                                        leading: Icon(
+                                        leading: const Icon(
                                           Icons.camera,
                                           color:
                                               Color.fromRGBO(58, 150, 255, 1),
@@ -384,7 +381,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           uploadGalleryImage();
                                           Navigator.pop(context);
                                         },
-                                        leading: Icon(
+                                        leading: const Icon(
                                           Icons.image,
                                           color:
                                               Color.fromRGBO(58, 150, 255, 1),
@@ -405,11 +402,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(
+                          color: const Color.fromRGBO(
                               58, 150, 255, 1), // set the background color here
                           borderRadius: BorderRadius.circular(25),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.camera_alt,
                           color: Colors.white,
                         ),
@@ -422,7 +419,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Center(
                 child: Text(
                   '$name',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -433,14 +430,14 @@ class _ProfilePageState extends State<ProfilePage> {
               Center(
                 child: Text(
                   '$bio',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontSize: 18,
                     fontWeight: FontWeight.w300,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               Row(
@@ -454,23 +451,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                 builder: (Context) => const CGPAPage()));
                       },
                       child: Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
-                        padding: EdgeInsets.only(left: 5, right: 5),
+                        margin: const EdgeInsets.only(left: 20, right: 20),
+                        padding: const EdgeInsets.only(left: 5, right: 5),
                         height: 70,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             width: 4,
-                            color: Color.fromRGBO(58, 150, 255, 1),
+                            color: const Color.fromRGBO(58, 150, 255, 1),
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           'CGPA',
                           style: TextStyle(
                             color: Color.fromRGBO(58, 150, 255, 1),
                             fontFamily: 'Roboto',
-                            fontSize: 25,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -486,23 +483,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                 builder: (Context) => const TotalPayments()));
                       },
                       child: Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
-                        padding: EdgeInsets.only(left: 5, right: 5),
+                        margin: const EdgeInsets.only(left: 20, right: 20),
+                        padding: const EdgeInsets.only(left: 5, right: 5),
                         height: 70,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             width: 4,
-                            color: Color.fromRGBO(58, 150, 255, 1),
+                            color: const Color.fromRGBO(58, 150, 255, 1),
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           'Payments',
                           style: TextStyle(
                             color: Color.fromRGBO(58, 150, 255, 1),
                             fontFamily: 'Roboto',
-                            fontSize: 25,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -511,7 +508,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               GestureDetector(
@@ -522,15 +519,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           builder: (Context) => ClassRoutinePage()));
                 },
                 child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20),
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Color.fromRGBO(58, 150, 255, 1),
+                    color: const Color.fromRGBO(58, 150, 255, 1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
+                  child: const Text(
                     'Class Routine',
                     style: TextStyle(
                       color: Colors.white,
@@ -541,7 +538,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               GestureDetector(
@@ -552,15 +549,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           builder: (Context) => ExamRoutinePage()));
                 },
                 child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20),
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Color.fromRGBO(58, 150, 255, 1),
+                    color: const Color.fromRGBO(58, 150, 255, 1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
+                  child: const Text(
                     'Exam Routine',
                     style: TextStyle(
                       color: Colors.white,
@@ -571,7 +568,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               GestureDetector(
@@ -580,15 +577,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       MaterialPageRoute(builder: (Context) => ReminderPage()));
                 },
                 child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20),
                   height: 70,
                   decoration: BoxDecoration(
-                    color: Color.fromRGBO(58, 150, 255, 1),
+                    color: const Color.fromRGBO(58, 150, 255, 1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
+                  child: const Text(
                     'Reminder',
                     style: TextStyle(
                       color: Colors.white,
@@ -599,7 +596,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
             ],

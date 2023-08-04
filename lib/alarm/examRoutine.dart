@@ -84,7 +84,7 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
   void initState() {
     super.initState();
     _loadExamRoutine();
-    _dateController.text = newDay ?? '';
+    _dateController.text = newDay;
   }
 
   @override

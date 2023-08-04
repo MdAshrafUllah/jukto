@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:jukto/inside/userProfilePage.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -42,6 +43,7 @@ class _SearchPersonState extends State<SearchPerson> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -145,6 +147,20 @@ class _SearchPersonState extends State<SearchPerson> {
                             }
                             return Card(
                               child: ListTile(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UserProfilePage(
+                                        // Pass the necessary user data to the UserProfilePage
+                                        name: data['name'],
+                                        email: data['email'],
+                                        profileImage: data['profileImage'],
+                                        bio: data['bio'],
+                                      ),
+                                    ),
+                                  );
+                                },
                                 title: Text(
                                   data['name'] ?? ' ',
                                   maxLines: 1,
