@@ -26,7 +26,6 @@ class ChatRoomState extends State<ChatRoom> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   File? imageFile;
   final scrollController = ScrollController();
-  bool _isInitialBuild = true;
   bool _isUserScrolling = false;
 
   @override
@@ -89,6 +88,8 @@ class ChatRoomState extends State<ChatRoom> {
       setState(() {
         status = 0;
       });
+
+      return;
     });
 
     if (status == 1) {
@@ -235,7 +236,7 @@ class ChatRoomState extends State<ChatRoom> {
                         true, // Reverse the SingleChildScrollView to show messages from the bottom
                     child: Column(
                       children: messages.map((message) {
-                        Map<String, dynamic> map = message.data()!;
+                        Map<String, dynamic> map = message.data();
                         return buildMessageWidget(
                             size, map, context, scrollController);
                       }).toList(),

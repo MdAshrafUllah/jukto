@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jukto/inside/TermsandConditions.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
@@ -313,29 +315,52 @@ class _signupPageState extends State<signupPage> {
                               ),
                             ),
                             TextSpan(
-                                text: " terms of use",
-                                style: TextStyle(
-                                  fontFamily: 'Roboto',
-                                  color: Color.fromRGBO(58, 150, 255, 1),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                )),
+                              text: " terms of use",
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                color: Color.fromRGBO(58, 150, 255, 1),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          TermsandConditions(),
+                                    ),
+                                  );
+                                },
+                            ),
                             TextSpan(
-                                text: " and our",
-                                style: TextStyle(
-                                  fontFamily: 'Roboto',
-                                  color: Theme.of(context).iconTheme.color,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                )),
+                              text: " and our",
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                color: Theme.of(context).iconTheme.color,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                             TextSpan(
-                                text: " privacy policy",
-                                style: TextStyle(
-                                  fontFamily: 'Roboto',
-                                  color: Color.fromRGBO(58, 150, 255, 1),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                )),
+                              text: " privacy policy",
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                color: Color.fromRGBO(58, 150, 255, 1),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          TermsandConditions(),
+                                    ),
+                                  );
+                                },
+                            ),
                           ]),
                         ),
                       ),

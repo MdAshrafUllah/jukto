@@ -354,14 +354,6 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
         ],
       ),
       actions: [
-        ElevatedButton(
-          onPressed: () {
-            if (amount != 0.0) {
-              Navigator.pop(context, Payment(date: date, amount: amount));
-            }
-          },
-          child: Text('Add'),
-        ),
         TextButton(
           onPressed: () {
             Navigator.pop(context);
@@ -370,6 +362,14 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
             'Cancel',
             style: TextStyle(color: Colors.redAccent),
           ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (amount != 0.0) {
+              Navigator.pop(context, Payment(date: date, amount: amount));
+            }
+          },
+          child: Text('Add'),
         ),
       ],
     );

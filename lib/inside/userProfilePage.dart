@@ -170,52 +170,25 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               SizedBox(height: 8),
               if (isFriend == true)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 50,
-                      width: 120,
-                      decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Center(
-                        child: Text(
-                          "Friend",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            // You can customize the style here
-                          ),
+                Center(
+                  child: Container(
+                    height: 50,
+                    width: 120,
+                    decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Center(
+                      child: Text(
+                        "Friend",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          // You can customize the style here
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        height: 50,
-                        width: 120,
-                        decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Center(
-                          child: Text(
-                            "message",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              // You can customize the style here
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                  ),
                 )
               else if (receivedRequest == true)
                 Row(

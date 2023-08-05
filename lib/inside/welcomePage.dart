@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jukto/inside/About.dart';
+import 'package:jukto/inside/TermsandConditions.dart';
 import 'package:jukto/inside/friendList.dart';
 import 'package:jukto/inside/notificationPage.dart';
 import 'package:jukto/inside/sentRequestList.dart';
@@ -227,6 +229,55 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) => SettingsPage(),
+                          ),
+                        ).then((_) {
+                          Navigator.pop(
+                              context); // Close the drawer when returning to the page
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.newspaper,
+                      ),
+                      title: Text(
+                        'Terms and Conditions',
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                TermsandConditions(),
+                          ),
+                        ).then((_) {
+                          Navigator.pop(
+                              context); // Close the drawer when returning to the page
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.info,
+                      ),
+                      title: Text(
+                        'About The App',
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => AboutApp(),
                           ),
                         ).then((_) {
                           Navigator.pop(

@@ -189,9 +189,14 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: size.height / 15,
+                      height: size.height / 12,
                       width: size.width / 1.3,
                       child: TextField(
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
                         controller: _message,
                         decoration: InputDecoration(
                             suffixIcon: IconButton(

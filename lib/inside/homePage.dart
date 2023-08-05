@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jukto/inside/welcomePage.dart';
+import 'package:jukto/message/messagePage.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:provider/provider.dart';
@@ -660,31 +662,6 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ],
                                 )
-                              else
-                                PopupMenuButton<String>(
-                                  onSelected: (value) {
-                                    if (value == 'message') {
-                                      // Implement the logic for the "Message" option here
-                                    }
-                                  },
-                                  itemBuilder: (context) => [
-                                    PopupMenuItem<String>(
-                                      value: 'message',
-                                      child: Row(
-                                        children: [
-                                          const Icon(Icons.message),
-                                          const SizedBox(width: 8),
-                                          Text('Message',
-                                              style: TextStyle(
-                                                  color:
-                                                      themeProvider.isDarkMode
-                                                          ? Colors.white
-                                                          : Colors.black)),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
                             ],
                           ),
                           subtitle: Column(
@@ -878,31 +855,31 @@ class _HomePageState extends State<HomePage> {
                                                     // Handle edit post here
                                                     // You can navigate to an edit screen and pass the postId
                                                   } else if (value ==
-                                                      'message') {
+                                                      'delete_comment') {
                                                     showDeleteCommentDialog(
                                                         post, comment);
                                                   }
                                                 },
                                                 itemBuilder: (context) => [
-                                                  PopupMenuItem<String>(
-                                                    value: 'message',
-                                                    child: Row(
-                                                      children: [
-                                                        const Icon(
-                                                            Icons.message),
-                                                        const SizedBox(
-                                                            width: 8),
-                                                        Text('message',
-                                                            style: TextStyle(
-                                                                color: themeProvider
-                                                                        .isDarkMode
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black)),
-                                                      ],
-                                                    ),
-                                                  ),
+                                                  // PopupMenuItem<String>(
+                                                  //   value: 'message',
+                                                  //   child: Row(
+                                                  //     children: [
+                                                  //       const Icon(
+                                                  //           Icons.message),
+                                                  //       const SizedBox(
+                                                  //           width: 8),
+                                                  //       Text('message',
+                                                  //           style: TextStyle(
+                                                  //               color: themeProvider
+                                                  //                       .isDarkMode
+                                                  //                   ? Colors
+                                                  //                       .white
+                                                  //                   : Colors
+                                                  //                       .black)),
+                                                  //     ],
+                                                  //   ),
+                                                  // ),
                                                   PopupMenuItem<String>(
                                                     value: 'delete_comment',
                                                     child: Row(
@@ -924,35 +901,6 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                 ],
                                               )
-                                            else
-                                              PopupMenuButton<String>(
-                                                onSelected: (value) {
-                                                  if (value == 'message') {
-                                                    // Implement the logic for the "Message" option here
-                                                  }
-                                                },
-                                                itemBuilder: (context) => [
-                                                  PopupMenuItem<String>(
-                                                    value: 'message',
-                                                    child: Row(
-                                                      children: [
-                                                        const Icon(
-                                                            Icons.message),
-                                                        const SizedBox(
-                                                            width: 8),
-                                                        Text('Message',
-                                                            style: TextStyle(
-                                                                color: themeProvider
-                                                                        .isDarkMode
-                                                                    ? Colors
-                                                                        .white
-                                                                    : Colors
-                                                                        .black)),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
                                           ]),
                                           subtitle: Text(comment.commentText,
                                               style: TextStyle(
