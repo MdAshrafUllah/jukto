@@ -87,10 +87,10 @@ class _CGPAPageState extends State<CGPAPage> {
 
   double calculateSemesterGPA(List<Map<String, dynamic>> subjects) {
     double totalCreditGpa = 0.0;
-    int totalCredit = 0;
+    double totalCredit = 0.0;
 
     for (var subject in subjects) {
-      int credit = subject['credit'];
+      double credit = subject['credit'];
       double gpa = subject['gpa'];
 
       totalCreditGpa += (credit * gpa);
@@ -106,14 +106,14 @@ class _CGPAPageState extends State<CGPAPage> {
 
   double calculateTotalCGPA() {
     double totalCreditGpa = 0.0;
-    int totalCredit = 0;
+    double totalCredit = 0.0;
 
     semesterData.forEach((semesterName, subjects) {
-      int semesterCredit = 0;
+      double semesterCredit = 0.0;
       double semesterGpa = 0.0;
 
       subjects?.forEach((subject) {
-        int credit = subject['credit'];
+        double credit = subject['credit'];
         double gpa = subject['gpa'];
 
         semesterCredit += credit;
@@ -570,7 +570,7 @@ class _CGPAPageState extends State<CGPAPage> {
 
   void _showAddSubjectDialog(String semesterName) {
     String subjectName = '';
-    int credit = 0;
+    double credit = 0;
     double gpa = 0.0;
 
     showDialog(
@@ -608,7 +608,7 @@ class _CGPAPageState extends State<CGPAPage> {
                           ? Colors.white
                           : Colors.black),
                   onChanged: (value) {
-                    credit = int.tryParse(value) ?? 0;
+                    credit = double.tryParse(value) ?? 0;
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
