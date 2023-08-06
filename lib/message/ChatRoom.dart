@@ -250,17 +250,17 @@ class ChatRoomState extends State<ChatRoom> {
           ),
           Center(
             child: Container(
-              height: size.height / 8,
+              height: size.height / 10,
               width: size.width,
               alignment: Alignment.center,
               child: Container(
-                height: size.height / 10,
+                height: size.height / 12,
                 width: size.width / 1.1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: size.height / 10,
+                      height: size.height / 15,
                       width: size.width / 1.3,
                       child: TextField(
                           controller: _message,

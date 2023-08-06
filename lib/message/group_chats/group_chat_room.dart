@@ -189,7 +189,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: size.height / 12,
+                      height: size.height / 15,
                       width: size.width / 1.3,
                       child: TextField(
                         style: TextStyle(
@@ -201,7 +201,10 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
                               onPressed: () {},
-                              icon: Icon(Icons.photo),
+                              icon: Icon(
+                                Icons.photo,
+                                color: Color.fromRGBO(58, 150, 255, 1),
+                              ),
                             ),
                             hintText: "Send Message",
                             border: OutlineInputBorder(
@@ -210,7 +213,9 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                       ),
                     ),
                     IconButton(
-                        icon: Icon(Icons.send), onPressed: onSendMessage),
+                        icon: Icon(Icons.send,
+                            color: Color.fromRGBO(58, 150, 255, 1)),
+                        onPressed: onSendMessage),
                   ],
                 ),
               ),
