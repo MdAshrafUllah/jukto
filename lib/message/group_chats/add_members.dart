@@ -46,7 +46,6 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
           String documentId = doc.id;
           userID = documentId;
           CurrentPic = doc['profileImage'];
-          print(CurrentPic);
         });
       });
     }

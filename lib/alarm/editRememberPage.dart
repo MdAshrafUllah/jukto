@@ -18,7 +18,6 @@ class _EditRememberPageState extends State<EditRememberPage> {
   late TimeOfDay _time;
   late String _subject;
 
-  // Define the list of days here
   final List<String> _daysOfWeek = [
     "Saturday",
     "Sunday",
@@ -95,7 +94,7 @@ class _EditRememberPageState extends State<EditRememberPage> {
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green, // Background color
+                  backgroundColor: Colors.green,
                 ),
                 onPressed: () async {
                   final selectedTime = await showTimePicker(

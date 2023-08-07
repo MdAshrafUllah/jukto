@@ -14,7 +14,6 @@ class ClassRoutine {
 
   ClassRoutine({required this.day, required this.subject, required this.time});
 
-  // Convert the ClassRoutine object to a map for serialization
   Map<String, dynamic> toMap() {
     return {
       'day': day,
@@ -23,7 +22,6 @@ class ClassRoutine {
     };
   }
 
-  // Create a ClassRoutine object from a map
   factory ClassRoutine.fromMap(Map<String, dynamic> map) {
     return ClassRoutine(
       day: map['day'],
@@ -35,7 +33,6 @@ class ClassRoutine {
     );
   }
 
-  // Format the time to 12-hour format (AM/PM)
   String formattedTime() {
     final now = DateTime.now();
     final dateTime =
@@ -62,7 +59,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
     "Friday",
   ];
 
-  String? newDay; // Changed to allow null value
+  String? newDay;
   String newSubject = '';
   TimeOfDay newTime = TimeOfDay.now();
 
@@ -126,7 +123,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
           rows: classRoutine.map((routine) {
             return DataRow(cells: [
               DataCell(Text(routine.day)),
-              DataCell(Text(routine.formattedTime())), // Use the formatted time
+              DataCell(Text(routine.formattedTime())),
               DataCell(Text(routine.subject)),
               DataCell(Row(
                 children: [
@@ -215,7 +212,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
   }
 
   void _showAddSubjectDialog(BuildContext context) {
-    newDay = null; // Set initial value to null
+    newDay = null;
     newSubject = '';
     newTime = TimeOfDay.now();
 
@@ -233,7 +230,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 DropdownButtonFormField<String>(
-                  value: newDay, // Set the initial value to null
+                  value: newDay,
                   items: weekDays.map((day) {
                     return DropdownMenuItem<String>(
                       value: day,
@@ -311,7 +308,6 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                 onPressed: () {
                   setState(() {
                     if (newDay != null && newSubject.isNotEmpty) {
-                      // Check if the subject already exists in the routine
                       ClassRoutine? existingSubject =
                           classRoutine.firstWhereOrNull(
                         (routine) =>
@@ -320,16 +316,13 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                       );
 
                       if (existingSubject != null) {
-                        // Subject with the same name already exists, update the time
                         existingSubject.time = newTime;
                       } else {
-                        // Add as a new entry or group under the same name
                         List<ClassRoutine> sameNamedSubjects = classRoutine
                             .where((routine) => routine.subject == newSubject)
                             .toList();
 
                         if (sameNamedSubjects.isNotEmpty) {
-                          // Group under the same name
                           sameNamedSubjects.forEach((subject) {
                             subject.day = subject.day + "\n" + newDay!;
                           });
@@ -338,24 +331,22 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                             subject: newSubject,
                             time: newTime,
                           ));
-                          // Sort the list after adding the new entry
+
                           classRoutine.sort((a, b) => weekDays
                               .indexOf(a.day)
                               .compareTo(weekDays.indexOf(b.day)));
                         } else {
-                          // Add as a new entry
                           classRoutine.add(ClassRoutine(
                             day: newDay!,
                             subject: newSubject,
                             time: newTime,
                           ));
-                          // Sort the list after adding the new entry
+
                           classRoutine.sort((a, b) => weekDays
                               .indexOf(a.day)
                               .compareTo(weekDays.indexOf(b.day)));
                         }
 
-                        // Save the updated classRoutine list to storage
                         _saveClassRoutine();
                       }
                     }
@@ -444,7 +435,6 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                   routine.time = updatedTime;
                 });
 
-                // Save the updated classRoutine list to storage
                 _saveClassRoutine();
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     behavior: SnackBarBehavior.floating,
@@ -469,7 +459,6 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
     setState(() {
       classRoutine.remove(routine);
 
-      // Save the updated classRoutine list to storage
       _saveClassRoutine();
     });
   }
@@ -478,7 +467,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<Map<String, dynamic>> serializedData =
         classRoutine.map((routine) => routine.toMap()).toList();
-    String jsonString = jsonEncode(serializedData); // Convert to JSON string
+    String jsonString = jsonEncode(serializedData);
     await prefs.setString('classRoutine', jsonString);
   }
 
@@ -491,7 +480,6 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
         List<ClassRoutine> loadedClassRoutine =
             data.map((item) => ClassRoutine.fromMap(item)).toList();
 
-        // Sort the class routines in ascending order based on the days of the week
         loadedClassRoutine.sort((a, b) =>
             weekDays.indexOf(a.day).compareTo(weekDays.indexOf(b.day)));
 
@@ -499,8 +487,16 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
           classRoutine = loadedClassRoutine;
         });
       } catch (e) {
-        // Handle the format exception here
-        print('Error loading class routine data: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              'Error loading class routine data',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Roboto',
+              ),
+            )));
       }
     }
   }

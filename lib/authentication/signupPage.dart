@@ -476,9 +476,7 @@ class _signupPageState extends State<signupPage> {
                                   ),
                                 )));
                           }
-                        } catch (e) {
-                          print(e);
-                        }
+                        } catch (e) {}
                       } else {
                         setState(() {
                           showSpinner = false;

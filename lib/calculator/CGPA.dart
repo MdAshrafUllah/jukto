@@ -82,7 +82,16 @@ class _CGPAPageState extends State<CGPAPage> {
         }
       }
     } catch (error) {
-      print('Failed to load data: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'Failed to load data',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
     }
   }
 
@@ -170,7 +179,7 @@ class _CGPAPageState extends State<CGPAPage> {
               final semesterName = semesterData.keys.elementAt(index);
               final subjects = semesterData[semesterName];
 
-              double totalCredit = 0.0; // Declare as double instead of int
+              double totalCredit = 0.0;
               subjects?.forEach((subject) {
                 totalCredit += subject['credit'];
               });
@@ -309,8 +318,7 @@ class _CGPAPageState extends State<CGPAPage> {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromRGBO(
-                                58, 150, 255, 1), // Background color
+                            backgroundColor: Color.fromRGBO(58, 150, 255, 1),
                           ),
                           onPressed: () {
                             _showAddSubjectDialog(semesterName);
@@ -325,8 +333,7 @@ class _CGPAPageState extends State<CGPAPage> {
                         Spacer(),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Colors.redAccent, // Background color
+                            backgroundColor: Colors.redAccent,
                           ),
                           onPressed: () {
                             showDialog(
@@ -402,8 +409,8 @@ class _CGPAPageState extends State<CGPAPage> {
               bottom: 16.0,
               left: 16.0,
               child: Container(
-                width: 80, // Set the desired width
-                height: 80, // Set the desired height
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
@@ -414,7 +421,7 @@ class _CGPAPageState extends State<CGPAPage> {
                   ),
                 ),
                 child: FloatingActionButton(
-                  onPressed: null, // Disabled clicking
+                  onPressed: null,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -439,8 +446,7 @@ class _CGPAPageState extends State<CGPAPage> {
                       : Colors.white,
                   foregroundColor:
                       themeProvider.isDarkMode ? Colors.white : Colors.black,
-                  elevation:
-                      0, // Set elevation to 0 to remove the default shadow
+                  elevation: 0,
                 ),
               ),
             ),
@@ -547,17 +553,34 @@ class _CGPAPageState extends State<CGPAPage> {
       FirebaseFirestore.instance
           .collection('users')
           .doc(userID)
-          .update({"CGPA": semesterData})
-          .then((value) => print('Data Delete successfully Online.'))
-          .catchError((error) => print('Failed to Delete data Online: $error'));
+          .update({"CGPA": semesterData}).then((value) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              'Data Delete',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Roboto',
+              ),
+            )));
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              'Failed to Delete data',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Roboto',
+              ),
+            )));
+      });
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String semesterDataJson = json.encode(semesterData);
       await prefs.setString('semesterData', semesterDataJson);
-      print('Data Delete successfully Offline.');
-    } catch (error) {
-      print('Failed to Delete data Offline: $error');
-    }
+    } catch (error) {}
   }
 
   void _deleteSubject(String semesterName, int subjectIndex) async {
@@ -570,16 +593,13 @@ class _CGPAPageState extends State<CGPAPage> {
           .collection('users')
           .doc(userID)
           .update({"CGPA": semesterData})
-          .then((value) => print('Data Delete successfully Online.'))
-          .catchError((error) => print('Failed to Delete data Online: $error'));
+          .then((value) {})
+          .catchError((error) => {});
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String semesterDataJson = json.encode(semesterData);
       await prefs.setString('semesterData', semesterDataJson);
-      print('Data Delete successfully Offline.');
-    } catch (error) {
-      print('Failed to Delete data Offline: $error');
-    }
+    } catch (error) {}
   }
 
   void _showAddSubjectDialog(String semesterName) {

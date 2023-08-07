@@ -39,7 +39,6 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
           String documentId = doc.id;
           userID = documentId;
           CurrentPic = doc['profileImage'];
-          print(CurrentPic);
         });
       });
     }

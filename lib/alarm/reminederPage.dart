@@ -36,7 +36,6 @@ class _ReminderPageState extends State<ReminderPage> {
     _initializeNotifications();
   }
 
-  // Load saved reminders from SharedPreferences
   Future<void> _loadReminders() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final savedReminders = prefs.getStringList('reminders');
@@ -50,7 +49,6 @@ class _ReminderPageState extends State<ReminderPage> {
     }
   }
 
-  // Save reminders to SharedPreferences
   Future<void> _saveReminders() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final remindersJson = _submittedRoutines
@@ -59,7 +57,6 @@ class _ReminderPageState extends State<ReminderPage> {
     await prefs.setStringList('reminders', remindersJson);
   }
 
-  // Initialize notifications
   Future<void> _initializeNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -177,7 +174,7 @@ class _ReminderPageState extends State<ReminderPage> {
       _submittedRoutines.add(newRoutine);
     });
     _scheduleNotification(newRoutine);
-    _saveReminders(); // Save the updated list of reminders
+    _saveReminders();
   }
 
   void _updateRoutine(int index, ClassRoutine updatedRoutine) {
@@ -186,17 +183,16 @@ class _ReminderPageState extends State<ReminderPage> {
     });
 
     _scheduleNotification(updatedRoutine);
-    _saveReminders(); // Save the updated list of reminders
+    _saveReminders();
   }
 
   void _deleteRoutine(int index) {
     setState(() {
       _submittedRoutines.removeAt(index);
     });
-    _saveReminders(); // Save the updated list of reminders
+    _saveReminders();
   }
 
-  // Schedule notifications
   Future<void> _scheduleNotification(ClassRoutine routine) async {
     final int id = DateTime.now().millisecondsSinceEpoch % (1 << 31);
 
@@ -228,7 +224,6 @@ class _ReminderPageState extends State<ReminderPage> {
       if (_daysOfWeek[selectedDay] == day) {
         int dayOffset = selectedDay - now.weekday;
         if (dayOffset < 0) {
-          // If the selected day is in the past, add 7 days to schedule it for the next occurrence
           dayOffset += 7;
         }
 
@@ -240,22 +235,19 @@ class _ReminderPageState extends State<ReminderPage> {
           timeOfDay.minute,
         );
 
-        // Convert the DateTime to TZDateTime using the local time zone
         final tz.TZDateTime scheduledTime = tz.TZDateTime.from(
           scheduledDateTime,
           tz.local,
         );
 
         await flutterLocalNotificationsPlugin.zonedSchedule(
-          id +
-              selectedDay, // Add selectedDay to the id to ensure unique IDs for each day
+          id + selectedDay,
           'Reminder',
           'It\'s time for ${routine.subject}.',
           scheduledTime,
           platformChannelSpecifics,
           androidAllowWhileIdle: true,
-          payload:
-              'class_payload_${id + selectedDay}', // Add selectedDay to the payload as well
+          payload: 'class_payload_${id + selectedDay}',
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
           matchDateTimeComponents: DateTimeComponents.time,

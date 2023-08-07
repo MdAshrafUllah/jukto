@@ -51,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } catch (e) {
-        print(e);
       } finally {
         setState(() {
           showSpinner = false;
@@ -152,9 +151,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   onChanged: (value) {
                     _emailController.value = _emailController.value.copyWith(
-                      text: value.toLowerCase(), // Convert to lowercase
-                      selection: TextSelection.collapsed(
-                          offset: value.length), // Preserve cursor position
+                      text: value.toLowerCase(),
+                      selection: TextSelection.collapsed(offset: value.length),
                     );
                   },
                 ),
@@ -289,7 +287,6 @@ class _LoginPageState extends State<LoginPage> {
                         );
                         user = userCredential.user;
                         if (user != null) {
-                          // Save login status to cache
                           _prefs ??= await SharedPreferences.getInstance();
                           _prefs!.setBool(_cacheKey, true);
 
@@ -343,9 +340,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               )));
                         }
-                      } catch (e) {
-                        print(e);
-                      }
+                      } catch (e) {}
                     } else {
                       setState(() {
                         showSpinner = false;
@@ -421,7 +416,6 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void nouserAlertDialog(BuildContext context) {
-  // Create button
   Widget okButton = TextButton(
     child: Text(
       "OK",
@@ -438,7 +432,6 @@ void nouserAlertDialog(BuildContext context) {
     },
   );
 
-  // Create AlertDialog
   AlertDialog alert = AlertDialog(
     title: Text(
       "⚠ Warning",
@@ -453,7 +446,6 @@ void nouserAlertDialog(BuildContext context) {
     ],
   );
 
-  // Show the dialog
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -463,7 +455,6 @@ void nouserAlertDialog(BuildContext context) {
 }
 
 void wrongpassAlertDialog(BuildContext context) {
-  // Create button
   Widget okButton = TextButton(
     child: Text(
       "OK",
@@ -480,7 +471,6 @@ void wrongpassAlertDialog(BuildContext context) {
     },
   );
 
-  // Create AlertDialog
   AlertDialog alert = AlertDialog(
     title: Text(
       "⚠ Warning",
@@ -495,7 +485,6 @@ void wrongpassAlertDialog(BuildContext context) {
     ],
   );
 
-  // Show the dialog
   showDialog(
     context: context,
     builder: (BuildContext context) {

@@ -321,7 +321,6 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
       }
 
       if (chatMap['type'] == "notify") {
-        print(chatMap['message']);
         return Container(
           width: size.width,
           alignment: Alignment.center,

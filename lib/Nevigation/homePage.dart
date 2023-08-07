@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jukto/Nevigation/messagePage.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:provider/provider.dart';
@@ -187,7 +186,6 @@ class _HomePageState extends State<HomePage> {
     String? name = currentUser?.displayName;
     DateTime postTime = DateTime.now();
 
-    // Upload the image to Firebase Storage if an image is selected
     String? imageUrl;
     if (selectimg != null) {
       Reference storageReference =
@@ -195,7 +193,6 @@ class _HomePageState extends State<HomePage> {
       UploadTask uploadTask = storageReference.putFile(File(selectimg!));
       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
 
-      // Get the download URL of the uploaded image
       imageUrl = await storageReference.getDownloadURL();
     }
 
@@ -621,29 +618,11 @@ class _HomePageState extends State<HomePage> {
                                 PopupMenuButton<String>(
                                   onSelected: (value) {
                                     if (value == 'edit_post') {
-                                      // Handle edit post here
-                                      // You can navigate to an edit screen and pass the postId
                                     } else if (value == 'delete_post') {
                                       showDeletePostDialog(post.postId);
                                     }
                                   },
                                   itemBuilder: (context) => [
-                                    // PopupMenuItem<String>(
-                                    //   value: 'edit_post',
-                                    //   child: Row(
-                                    //     children: [
-                                    //       Icon(Icons.edit),
-                                    //       SizedBox(width: 8),
-                                    //       Text(
-                                    //         'Edit post',
-                                    //         style: TextStyle(
-                                    //             color: themeProvider.isDarkMode
-                                    //                 ? Colors.white
-                                    //                 : Colors.black),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
                                     PopupMenuItem<String>(
                                       value: 'delete_post',
                                       child: Row(
@@ -800,8 +779,6 @@ class _HomePageState extends State<HomePage> {
                                               PopupMenuButton<String>(
                                                 onSelected: (value) {
                                                   if (value == 'edit_comment') {
-                                                    // Handle edit post here
-                                                    // You can navigate to an edit screen and pass the postId
                                                   } else if (value ==
                                                       'delete_comment') {
                                                     showDeleteCommentDialog(
@@ -809,22 +786,6 @@ class _HomePageState extends State<HomePage> {
                                                   }
                                                 },
                                                 itemBuilder: (context) => [
-                                                  // PopupMenuItem<String>(
-                                                  //   value: 'edit_comment',
-                                                  //   child: Row(
-                                                  //     children: [
-                                                  //       Icon(Icons.edit),
-                                                  //       SizedBox(width: 8),
-                                                  //       Text('Edit',
-                                                  //           style: TextStyle(
-                                                  //               color: themeProvider
-                                                  //                       .isDarkMode
-                                                  //                   ? Colors.white
-                                                  //                   : Colors
-                                                  //                       .black)),
-                                                  //     ],
-                                                  //   ),
-                                                  // ),
                                                   PopupMenuItem<String>(
                                                     value: 'delete_comment',
                                                     child: Row(
@@ -851,8 +812,6 @@ class _HomePageState extends State<HomePage> {
                                               PopupMenuButton<String>(
                                                 onSelected: (value) {
                                                   if (value == 'message') {
-                                                    // Handle edit post here
-                                                    // You can navigate to an edit screen and pass the postId
                                                   } else if (value ==
                                                       'delete_comment') {
                                                     showDeleteCommentDialog(
@@ -860,25 +819,6 @@ class _HomePageState extends State<HomePage> {
                                                   }
                                                 },
                                                 itemBuilder: (context) => [
-                                                  // PopupMenuItem<String>(
-                                                  //   value: 'message',
-                                                  //   child: Row(
-                                                  //     children: [
-                                                  //       const Icon(
-                                                  //           Icons.message),
-                                                  //       const SizedBox(
-                                                  //           width: 8),
-                                                  //       Text('message',
-                                                  //           style: TextStyle(
-                                                  //               color: themeProvider
-                                                  //                       .isDarkMode
-                                                  //                   ? Colors
-                                                  //                       .white
-                                                  //                   : Colors
-                                                  //                       .black)),
-                                                  //     ],
-                                                  //   ),
-                                                  // ),
                                                   PopupMenuItem<String>(
                                                     value: 'delete_comment',
                                                     child: Row(

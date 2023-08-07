@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jukto/Nevigation/notificationPage.dart';
 import 'package:jukto/info/About.dart';
 import 'package:jukto/info/TermsandConditions.dart';
+import 'package:jukto/Nevigation/messagePage.dart';
 import 'package:jukto/useruse/friendList.dart';
 import 'package:jukto/useruse/sentRequestList.dart';
 import 'package:jukto/useruse/settings.dart';
@@ -16,7 +17,6 @@ import 'package:provider/provider.dart';
 
 import '../theme/theme.dart';
 import 'homePage.dart';
-import 'messagePage.dart';
 import 'profilePage.dart';
 import 'searchPage.dart';
 

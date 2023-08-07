@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class ExamRoutine {
-  String date; // Store the date in "dd-MM-yyyy" format
-  String day; // Store the day of the week
+  String date;
+  String day;
   String subject;
   TimeOfDay time;
 
@@ -19,7 +19,6 @@ class ExamRoutine {
     required this.time,
   });
 
-  // Convert the ExamRoutine object to a map for serialization
   Map<String, dynamic> toMap() {
     return {
       'date': date,
@@ -29,7 +28,6 @@ class ExamRoutine {
     };
   }
 
-  // Create a ExamRoutine object from a map
   factory ExamRoutine.fromMap(Map<String, dynamic> map) {
     return ExamRoutine(
       date: map['date'],
@@ -42,7 +40,6 @@ class ExamRoutine {
     );
   }
 
-  // Format the time to 12-hour format (AM/PM)
   String formattedTime() {
     final now = DateTime.now();
     final dateTime = DateTime(
@@ -76,7 +73,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
     "Friday",
   ];
 
-  // String? newDay; // Changed to allow null value
   String newSubject = '';
   TimeOfDay newTime = TimeOfDay.now();
 
@@ -229,13 +225,12 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
   }
 
   void _showAddSubjectDialog(BuildContext context) {
-    newDay = ''; // Set initial value to empty string
+    newDay = '';
     newSubject = '';
     newTime = TimeOfDay.now();
 
-    // Split the newDay string to get the "dd-MM-yyyy" part
     String initialDateValue = newDay.isNotEmpty
-        ? newDay.split(' ')[0] // Get the "dd-MM-yyyy" part
+        ? newDay.split(' ')[0]
         : DateFormat('dd-MM-yyyy').format(DateTime.now());
 
     showDialog(
@@ -284,15 +279,13 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                     if (pickedDate != null) {
                       String formattedDate =
                           DateFormat('dd-MM-yyyy').format(pickedDate);
-                      String dayOfWeek = DateFormat('EEEE')
-                          .format(pickedDate); // Get the day of the week
+                      String dayOfWeek = DateFormat('EEEE').format(pickedDate);
 
                       setState(() {
                         newDay = '$formattedDate $dayOfWeek';
-                        // Split the newDay string to get the "dd-MM-yyyy" part
+
                         initialDateValue = newDay.split(' ')[0];
-                        _dateController.text =
-                            initialDateValue; // Update the controller value with "dd-MM-yyyy"
+                        _dateController.text = initialDateValue;
                       });
                     }
                   },
@@ -350,7 +343,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                 onPressed: () {
                   setState(() {
                     if (newDay.isNotEmpty && newSubject.isNotEmpty) {
-                      // Check if the subject already exists in the routine
                       ExamRoutine? existingSubject =
                           examRoutine.firstWhereOrNull(
                         (routine) =>
@@ -359,16 +351,13 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                       );
 
                       if (existingSubject != null) {
-                        // Subject with the same name already exists, update the time
                         existingSubject.time = newTime;
                       } else {
-                        // Add as a new entry or group under the same name
                         List<ExamRoutine> sameNamedSubjects = examRoutine
                             .where((routine) => routine.subject == newSubject)
                             .toList();
 
                         if (sameNamedSubjects.isNotEmpty) {
-                          // Group under the same name
                           sameNamedSubjects.forEach((subject) {
                             subject.day = subject.day + "\n" + newDay;
                           });
@@ -379,7 +368,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                             time: newTime,
                           ));
                         } else {
-                          // Add as a new entry
                           examRoutine.add(ExamRoutine(
                             date: initialDateValue,
                             day: newDay,
@@ -389,7 +377,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                         }
                       }
 
-                      // Save the updated ExamRoutine list to storage
                       _saveExamRoutine();
                     }
                   });
@@ -473,7 +460,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                   routine.time = updatedTime;
                 });
 
-                // Save the updated ExamRoutine list to storage
                 _saveExamRoutine();
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     behavior: SnackBarBehavior.floating,
@@ -498,7 +484,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
     setState(() {
       examRoutine.remove(routine);
 
-      // Save the updated ExamRoutine list to storage
       _saveExamRoutine();
     });
   }
@@ -506,7 +491,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
   Future<void> _saveExamRoutine() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<Map<String, dynamic>> serializedData = examRoutine.map((routine) {
-      // Separate the "date" and "day" fields before saving to shared preferences
       String date = routine.date.split(' ')[0];
       String day = routine.day;
       return {
@@ -517,7 +501,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
       };
     }).toList();
 
-    // Convert the list of ExamRoutine objects to a JSON string
     String jsonData = jsonEncode(serializedData);
 
     await prefs.setString('ExamRoutine', jsonData);
@@ -532,8 +515,7 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
         List<ExamRoutine> loadedExamRoutine = data
             .map((item) => ExamRoutine.fromMap(item))
             .toList()
-            .cast<
-                ExamRoutine>(); // Add .cast<ExamRoutine>() to ensure correct data type
+            .cast<ExamRoutine>();
 
         setState(() {
           examRoutine = loadedExamRoutine;
@@ -550,7 +532,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
               ),
             )));
 
-        // Handle the error as needed, e.g., clear the invalid data from shared preferences
         await prefs.remove('ExamRoutine');
       }
     }

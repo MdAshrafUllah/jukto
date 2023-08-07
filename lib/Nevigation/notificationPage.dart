@@ -421,9 +421,7 @@ Future<List<UserModel>> fetchLikedUsersData(
             .add(UserModel(name: userName, profileImageUrl: profileImageUrl));
       }
     });
-  } catch (error) {
-    print("Error fetching user data: $error");
-  }
+  } catch (error) {}
 
   return usersData;
 }
@@ -452,9 +450,7 @@ Future<List<CommenterModel>> fetchCommentersData(
       }
       return null;
     }).whereType<CommenterModel>());
-  } catch (error) {
-    print("Error fetching commenters' data: $error");
-  }
+  } catch (error) {}
 
   return commentersData;
 }

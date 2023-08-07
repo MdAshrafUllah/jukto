@@ -101,8 +101,6 @@ class ChatRoomState extends State<ChatRoom> {
           .collection('chats')
           .doc(fileName)
           .update({"message": imageUrl});
-
-      print(imageUrl);
     }
   }
 

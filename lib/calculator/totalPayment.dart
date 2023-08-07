@@ -39,7 +39,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
           .where('email', isEqualTo: user?.email)
           .get();
 
-      List<Payment> fetchedPayments = []; // Create a temporary list
+      List<Payment> fetchedPayments = [];
 
       for (var doc in querySnapshot.docs) {
         setState(() {
@@ -55,21 +55,16 @@ class _TotalPaymentsState extends State<TotalPayments> {
       }
 
       setState(() {
-        payments =
-            fetchedPayments; // Update the payments list with fetched data
+        payments = fetchedPayments;
       });
 
-      // Save fetched data to the cache
       _prefs ??= await SharedPreferences.getInstance();
       _prefs!.setStringList(_cacheKey, paymentListToJson(fetchedPayments));
     }
   }
 
   void saveData() {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userID) // Use the UserID obtained from the fetchData() method
-        .update({
+    FirebaseFirestore.instance.collection('users').doc(userID).update({
       'payments': payments.map((payment) {
         return {
           'date': payment.date,
@@ -77,7 +72,6 @@ class _TotalPaymentsState extends State<TotalPayments> {
         };
       }).toList(),
     }).then((value) async {
-      // Update the cache after saving to Firestore
       _prefs ??= await SharedPreferences.getInstance();
       _prefs!.setStringList(_cacheKey, paymentListToJson(payments));
 
@@ -126,9 +120,8 @@ class _TotalPaymentsState extends State<TotalPayments> {
   void deletePayment(int index) {
     setState(() {
       Payment deletedPayment = payments.removeAt(index);
-      saveData(); // Save the updated payments list after removing the payment locally
-      deletePaymentFromFirestore(
-          deletedPayment); // Delete the payment from Firestore
+      saveData();
+      deletePaymentFromFirestore(deletedPayment);
     });
   }
 
