@@ -6,17 +6,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:jukto/inside/About.dart';
-import 'package:jukto/inside/TermsandConditions.dart';
-import 'package:jukto/inside/friendList.dart';
-import 'package:jukto/inside/notificationPage.dart';
-import 'package:jukto/inside/sentRequestList.dart';
-import 'package:jukto/inside/settings.dart';
+import 'package:jukto/Nevigation/notificationPage.dart';
+import 'package:jukto/info/About.dart';
+import 'package:jukto/info/TermsandConditions.dart';
+import 'package:jukto/useruse/friendList.dart';
+import 'package:jukto/useruse/sentRequestList.dart';
+import 'package:jukto/useruse/settings.dart';
 import 'package:provider/provider.dart';
 
 import '../theme/theme.dart';
 import 'homePage.dart';
-import '../message/messagePage.dart';
+import 'messagePage.dart';
 import 'profilePage.dart';
 import 'searchPage.dart';
 
