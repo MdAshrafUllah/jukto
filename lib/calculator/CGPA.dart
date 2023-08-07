@@ -17,6 +17,20 @@ class CGPAPage extends StatefulWidget {
 class _CGPAPageState extends State<CGPAPage> {
   Map<String, List<Map<String, dynamic>>> semesterData = {};
 
+  final List<Map<String, dynamic>> cgpaList = [
+    {'grade': 'A+', 'value': 4.0},
+    {'grade': 'A', 'value': 3.75},
+    {'grade': 'A-', 'value': 3.50},
+    {'grade': 'B+', 'value': 3.25},
+    {'grade': 'B', 'value': 3.0},
+    {'grade': 'B-', 'value': 2.75},
+    {'grade': 'C+', 'value': 2.50},
+    {'grade': 'C', 'value': 2.25},
+    {'grade': 'D', 'value': 2.0},
+  ];
+
+  String selectedCGPA = '';
+
   FirebaseAuth auth = FirebaseAuth.instance;
   User? user;
   String userID = '';
@@ -570,86 +584,108 @@ class _CGPAPageState extends State<CGPAPage> {
 
   void _showAddSubjectDialog(String semesterName) {
     String subjectName = '';
-    double credit = 0;
+    double credit = 0.0;
     double gpa = 0.0;
+    Map<String, dynamic>? selectedCGPA;
 
+    final size = MediaQuery.of(context).size;
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: AlertDialog(
-            title: Text(
-              'Add Subject',
-              style: TextStyle(
-                  color: Provider.of<ThemeProvider>(context).isDarkMode
-                      ? Colors.white
-                      : Colors.black),
+        return AlertDialog(
+          title: Text(
+            'Add Subject',
+            style: TextStyle(
+              color: Provider.of<ThemeProvider>(context).isDarkMode
+                  ? Colors.white
+                  : Colors.black,
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  style: TextStyle(
+          ),
+          content: Container(
+            height: size.height / 3.18,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    style: TextStyle(
+                        color: Provider.of<ThemeProvider>(context).isDarkMode
+                            ? Colors.white
+                            : Colors.black),
+                    onChanged: (value) {
+                      subjectName = value;
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Subject Name',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    style: TextStyle(
                       color: Provider.of<ThemeProvider>(context).isDarkMode
                           ? Colors.white
-                          : Colors.black),
-                  onChanged: (value) {
-                    subjectName = value;
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Subject Name',
+                          : Colors.black,
+                    ),
+                    onChanged: (value) {
+                      credit = double.tryParse(value) ?? 0;
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Credit',
+                    ),
+                    keyboardType: TextInputType.number,
                   ),
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  style: TextStyle(
-                      color: Provider.of<ThemeProvider>(context).isDarkMode
-                          ? Colors.white
-                          : Colors.black),
-                  onChanged: (value) {
-                    credit = double.tryParse(value) ?? 0;
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Credit',
+                  SizedBox(height: 16),
+                  DropdownButtonFormField<Map<String, dynamic>>(
+                    value: selectedCGPA,
+                    items: cgpaList.map((gradeData) {
+                      return DropdownMenuItem<Map<String, dynamic>>(
+                        value: gradeData,
+                        child: Text(
+                          style: TextStyle(
+                              color:
+                                  Provider.of<ThemeProvider>(context).isDarkMode
+                                      ? Colors.white
+                                      : Colors.black),
+                          selectedCGPA == gradeData
+                              ? gradeData['value'].toString()
+                              : '${gradeData['grade']}  ${gradeData['value']}',
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCGPA = value!;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'GPA Grade',
+                    ),
                   ),
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  style: TextStyle(
-                      color: Provider.of<ThemeProvider>(context).isDarkMode
-                          ? Colors.white
-                          : Colors.black),
-                  onChanged: (value) {
-                    gpa = double.tryParse(value) ?? 0.0;
-                  },
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'GPA',
-                  ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.redAccent),
-                ),
+                ],
               ),
-              ElevatedButton(
-                onPressed: () {
-                  if (subjectName.isNotEmpty && credit > 0 && gpa >= 0.0) {
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (subjectName.isNotEmpty && credit > 0 && gpa >= 0.0) {
+                  if (credit <= 6) {
                     final newSubject = {
                       'subjectName': subjectName,
                       'credit': credit,
-                      'gpa': gpa,
+                      'gpa': selectedCGPA!['value'],
                     };
 
                     setState(() {
@@ -657,12 +693,23 @@ class _CGPAPageState extends State<CGPAPage> {
                     });
 
                     Navigator.pop(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.redAccent,
+                        content: Text(
+                          'You can input Max 6 Credit Only',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Roboto',
+                          ),
+                        )));
                   }
-                },
-                child: Text('Add'),
-              ),
-            ],
-          ),
+                }
+              },
+              child: Text('Add'),
+            ),
+          ],
         );
       },
     );
