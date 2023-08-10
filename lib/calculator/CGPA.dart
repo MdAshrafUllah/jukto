@@ -135,7 +135,7 @@ class _CGPAPageState extends State<CGPAPage> {
       double semesterCredit = 0.0;
       double semesterGpa = 0.0;
 
-      subjects?.forEach((subject) {
+      subjects.forEach((subject) {
         double credit = subject['credit'];
         double gpa = subject['gpa'];
 
@@ -592,9 +592,7 @@ class _CGPAPageState extends State<CGPAPage> {
       FirebaseFirestore.instance
           .collection('users')
           .doc(userID)
-          .update({"CGPA": semesterData})
-          .then((value) {})
-          .catchError((error) => {});
+          .update({"CGPA": semesterData}).then((value) {});
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String semesterDataJson = json.encode(semesterData);
