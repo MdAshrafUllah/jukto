@@ -193,8 +193,10 @@ class _MessagePageState extends State<MessagePage> {
                                 Map<String, dynamic> lastMessage =
                                     snapshot.data!.docs[0].data()
                                         as Map<String, dynamic>;
-                                if (lastMessage['type'] == 'image') {
+                                if (lastMessage['type'] == 'img') {
                                   return Text('Share a picture');
+                                } else if (lastMessage['type'] == 'file') {
+                                  return Text('Share a document');
                                 } else {
                                   if (lastMessage['message'].toString().startsWith(
                                       'https://firebasestorage.googleapis.com')) {

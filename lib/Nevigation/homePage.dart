@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:provider/provider.dart';
@@ -535,11 +535,14 @@ class _HomePageState extends State<HomePage> {
                             : IconButton(
                                 padding: const EdgeInsets.all(5),
                                 onPressed: () async {
-                                  final pickedFile = await ImagePicker()
-                                      .pickImage(source: ImageSource.gallery);
+                                  FilePickerResult? result =
+                                      await FilePicker.platform.pickFiles(
+                                    type: FileType.image,
+                                  );
 
-                                  if (pickedFile != null) {
-                                    File file = File(pickedFile.path);
+                                  if (result != null &&
+                                      result.files.isNotEmpty) {
+                                    File file = File(result.files.single.path!);
                                     setState(() {
                                       selectimg = file.path;
                                     });

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jukto/alarm/examRoutine.dart';
 import 'package:jukto/alarm/reminederPage.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:jukto/alarm/classRoutine.dart';
 import 'package:jukto/calculator/CGPA.dart';
 import 'package:jukto/theme/theme.dart';
@@ -79,123 +79,132 @@ class _ProfilePageState extends State<ProfilePage> {
         isLoading = true; // Show the spinner
       });
 
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
-          '_' +
-          Random().nextInt(10000).toString() +
-          '.jpg';
-      Reference ref = FirebaseStorage.instance.ref().child(fileName);
-      await ref.putFile(File(image!.path));
-      String downloadUrl = await ref.getDownloadURL();
-      ref.getDownloadURL().then((pImage) {
-        setState(() {
-          imageurl = pImage;
-        });
-      });
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+        allowCompression: true,
+      );
 
-      // Update user's profile image in the 'users' collection
-      FirebaseFirestore.instance
-          .collection('users')
-          .get()
-          .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
-          if (doc["email"] == user?.email) {
+      if (result != null && result.files.isNotEmpty) {
+        PlatformFile file = result.files.first;
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
+            '_' +
+            Random().nextInt(10000).toString() +
+            '.jpg';
+        Reference ref = FirebaseStorage.instance.ref().child(fileName);
+        await ref.putFile(File(result.files.first.path!));
+        String downloadUrl = await ref.getDownloadURL();
+
+        // Update user's profile image in the 'users' collection
+        FirebaseFirestore.instance.collection('users').get().then(
+          (QuerySnapshot querySnapshot) {
+            querySnapshot.docs.forEach((doc) {
+              if (doc["email"] == user?.email) {
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(doc.id)
+                    .update({'profileImage': downloadUrl.toString()});
+              }
+            });
+          },
+        );
+
+        // Update user's profile image in the 'posts' collection
+        FirebaseFirestore.instance
+            .collection('posts')
+            .where('userId', isEqualTo: user?.uid)
+            .get()
+            .then((QuerySnapshot postQuerySnapshot) {
+          postQuerySnapshot.docs.forEach((postDoc) {
             FirebaseFirestore.instance
-                .collection("users")
-                .doc(doc.id)
+                .collection('posts')
+                .doc(postDoc.id)
                 .update({'profileImage': downloadUrl.toString()});
-          }
+
+            // Update commenter's profile image in the 'comments' subcollection
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .collection('comments')
+                .get()
+                .then((QuerySnapshot commentQuerySnapshot) {
+              commentQuerySnapshot.docs.forEach((commentDoc) {
+                if (commentDoc["commenterEmail"] == user?.email) {
+                  FirebaseFirestore.instance
+                      .collection('posts')
+                      .doc(postDoc.id)
+                      .collection('comments')
+                      .doc(commentDoc.id)
+                      .update({'commenterProfileUrl': downloadUrl.toString()});
+                }
+              });
+            });
+          });
         });
-      });
 
-      // Update user's profile image in the 'posts' collection
-      FirebaseFirestore.instance
-          .collection('posts')
-          .where('userId', isEqualTo: user?.uid)
-          .get()
-          .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
-          FirebaseFirestore.instance
-              .collection('posts')
-              .doc(postDoc.id)
-              .update({'profileImage': downloadUrl.toString()});
-
-          // Update commenter's profile image in the 'comments' subcollection
-          FirebaseFirestore.instance
-              .collection('posts')
-              .doc(postDoc.id)
-              .collection('comments')
-              .get()
-              .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
-              if (commentDoc["commenterEmail"] == user?.email) {
+        // Update commenter's profile image in the 'comments' subcollection
+        FirebaseFirestore.instance
+            .collection('posts')
+            .get()
+            .then((QuerySnapshot postQuerySnapshot) {
+          postQuerySnapshot.docs.forEach((postDoc) {
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .collection('comments')
+                .where('commenterEmail', isEqualTo: user?.email)
+                .get()
+                .then((QuerySnapshot commentQuerySnapshot) {
+              commentQuerySnapshot.docs.forEach((commentDoc) {
                 FirebaseFirestore.instance
                     .collection('posts')
                     .doc(postDoc.id)
                     .collection('comments')
                     .doc(commentDoc.id)
-                    .update({'commenterProfileUrl': downloadUrl.toString()});
-              }
+                    .update({'commenterProfileImage': downloadUrl.toString()});
+              });
             });
           });
         });
-      });
 
-      // Update commenter's profile image in the 'comments' subcollection
-      FirebaseFirestore.instance
-          .collection('posts')
-          .get()
-          .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
-          FirebaseFirestore.instance
-              .collection('posts')
-              .doc(postDoc.id)
-              .collection('comments')
-              .where('commenterEmail', isEqualTo: user?.email)
-              .get()
-              .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
-              FirebaseFirestore.instance
-                  .collection('posts')
-                  .doc(postDoc.id)
-                  .collection('comments')
-                  .doc(commentDoc.id)
-                  .update({'commenterProfileImage': downloadUrl.toString()});
-            });
-          });
+        setState(() {
+          isLoading = false;
         });
-      });
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green,
+            content: Text(
+              'Profile Picture updated successfully!',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Roboto',
+              ),
+            ),
+          ),
+        );
+      }
       setState(() {
         isLoading = false;
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.green,
-        content: Text(
-          'Profile Picture updated successfully!',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Roboto',
-          ),
-        ),
-      ));
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.red,
-        content: Text(
-          'Error uploading profile picture.',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Roboto',
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          content: Text(
+            'Error uploading profile picture.',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
           ),
         ),
-      ));
+      );
     }
   }
 
@@ -205,123 +214,132 @@ class _ProfilePageState extends State<ProfilePage> {
         isLoading = true; // Show the spinner
       });
 
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
-          '_' +
-          Random().nextInt(10000).toString() +
-          '.jpg';
-      Reference ref = FirebaseStorage.instance.ref().child(fileName);
-      await ref.putFile(File(image!.path));
-      String downloadUrl = await ref.getDownloadURL();
-      ref.getDownloadURL().then((pImage) {
-        setState(() {
-          imageurl = pImage;
-        });
-      });
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+        allowCompression: true,
+      );
 
-      // Update user's profile image in the 'users' collection
-      FirebaseFirestore.instance
-          .collection('users')
-          .get()
-          .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
-          if (doc["email"] == user?.email) {
+      if (result != null && result.files.isNotEmpty) {
+        PlatformFile file = result.files.first;
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
+            '_' +
+            Random().nextInt(10000).toString() +
+            '.jpg';
+        Reference ref = FirebaseStorage.instance.ref().child(fileName);
+        await ref.putFile(File(result.files.first.path!));
+        String downloadUrl = await ref.getDownloadURL();
+
+        // Update user's profile image in the 'users' collection
+        FirebaseFirestore.instance.collection('users').get().then(
+          (QuerySnapshot querySnapshot) {
+            querySnapshot.docs.forEach((doc) {
+              if (doc["email"] == user?.email) {
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(doc.id)
+                    .update({'profileImage': downloadUrl.toString()});
+              }
+            });
+          },
+        );
+
+        // Update user's profile image in the 'posts' collection
+        FirebaseFirestore.instance
+            .collection('posts')
+            .where('userId', isEqualTo: user?.uid)
+            .get()
+            .then((QuerySnapshot postQuerySnapshot) {
+          postQuerySnapshot.docs.forEach((postDoc) {
             FirebaseFirestore.instance
-                .collection("users")
-                .doc(doc.id)
+                .collection('posts')
+                .doc(postDoc.id)
                 .update({'profileImage': downloadUrl.toString()});
-          }
+
+            // Update commenter's profile image in the 'comments' subcollection
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .collection('comments')
+                .get()
+                .then((QuerySnapshot commentQuerySnapshot) {
+              commentQuerySnapshot.docs.forEach((commentDoc) {
+                if (commentDoc["commenterEmail"] == user?.email) {
+                  FirebaseFirestore.instance
+                      .collection('posts')
+                      .doc(postDoc.id)
+                      .collection('comments')
+                      .doc(commentDoc.id)
+                      .update({'commenterProfileUrl': downloadUrl.toString()});
+                }
+              });
+            });
+          });
         });
-      });
 
-      // Update user's profile image in the 'posts' collection
-      FirebaseFirestore.instance
-          .collection('posts')
-          .where('userId', isEqualTo: user?.uid)
-          .get()
-          .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
-          FirebaseFirestore.instance
-              .collection('posts')
-              .doc(postDoc.id)
-              .update({'profileImage': downloadUrl.toString()});
-
-          // Update commenter's profile image in the 'comments' subcollection
-          FirebaseFirestore.instance
-              .collection('posts')
-              .doc(postDoc.id)
-              .collection('comments')
-              .get()
-              .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
-              if (commentDoc["commenterEmail"] == user?.email) {
+        // Update commenter's profile image in the 'comments' subcollection
+        FirebaseFirestore.instance
+            .collection('posts')
+            .get()
+            .then((QuerySnapshot postQuerySnapshot) {
+          postQuerySnapshot.docs.forEach((postDoc) {
+            FirebaseFirestore.instance
+                .collection('posts')
+                .doc(postDoc.id)
+                .collection('comments')
+                .where('commenterEmail', isEqualTo: user?.email)
+                .get()
+                .then((QuerySnapshot commentQuerySnapshot) {
+              commentQuerySnapshot.docs.forEach((commentDoc) {
                 FirebaseFirestore.instance
                     .collection('posts')
                     .doc(postDoc.id)
                     .collection('comments')
                     .doc(commentDoc.id)
-                    .update({'commenterProfileUrl': downloadUrl.toString()});
-              }
+                    .update({'commenterProfileImage': downloadUrl.toString()});
+              });
             });
           });
         });
-      });
 
-      // Update commenter's profile image in the 'comments' subcollection
-      FirebaseFirestore.instance
-          .collection('posts')
-          .get()
-          .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
-          FirebaseFirestore.instance
-              .collection('posts')
-              .doc(postDoc.id)
-              .collection('comments')
-              .where('commenterEmail', isEqualTo: user?.email)
-              .get()
-              .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
-              FirebaseFirestore.instance
-                  .collection('posts')
-                  .doc(postDoc.id)
-                  .collection('comments')
-                  .doc(commentDoc.id)
-                  .update({'commenterProfileImage': downloadUrl.toString()});
-            });
-          });
+        setState(() {
+          isLoading = false;
         });
-      });
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green,
+            content: Text(
+              'Profile Picture updated successfully!',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Roboto',
+              ),
+            ),
+          ),
+        );
+      }
       setState(() {
         isLoading = false;
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.green,
-        content: Text(
-          'Profile Picture updated successfully!',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Roboto',
-          ),
-        ),
-      ));
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.red,
-        content: Text(
-          'Error uploading profile picture.',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Roboto',
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          content: Text(
+            'Error uploading profile picture.',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
           ),
         ),
-      ));
+      );
     }
   }
 
@@ -341,74 +359,84 @@ class _ProfilePageState extends State<ProfilePage> {
               CircleAvatar(
                 radius: 50.0,
                 backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-                child: CircleAvatar(
-                  radius: 48.0,
-                  backgroundImage: imageurl != " "
-                      ? CachedNetworkImageProvider(imageurl)
-                      : CachedNetworkImageProvider(CurrentPic),
-                  child: Transform.translate(
-                    offset: const Offset(30, 35),
-                    child: IconButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                content: Container(
-                                  height: 120,
-                                  child: Column(
-                                    children: [
-                                      ListTile(
-                                        onTap: () {
-                                          uploadCameraImage();
-                                          Navigator.pop(context);
-                                        },
-                                        leading: const Icon(
-                                          Icons.camera,
-                                          color:
-                                              Color.fromRGBO(58, 150, 255, 1),
-                                        ),
-                                        title: Text(
-                                          'Camera',
-                                          style: TextStyle(
-                                              color: themeProvider.isDarkMode
-                                                  ? Colors.white
-                                                  : Colors.black),
-                                        ),
-                                      ),
-                                      ListTile(
-                                        onTap: () {
-                                          uploadGalleryImage();
-                                          Navigator.pop(context);
-                                        },
-                                        leading: const Icon(
-                                          Icons.image,
-                                          color:
-                                              Color.fromRGBO(58, 150, 255, 1),
-                                        ),
-                                        title: Text('Gallery',
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ShowImage(
+                        imageUrl: CurrentPic,
+                      ),
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 48.0,
+                    backgroundImage: imageurl != " "
+                        ? CachedNetworkImageProvider(imageurl)
+                        : CachedNetworkImageProvider(CurrentPic),
+                    child: Transform.translate(
+                      offset: const Offset(30, 35),
+                      child: IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Container(
+                                    height: 120,
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          onTap: () {
+                                            uploadCameraImage();
+                                            Navigator.pop(context);
+                                          },
+                                          leading: const Icon(
+                                            Icons.camera,
+                                            color:
+                                                Color.fromRGBO(58, 150, 255, 1),
+                                          ),
+                                          title: Text(
+                                            'Camera',
                                             style: TextStyle(
                                                 color: themeProvider.isDarkMode
                                                     ? Colors.white
-                                                    : Colors.black)),
-                                      )
-                                    ],
+                                                    : Colors.black),
+                                          ),
+                                        ),
+                                        ListTile(
+                                          onTap: () {
+                                            uploadGalleryImage();
+                                            Navigator.pop(context);
+                                          },
+                                          leading: const Icon(
+                                            Icons.image,
+                                            color:
+                                                Color.fromRGBO(58, 150, 255, 1),
+                                          ),
+                                          title: Text('Gallery',
+                                              style: TextStyle(
+                                                  color:
+                                                      themeProvider.isDarkMode
+                                                          ? Colors.white
+                                                          : Colors.black)),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            });
-                      },
-                      icon: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color.fromRGBO(
-                              58, 150, 255, 1), // set the background color here
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
+                                );
+                              });
+                        },
+                        icon: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(58, 150, 255,
+                                1), // set the background color here
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -602,6 +630,26 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ShowImage extends StatelessWidget {
+  final String imageUrl;
+
+  const ShowImage({required this.imageUrl, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: Container(
+        height: size.height,
+        width: size.width,
+        color: Colors.black,
+        child: CachedNetworkImage(imageUrl: imageUrl),
       ),
     );
   }

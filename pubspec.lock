@@ -169,6 +169,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.4"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      sha256: "21145c9c268d54b1f771d8380c195d2d6f655e0567dc1ca2f9c134c02c819e0a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.3.3"
   file_selector_linux:
     dependency: transitive
     description:
@@ -342,6 +350,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
+  flutter_downloader:
+    dependency: "direct main"
+    description:
+      name: flutter_downloader
+      sha256: "2b126083d2e6b7c09755bca12012c4c734bcf7666cf07ba00c508fcb83e8d0d7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.11.1"
+  flutter_file_downloader:
+    dependency: "direct main"
+    description:
+      name: flutter_file_downloader
+      sha256: "383d1fda8ab7d9bc4314db20ab322c135ab9f616545eca4b19592b3428e2ecca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -863,4 +887,4 @@ packages:
     version: "6.3.0"
 sdks:
   dart: ">=3.0.0 <4.0.0"
-  flutter: ">=3.3.0"
+  flutter: ">=3.10.0"

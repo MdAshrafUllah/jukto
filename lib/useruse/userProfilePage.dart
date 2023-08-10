@@ -142,10 +142,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: 20),
-              CircleAvatar(
-                radius: 60,
-                backgroundImage:
-                    CachedNetworkImageProvider(widget.profileImage),
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ShowImage(
+                      imageUrl: widget.profileImage,
+                    ),
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage:
+                      CachedNetworkImageProvider(widget.profileImage),
+                ),
               ),
               SizedBox(height: 20),
               Text(
@@ -586,6 +595,26 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ShowImage extends StatelessWidget {
+  final String imageUrl;
+
+  const ShowImage({required this.imageUrl, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: Container(
+        height: size.height,
+        width: size.width,
+        color: Colors.black,
+        child: CachedNetworkImage(imageUrl: imageUrl),
       ),
     );
   }

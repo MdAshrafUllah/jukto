@@ -6,7 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -45,22 +47,41 @@ class ChatRoomState extends State<ChatRoom> {
     super.dispose();
   }
 
-  Future getImage() async {
-    ImagePicker picker = ImagePicker();
+  Future pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx', 'pptx', 'ppt'],
+    );
 
-    await picker.pickImage(source: ImageSource.gallery).then((xFile) {
-      if (xFile != null) {
-        setState(() {
-          imageFile = File(xFile.path);
-        });
-        uploadImage();
-      }
-    });
+    if (result != null && result.files.isNotEmpty) {
+      File pickedFile = File(result.files.single.path!);
+      setState(() {
+        imageFile = pickedFile;
+      });
+      uploadFile();
+    }
   }
 
-  Future uploadImage() async {
-    String fileName = Uuid().v1();
+  Future uploadFile() async {
+    String fileName = const Uuid().v1();
     int status = 1;
+
+    // Determine the file extension
+    String extension =
+        imageFile != null ? imageFile!.path.split('.').last.toLowerCase() : '';
+
+    String? fileType; // Default to 'file' type
+
+    // Check the file extension and set the appropriate type
+    if (extension == 'jpg' || extension == 'png' || extension == 'jpeg') {
+      fileType = 'img';
+    } else if (extension == 'pdf' ||
+        extension == 'doc' ||
+        extension == 'docx' ||
+        extension == 'ppt' ||
+        extension == 'pptx') {
+      fileType = 'file';
+    }
 
     await FirebaseFirestore.instance
         .collection('chatroom')
@@ -70,12 +91,11 @@ class ChatRoomState extends State<ChatRoom> {
         .set({
       "sendby": auth.currentUser!.displayName,
       "message": "",
-      "type": "img",
+      "type": fileType,
       "time": FieldValue.serverTimestamp(),
     });
 
-    var ref =
-        FirebaseStorage.instance.ref().child('images').child("$fileName.jpg");
+    var ref = FirebaseStorage.instance.ref().child('files').child(fileName);
 
     var uploadTask = await ref.putFile(imageFile!).catchError((error) async {
       await FirebaseFirestore.instance
@@ -93,14 +113,14 @@ class ChatRoomState extends State<ChatRoom> {
     });
 
     if (status == 1) {
-      String imageUrl = await uploadTask.ref.getDownloadURL();
+      String fileUrl = await uploadTask.ref.getDownloadURL();
 
       await FirebaseFirestore.instance
           .collection('chatroom')
           .doc(widget.chatRoomId)
           .collection('chats')
           .doc(fileName)
-          .update({"message": imageUrl});
+          .update({"message": fileUrl});
     }
   }
 
@@ -123,7 +143,7 @@ class ChatRoomState extends State<ChatRoom> {
       if (!_isUserScrolling) {
         scrollController.animateTo(
           scrollController.position.minScrollExtent,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       }
@@ -171,7 +191,7 @@ class ChatRoomState extends State<ChatRoom> {
                             backgroundImage: CachedNetworkImageProvider(
                                 client['profileImage']),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5,
                           ),
                           Column(
@@ -212,8 +232,8 @@ class ChatRoomState extends State<ChatRoom> {
             }
           },
         ),
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Column(
         children: [
@@ -230,8 +250,7 @@ class ChatRoomState extends State<ChatRoom> {
                 if (snapshot.hasData) {
                   final messages = snapshot.data!.docs;
                   return SingleChildScrollView(
-                    reverse:
-                        true, // Reverse the SingleChildScrollView to show messages from the bottom
+                    reverse: true,
                     child: Column(
                       children: messages.map((message) {
                         Map<String, dynamic> map = message.data();
@@ -264,8 +283,8 @@ class ChatRoomState extends State<ChatRoom> {
                           controller: _message,
                           decoration: InputDecoration(
                               suffixIcon: IconButton(
-                                onPressed: () => getImage(),
-                                icon: Icon(Icons.photo,
+                                onPressed: () => pickFile(),
+                                icon: const Icon(Icons.upload_file_rounded,
                                     color: Color.fromRGBO(58, 150, 255, 1)),
                               ),
                               hintText: "Send Message",
@@ -279,7 +298,7 @@ class ChatRoomState extends State<ChatRoom> {
                           )),
                     ),
                     IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.send,
                           color: Color.fromRGBO(58, 150, 255, 1),
                         ),
@@ -297,73 +316,157 @@ class ChatRoomState extends State<ChatRoom> {
   // Rename the function to buildMessageWidget to avoid naming conflict
   Widget buildMessageWidget(Size size, Map<String, dynamic> map,
       BuildContext context, ScrollController scrollController) {
-    return map['type'] == "text"
-        ? Container(
-            margin: EdgeInsets.only(top: 10),
-            width: size.width,
-            alignment: map['sendby'] == auth.currentUser!.displayName
-                ? Alignment.centerRight
-                : Alignment.centerLeft,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 9, horizontal: 14),
-              margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-              decoration: map['sendby'] == auth.currentUser!.displayName
-                  ? BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          bottomLeft: Radius.circular(15),
-                          topRight: Radius.circular(10)),
-                      color: Colors.grey,
-                    )
-                  : BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(15),
-                          bottomRight: Radius.circular(15),
-                          topLeft: Radius.circular(10)),
-                      color: Color.fromRGBO(
-                          58, 150, 255, 1), // Change the background color here
-                    ),
-              child: Text(
-                map['message'],
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
+    if (map['type'] == "text") {
+      return Container(
+        margin: const EdgeInsets.only(top: 10),
+        width: size.width,
+        alignment: map['sendby'] == auth.currentUser!.displayName
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 14),
+          margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+          decoration: map['sendby'] == auth.currentUser!.displayName
+              ? const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                      topRight: Radius.circular(10)),
+                  color: Colors.grey,
+                )
+              : const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      bottomRight: Radius.circular(15),
+                      topLeft: Radius.circular(10)),
+                  color: Color.fromRGBO(58, 150, 255, 1),
                 ),
-              ),
+          child: Text(
+            map['message'],
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
             ),
-          )
-        : Container(
-            height: size.height / 2.5,
-            width: size.width,
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            alignment: map['sendby'] == auth.currentUser!.displayName
-                ? Alignment.centerRight
-                : Alignment.centerLeft,
-            child: InkWell(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ShowImage(
-                    imageUrl: map['message'],
+          ),
+        ),
+      );
+    } else if (map['type'] == "file") {
+      return Container(
+        width: size.width,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        alignment: map['sendby'] == auth.currentUser!.displayName
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        child: InkWell(
+          onTap: () {
+            if (map['message'].isNotEmpty) {
+              downloadFile(map['message']);
+            }
+          },
+          child: Container(
+            height: size.height / 22,
+            width: size.width / 2,
+            decoration: map['sendby'] == auth.currentUser!.displayName
+                ? const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        bottomLeft: Radius.circular(15),
+                        topRight: Radius.circular(10)),
+                    color: Colors.grey,
+                  )
+                : const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(15),
+                        bottomRight: Radius.circular(15),
+                        topLeft: Radius.circular(10)),
+                    color: Color.fromRGBO(58, 150, 255, 1),
                   ),
-                ),
-              ),
-              child: Container(
-                height: size.height / 2.5,
-                width: size.width / 2,
-                decoration: BoxDecoration(
-                  border: Border.all(),
-                ),
-                alignment: map['message'] != "" ? null : Alignment.center,
-                child: map['message'] != ""
-                    ? Image.network(
-                        map['message'],
-                        fit: BoxFit.cover,
+            alignment: map['message'] != "" ? null : Alignment.center,
+            child: map['message'] != ""
+                ? const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.file_present,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        'file',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       )
-                    : CircularProgressIndicator(),
+                    ],
+                  ) // Display file icon
+                : Container(
+                    height: 24, // Adjust the height as needed
+                    width: 24, // Adjust the width as needed
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  ),
+          ),
+        ),
+      );
+    } else if (map['type'] == "img") {
+      return Container(
+        height: size.height / 2.5,
+        width: size.width,
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        alignment: map['sendby'] == auth.currentUser!.displayName
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        child: InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ShowImage(
+                imageUrl: map['message'],
               ),
             ),
-          );
+          ),
+          child: Container(
+            height: size.height / 2.5,
+            width: size.width / 2,
+            decoration: BoxDecoration(
+              border: Border.all(),
+            ),
+            alignment: map['message'] != "" ? null : Alignment.center,
+            child: map['message'] != ""
+                ? Image.network(
+                    map['message'],
+                    fit: BoxFit.cover,
+                  )
+                : const CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+    return Container();
+  }
+
+  Future<void> downloadFile(String fileUrl) async {
+    final dir = await getExternalStorageDirectory();
+    final savePath = '${dir!.path}/${DateTime.now().millisecondsSinceEpoch}';
+
+    final savedDir = Directory(savePath);
+    if (!savedDir.existsSync()) {
+      savedDir.createSync(recursive: true);
+    }
+
+    try {
+      final taskId = await FlutterDownloader.enqueue(
+        url: fileUrl,
+        savedDir: savePath,
+        fileName: 'Downloaded File',
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+    } catch (error, stackTrace) {
+      print('Error downloading file: $error');
+      print('Stack Trace: $stackTrace');
+    }
   }
 }
 
