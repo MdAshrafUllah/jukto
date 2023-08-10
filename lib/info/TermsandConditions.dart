@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
 class TermsandConditions extends StatelessWidget {
   const TermsandConditions({super.key});
 
@@ -9,7 +7,7 @@ class TermsandConditions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Terms and Conditions',
           style: TextStyle(
             color: Colors.white,
@@ -17,10 +15,10 @@ class TermsandConditions extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

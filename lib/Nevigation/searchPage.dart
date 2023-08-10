@@ -43,7 +43,6 @@ class _SearchPersonState extends State<SearchPerson> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Column(
         children: <Widget>[
