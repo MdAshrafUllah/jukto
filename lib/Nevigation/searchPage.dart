@@ -156,6 +156,8 @@ class _SearchPersonState extends State<SearchPerson> {
                                         email: data['email'],
                                         profileImage: data['profileImage'],
                                         bio: data['bio'],
+                                        university: data['university'],
+                                        city: data['city'],
                                       ),
                                     ),
                                   );

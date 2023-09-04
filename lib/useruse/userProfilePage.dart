@@ -11,6 +11,8 @@ class UserProfilePage extends StatefulWidget {
   final String name;
   final String email;
   final String bio;
+  final String university;
+  final String city;
 
   const UserProfilePage({
     Key? key,
@@ -18,6 +20,8 @@ class UserProfilePage extends StatefulWidget {
     required this.name,
     required this.email,
     required this.bio,
+    required this.university,
+    required this.city,
   }) : super(key: key);
 
   @override
@@ -118,7 +122,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -175,6 +179,64 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     color:
                         themeProvider.isDarkMode ? Colors.white : Colors.black,
                   ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                margin: EdgeInsets.only(
+                    left: size.width / 18, right: size.width / 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SingleChildScrollView(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'University: ',
+                            style: const TextStyle(
+                              fontFamily: 'Roboto',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              widget.university,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text(
+                          'From: ',
+                          style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.city,
+                          style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 8),

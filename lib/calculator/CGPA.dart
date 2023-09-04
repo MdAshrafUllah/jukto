@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/theme/theme.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jukto/theme/theme.dart';
 
 class CGPAPage extends StatefulWidget {
   const CGPAPage({Key? key}) : super(key: key);
@@ -170,6 +174,14 @@ class _CGPAPageState extends State<CGPAPage> {
         centerTitle: true,
         backgroundColor: Color.fromRGBO(58, 150, 255, 1),
         iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.picture_as_pdf),
+            onPressed: () {
+              generatePDF();
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -767,5 +779,146 @@ class _CGPAPageState extends State<CGPAPage> {
       String semesterDataJson = json.encode(semesterData);
       await prefs.setString('semesterData', semesterDataJson);
     } catch (error) {}
+  }
+
+  Future<void> generatePDF() async {
+    final pdf = pw.Document();
+
+    // Get the app's private storage directory
+    final directory = await getExternalStorageDirectory();
+
+    if (directory == null) {
+      // Handle the case where external storage is not available
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.redAccent,
+        content: Text(
+          'External storage is not available for saving the PDF.',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+        ),
+      ));
+      return;
+    }
+
+    // Construct the file path in the app's private storage
+    final fileName = 'total_cgpa_list.pdf';
+    final filePath = '${directory.path}/$fileName';
+
+    // Divide the semesters into chunks of two per page
+    final semesters = semesterData.entries.toList();
+    final chunkSize = 2;
+    final totalChunks = (semesters.length / chunkSize).ceil();
+
+    for (var chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      final startIndex = chunkIndex * chunkSize;
+      final endIndex = (chunkIndex + 1) * chunkSize;
+      final semestersChunk = semesters.sublist(startIndex, endIndex);
+
+      // Add a new page for each chunk of semesters
+      pdf.addPage(
+        pw.Page(
+          build: (context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                for (final entry in semestersChunk)
+                  pw.Column(
+                    children: [
+                      // Semester Header
+                      pw.Container(
+                        child: pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text(
+                              'Semester: ${entry.key}',
+                              style:
+                                  pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                            ),
+                            pw.Text(
+                              'Total GPA: ${calculateSemesterGPA(entry.value).toStringAsFixed(2)}',
+                              style:
+                                  pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Subject Table
+                      pw.TableHelper.fromTextArray(
+                        context: context,
+                        border: pw.TableBorder.all(),
+                        headers: ['Subject', 'GPA', 'Credit'],
+                        data: [
+                          for (final subject in entry.value)
+                            [
+                              subject['subjectName'],
+                              subject['gpa'].toStringAsFixed(2),
+                              subject['credit'].toStringAsFixed(2),
+                            ],
+                        ],
+                      ),
+                    ],
+                  ),
+              ],
+            );
+          },
+        ),
+      );
+    }
+
+    // Save the PDF to the private storage
+    final pdfBytes = await pdf.save();
+    final pdfFile = File(filePath);
+    await pdfFile.writeAsBytes(pdfBytes);
+
+    // Show the PDF in a dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'PDF Preview',
+            style: TextStyle(
+              color: Provider.of<ThemeProvider>(context).isDarkMode
+                  ? Colors.white
+                  : Colors.black,
+            ),
+          ),
+          content: Container(
+            width: double.maxFinite,
+            height: 400, // Adjust the height as needed
+            child: PDFView(
+              filePath: filePath,
+              onPageChanged: (page, total) {
+                // Handle page changes if needed
+              },
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Show a success message
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.green,
+      content: Text(
+        'PDF generated successfully and saved to $filePath',
+        style: TextStyle(
+          color: Colors.white,
+          fontFamily: 'Roboto',
+        ),
+      ),
+    ));
   }
 }

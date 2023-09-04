@@ -9,7 +9,36 @@
       "client_info": {
         "mobilesdk_app_id": "1:278225724157:android:06cb9de3c8359c131c9494",
         "android_client_info": {
-          "package_name": "com.example.jukto"
+          "package_name": "com.jukto.student"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278225724157-fi5cmb0gsofru4fd8pb6hpkap2umc8o6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHdp3gnQoEMuCskiB423sV8pTFLQEQDGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278225724157-fi5cmb0gsofru4fd8pb6hpkap2umc8o6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278225724157:android:faac79457d742afc1c9494",
+        "android_client_info": {
+          "package_name": "com.jukto.student"
         }
       },
       "oauth_client": [

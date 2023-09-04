@@ -7,13 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jukto/alarm/examRoutine.dart';
 import 'package:jukto/alarm/reminederPage.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:jukto/alarm/classRoutine.dart';
 import 'package:jukto/calculator/CGPA.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
-
+import 'package:image_picker/image_picker.dart';
 import '../calculator/totalPayment.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -24,11 +23,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 String imageurl = ' ';
-String CurrentPic = ' ';
-String addbio = ' ';
-String Currentbio = ' ';
+String currentPic = ' ';
 String bio = '';
 String name = '';
+String university = '';
+String city = '';
 
 class _ProfilePageState extends State<ProfilePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -56,9 +55,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
         for (var doc in querySnapshot.docs) {
           setState(() {
-            CurrentPic = doc["profileImage"];
+            currentPic = doc["profileImage"];
             bio = doc['bio'];
             name = doc['name'];
+            university = doc['university'];
+            city = doc['city'];
           });
         }
 
@@ -79,132 +80,123 @@ class _ProfilePageState extends State<ProfilePage> {
         isLoading = true; // Show the spinner
       });
 
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowMultiple: false,
-        allowCompression: true,
-      );
-
-      if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
-            '_' +
-            Random().nextInt(10000).toString() +
-            '.jpg';
-        Reference ref = FirebaseStorage.instance.ref().child(fileName);
-        await ref.putFile(File(result.files.first.path!));
-        String downloadUrl = await ref.getDownloadURL();
-
-        // Update user's profile image in the 'users' collection
-        FirebaseFirestore.instance.collection('users').get().then(
-          (QuerySnapshot querySnapshot) {
-            querySnapshot.docs.forEach((doc) {
-              if (doc["email"] == user?.email) {
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(doc.id)
-                    .update({'profileImage': downloadUrl.toString()});
-              }
-            });
-          },
-        );
-
-        // Update user's profile image in the 'posts' collection
-        FirebaseFirestore.instance
-            .collection('posts')
-            .where('userId', isEqualTo: user?.uid)
-            .get()
-            .then((QuerySnapshot postQuerySnapshot) {
-          postQuerySnapshot.docs.forEach((postDoc) {
-            FirebaseFirestore.instance
-                .collection('posts')
-                .doc(postDoc.id)
-                .update({'profileImage': downloadUrl.toString()});
-
-            // Update commenter's profile image in the 'comments' subcollection
-            FirebaseFirestore.instance
-                .collection('posts')
-                .doc(postDoc.id)
-                .collection('comments')
-                .get()
-                .then((QuerySnapshot commentQuerySnapshot) {
-              commentQuerySnapshot.docs.forEach((commentDoc) {
-                if (commentDoc["commenterEmail"] == user?.email) {
-                  FirebaseFirestore.instance
-                      .collection('posts')
-                      .doc(postDoc.id)
-                      .collection('comments')
-                      .doc(commentDoc.id)
-                      .update({'commenterProfileUrl': downloadUrl.toString()});
-                }
-              });
-            });
-          });
+      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
+          '_' +
+          Random().nextInt(10000).toString() +
+          '.jpg';
+      Reference ref = FirebaseStorage.instance.ref().child(fileName);
+      await ref.putFile(File(image!.path));
+      String downloadUrl = await ref.getDownloadURL();
+      ref.getDownloadURL().then((pImage) {
+        setState(() {
+          imageurl = pImage;
         });
+      });
 
-        // Update commenter's profile image in the 'comments' subcollection
-        FirebaseFirestore.instance
-            .collection('posts')
-            .get()
-            .then((QuerySnapshot postQuerySnapshot) {
-          postQuerySnapshot.docs.forEach((postDoc) {
+      // Update user's profile image in the 'users' collection
+      FirebaseFirestore.instance
+          .collection('users')
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          if (doc["email"] == user?.email) {
             FirebaseFirestore.instance
-                .collection('posts')
-                .doc(postDoc.id)
-                .collection('comments')
-                .where('commenterEmail', isEqualTo: user?.email)
-                .get()
-                .then((QuerySnapshot commentQuerySnapshot) {
-              commentQuerySnapshot.docs.forEach((commentDoc) {
+                .collection("users")
+                .doc(doc.id)
+                .update({'profileImage': downloadUrl.toString()});
+          }
+        });
+      });
+
+      // Update user's profile image in the 'posts' collection
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('userId', isEqualTo: user?.uid)
+          .get()
+          .then((QuerySnapshot postQuerySnapshot) {
+        postQuerySnapshot.docs.forEach((postDoc) {
+          FirebaseFirestore.instance
+              .collection('posts')
+              .doc(postDoc.id)
+              .update({'profileImage': downloadUrl.toString()});
+
+          // Update commenter's profile image in the 'comments' subcollection
+          FirebaseFirestore.instance
+              .collection('posts')
+              .doc(postDoc.id)
+              .collection('comments')
+              .get()
+              .then((QuerySnapshot commentQuerySnapshot) {
+            commentQuerySnapshot.docs.forEach((commentDoc) {
+              if (commentDoc["commenterEmail"] == user?.email) {
                 FirebaseFirestore.instance
                     .collection('posts')
                     .doc(postDoc.id)
                     .collection('comments')
                     .doc(commentDoc.id)
-                    .update({'commenterProfileImage': downloadUrl.toString()});
-              });
+                    .update({'commenterProfileUrl': downloadUrl.toString()});
+              }
             });
           });
         });
+      });
 
-        setState(() {
-          isLoading = false;
+      // Update commenter's profile image in the 'comments' subcollection
+      FirebaseFirestore.instance
+          .collection('posts')
+          .get()
+          .then((QuerySnapshot postQuerySnapshot) {
+        postQuerySnapshot.docs.forEach((postDoc) {
+          FirebaseFirestore.instance
+              .collection('posts')
+              .doc(postDoc.id)
+              .collection('comments')
+              .where('commenterEmail', isEqualTo: user?.email)
+              .get()
+              .then((QuerySnapshot commentQuerySnapshot) {
+            commentQuerySnapshot.docs.forEach((commentDoc) {
+              FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postDoc.id)
+                  .collection('comments')
+                  .doc(commentDoc.id)
+                  .update({'commenterProfileImage': downloadUrl.toString()});
+            });
+          });
         });
+      });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.green,
-            content: Text(
-              'Profile Picture updated successfully!',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Roboto',
-              ),
-            ),
-          ),
-        );
-      }
       setState(() {
         isLoading = false;
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+        content: Text(
+          'Profile Picture updated successfully!',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+        ),
+      ));
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          content: Text(
-            'Error uploading profile picture.',
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Roboto',
-            ),
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.red,
+        content: Text(
+          'Error uploading profile picture.',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
           ),
         ),
-      );
+      ));
     }
   }
 
@@ -214,137 +206,129 @@ class _ProfilePageState extends State<ProfilePage> {
         isLoading = true; // Show the spinner
       });
 
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowMultiple: false,
-        allowCompression: true,
-      );
-
-      if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
-            '_' +
-            Random().nextInt(10000).toString() +
-            '.jpg';
-        Reference ref = FirebaseStorage.instance.ref().child(fileName);
-        await ref.putFile(File(result.files.first.path!));
-        String downloadUrl = await ref.getDownloadURL();
-
-        // Update user's profile image in the 'users' collection
-        FirebaseFirestore.instance.collection('users').get().then(
-          (QuerySnapshot querySnapshot) {
-            querySnapshot.docs.forEach((doc) {
-              if (doc["email"] == user?.email) {
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(doc.id)
-                    .update({'profileImage': downloadUrl.toString()});
-              }
-            });
-          },
-        );
-
-        // Update user's profile image in the 'posts' collection
-        FirebaseFirestore.instance
-            .collection('posts')
-            .where('userId', isEqualTo: user?.uid)
-            .get()
-            .then((QuerySnapshot postQuerySnapshot) {
-          postQuerySnapshot.docs.forEach((postDoc) {
-            FirebaseFirestore.instance
-                .collection('posts')
-                .doc(postDoc.id)
-                .update({'profileImage': downloadUrl.toString()});
-
-            // Update commenter's profile image in the 'comments' subcollection
-            FirebaseFirestore.instance
-                .collection('posts')
-                .doc(postDoc.id)
-                .collection('comments')
-                .get()
-                .then((QuerySnapshot commentQuerySnapshot) {
-              commentQuerySnapshot.docs.forEach((commentDoc) {
-                if (commentDoc["commenterEmail"] == user?.email) {
-                  FirebaseFirestore.instance
-                      .collection('posts')
-                      .doc(postDoc.id)
-                      .collection('comments')
-                      .doc(commentDoc.id)
-                      .update({'commenterProfileUrl': downloadUrl.toString()});
-                }
-              });
-            });
-          });
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
+          '_' +
+          Random().nextInt(10000).toString() +
+          '.jpg';
+      Reference ref = FirebaseStorage.instance.ref().child(fileName);
+      await ref.putFile(File(image!.path));
+      String downloadUrl = await ref.getDownloadURL();
+      ref.getDownloadURL().then((pImage) {
+        setState(() {
+          imageurl = pImage;
         });
+      });
 
-        // Update commenter's profile image in the 'comments' subcollection
-        FirebaseFirestore.instance
-            .collection('posts')
-            .get()
-            .then((QuerySnapshot postQuerySnapshot) {
-          postQuerySnapshot.docs.forEach((postDoc) {
+      // Update user's profile image in the 'users' collection
+      FirebaseFirestore.instance
+          .collection('users')
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          if (doc["email"] == user?.email) {
             FirebaseFirestore.instance
-                .collection('posts')
-                .doc(postDoc.id)
-                .collection('comments')
-                .where('commenterEmail', isEqualTo: user?.email)
-                .get()
-                .then((QuerySnapshot commentQuerySnapshot) {
-              commentQuerySnapshot.docs.forEach((commentDoc) {
+                .collection("users")
+                .doc(doc.id)
+                .update({'profileImage': downloadUrl.toString()});
+          }
+        });
+      });
+
+      // Update user's profile image in the 'posts' collection
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('userId', isEqualTo: user?.uid)
+          .get()
+          .then((QuerySnapshot postQuerySnapshot) {
+        postQuerySnapshot.docs.forEach((postDoc) {
+          FirebaseFirestore.instance
+              .collection('posts')
+              .doc(postDoc.id)
+              .update({'profileImage': downloadUrl.toString()});
+
+          // Update commenter's profile image in the 'comments' subcollection
+          FirebaseFirestore.instance
+              .collection('posts')
+              .doc(postDoc.id)
+              .collection('comments')
+              .get()
+              .then((QuerySnapshot commentQuerySnapshot) {
+            commentQuerySnapshot.docs.forEach((commentDoc) {
+              if (commentDoc["commenterEmail"] == user?.email) {
                 FirebaseFirestore.instance
                     .collection('posts')
                     .doc(postDoc.id)
                     .collection('comments')
                     .doc(commentDoc.id)
-                    .update({'commenterProfileImage': downloadUrl.toString()});
-              });
+                    .update({'commenterProfileUrl': downloadUrl.toString()});
+              }
             });
           });
         });
+      });
 
-        setState(() {
-          isLoading = false;
+      // Update commenter's profile image in the 'comments' subcollection
+      FirebaseFirestore.instance
+          .collection('posts')
+          .get()
+          .then((QuerySnapshot postQuerySnapshot) {
+        postQuerySnapshot.docs.forEach((postDoc) {
+          FirebaseFirestore.instance
+              .collection('posts')
+              .doc(postDoc.id)
+              .collection('comments')
+              .where('commenterEmail', isEqualTo: user?.email)
+              .get()
+              .then((QuerySnapshot commentQuerySnapshot) {
+            commentQuerySnapshot.docs.forEach((commentDoc) {
+              FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postDoc.id)
+                  .collection('comments')
+                  .doc(commentDoc.id)
+                  .update({'commenterProfileImage': downloadUrl.toString()});
+            });
+          });
         });
+      });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.green,
-            content: Text(
-              'Profile Picture updated successfully!',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Roboto',
-              ),
-            ),
-          ),
-        );
-      }
       setState(() {
         isLoading = false;
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+        content: Text(
+          'Profile Picture updated successfully!',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+        ),
+      ));
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          content: Text(
-            'Error uploading profile picture.',
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Roboto',
-            ),
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.red,
+        content: Text(
+          'Error uploading profile picture.',
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Roboto',
           ),
         ),
-      );
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       body: ModalProgressHUD(
@@ -363,7 +347,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => ShowImage(
-                        imageUrl: CurrentPic,
+                        imageUrl: currentPic,
                       ),
                     ),
                   ),
@@ -371,7 +355,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     radius: 48.0,
                     backgroundImage: imageurl != " "
                         ? CachedNetworkImageProvider(imageurl)
-                        : CachedNetworkImageProvider(CurrentPic),
+                        : CachedNetworkImageProvider(currentPic),
                     child: Transform.translate(
                       offset: const Offset(30, 35),
                       child: IconButton(
@@ -463,6 +447,64 @@ class _ProfilePageState extends State<ProfilePage> {
                     fontSize: 18,
                     fontWeight: FontWeight.w300,
                   ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                margin: EdgeInsets.only(
+                    left: size.width / 18, right: size.width / 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SingleChildScrollView(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'University: ',
+                            style: const TextStyle(
+                              fontFamily: 'Roboto',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              '$university',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              style: const TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Text(
+                          'From: ',
+                          style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '$city',
+                          style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(

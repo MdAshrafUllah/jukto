@@ -250,7 +250,6 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                   child: InputDecorator(
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Date',
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -536,10 +535,4 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
       }
     }
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: ExamRoutinePage(),
-  ));
 }

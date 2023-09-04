@@ -38,7 +38,9 @@ class _signupPageState extends State<signupPage> {
       'status': 'Unavalible',
       'uid': auth.currentUser?.uid,
       'profileImage': 'https://i.stack.imgur.com/YaL3s.jpg',
-      'bio': ''
+      'bio': '',
+      'university': '',
+      'city': ''
     });
   }
 

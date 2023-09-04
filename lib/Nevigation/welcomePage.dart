@@ -7,13 +7,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jukto/Nevigation/notificationPage.dart';
+import 'package:jukto/alarm/event_calendar.dart';
 import 'package:jukto/info/About.dart';
 import 'package:jukto/info/TermsandConditions.dart';
 import 'package:jukto/Nevigation/messagePage.dart';
+import 'package:jukto/useruse/EbooksPage.dart';
 import 'package:jukto/useruse/friendList.dart';
 import 'package:jukto/useruse/sentRequestList.dart';
 import 'package:jukto/useruse/settings.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../theme/theme.dart';
 import 'homePage.dart';
@@ -55,6 +58,51 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
           setStatus("Online");
         });
       });
+    }
+    requestAndCheckPermissions();
+  }
+
+  Future<void> requestAndCheckPermissions() async {
+    // Check if camera permission is already granted
+    PermissionStatus cameraStatus = await Permission.camera.status;
+    if (!cameraStatus.isGranted) {
+      // Request camera permission
+      await Permission.camera.request();
+    }
+
+    // Check if file permission is already granted
+    PermissionStatus fileStatus = await Permission.storage.status;
+    if (!fileStatus.isGranted) {
+      // Request file permission
+      await Permission.storage.request();
+    }
+
+    // Check if notification permission is already granted
+    PermissionStatus notificationStatus = await Permission.notification.status;
+    if (!notificationStatus.isGranted) {
+      // Request notification permission
+      await Permission.notification.request();
+    }
+
+    // Check if audio permission is already granted
+    PermissionStatus audioStatus = await Permission.audio.status;
+    if (!audioStatus.isGranted) {
+      // Request notification permission
+      await Permission.audio.request();
+    }
+
+    // Check if audio permission is already granted
+    PermissionStatus photoStatus = await Permission.photos.status;
+    if (!photoStatus.isGranted) {
+      // Request notification permission
+      await Permission.photos.request();
+    }
+
+    // Check if audio permission is already granted
+    PermissionStatus videoStatus = await Permission.videos.status;
+    if (!videoStatus.isGranted) {
+      // Request notification permission
+      await Permission.videos.request();
     }
   }
 
@@ -205,6 +253,55 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 SentRequestPage(),
+                          ),
+                        ).then((_) {
+                          Navigator.pop(
+                              context); // Close the drawer when returning to the page
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.event,
+                      ),
+                      title: Text(
+                        'Events',
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                EventSchedulerPage(),
+                          ),
+                        ).then((_) {
+                          Navigator.pop(
+                              context); // Close the drawer when returning to the page
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.book_online,
+                      ),
+                      title: Text(
+                        'E-Books',
+                        style: TextStyle(
+                          color: themeProvider.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => EbooksPage(),
                           ),
                         ).then((_) {
                           Navigator.pop(

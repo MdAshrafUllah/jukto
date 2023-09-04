@@ -45,7 +45,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
         querySnapshot.docs.forEach((doc) {
           String documentId = doc.id;
           userID = documentId;
-          CurrentPic = doc['profileImage'];
+          currentPic = doc['profileImage'];
         });
       });
     }

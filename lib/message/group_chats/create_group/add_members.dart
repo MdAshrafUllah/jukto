@@ -38,7 +38,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
         querySnapshot.docs.forEach((doc) {
           String documentId = doc.id;
           userID = documentId;
-          CurrentPic = doc['profileImage'];
+          currentPic = doc['profileImage'];
         });
       });
     }
@@ -71,7 +71,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
       if (user != null) {
         membersList.add({
           "profileImage":
-              CurrentPic, // You can customize the default value if needed
+              currentPic, // You can customize the default value if needed
           "name": user.displayName ??
               'Anonymous', // You can customize the default value if needed
           "email": user.email ?? '',

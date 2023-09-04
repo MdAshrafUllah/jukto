@@ -17,6 +17,8 @@ class _SettingsPageState extends State<SettingsPage> {
   String userID = '';
   TextEditingController nameCngController = TextEditingController();
   TextEditingController bioCngController = TextEditingController();
+  TextEditingController universityController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
 
   @override
   void initState() {
@@ -37,6 +39,8 @@ class _SettingsPageState extends State<SettingsPage> {
           userID = documentId;
           nameCngController.text = doc["name"];
           bioCngController.text = doc['bio'];
+          universityController.text = doc['university'];
+          cityController.text = doc['city'];
         });
       });
     }
@@ -52,6 +56,8 @@ class _SettingsPageState extends State<SettingsPage> {
         await userRef.update({
           'name': nameCngController.text,
           'bio': bioCngController.text,
+          'university': universityController.text,
+          'city': cityController.text,
         });
 
         FirebaseFirestore.instance
@@ -67,7 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
           });
         });
 
-        // Update user's profile image in the 'posts' collection
+        // Update user's name in the 'posts' collection
         FirebaseFirestore.instance
             .collection('posts')
             .where('userId', isEqualTo: user?.uid)
@@ -79,7 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 .doc(postDoc.id)
                 .update({'name': nameCngController.text});
 
-            // Update commenter's profile image in the 'comments' subcollection
+            // Update commenter's name in the 'comments' subcollection
             FirebaseFirestore.instance
                 .collection('posts')
                 .doc(postDoc.id)
@@ -100,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
           });
         });
 
-        // Update commenter's profile image in the 'comments' subcollection
+        // Update commenter's name in the 'comments' subcollection
         FirebaseFirestore.instance
             .collection('posts')
             .get()
@@ -202,7 +208,8 @@ class _SettingsPageState extends State<SettingsPage> {
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Your Name",
-                  suffixIcon: Icon(Icons.edit)),
+                  suffixIcon:
+                      Icon(Icons.edit, color: Color.fromRGBO(58, 150, 255, 1))),
             ),
             SizedBox(
               height: 5,
@@ -226,7 +233,8 @@ class _SettingsPageState extends State<SettingsPage> {
               decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Your Bio",
-                  suffixIcon: Icon(Icons.edit)),
+                  suffixIcon:
+                      Icon(Icons.edit, color: Color.fromRGBO(58, 150, 255, 1))),
             ),
             SizedBox(
               height: 5,
@@ -247,6 +255,58 @@ class _SettingsPageState extends State<SettingsPage> {
                   hintText: user?.email,
                   border: OutlineInputBorder(),
                 )),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              "Your University",
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Roboto',
+              ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            TextField(
+              style: TextStyle(
+                  color:
+                      themeProvider.isDarkMode ? Colors.white : Colors.black),
+              maxLength: 100,
+              controller: universityController,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Your University Name",
+                  suffixIcon:
+                      Icon(Icons.edit, color: Color.fromRGBO(58, 150, 255, 1))),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              "Your City",
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Roboto',
+              ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            TextField(
+              style: TextStyle(
+                  color:
+                      themeProvider.isDarkMode ? Colors.white : Colors.black),
+              maxLength: 50,
+              controller: cityController,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Your City",
+                  suffixIcon: Icon(
+                    Icons.edit,
+                    color: Color.fromRGBO(58, 150, 255, 1),
+                  )),
+            ),
             SizedBox(
               height: 15,
             ),
