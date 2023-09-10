@@ -104,7 +104,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               'Confirm Deletion',
               style: TextStyle(color: Colors.redAccent),
             ),
@@ -117,7 +117,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
                 onPressed: () {
                   Navigator.of(context).pop(false); // Cancel deletion
                 },
@@ -126,7 +126,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
                 ),
-                child: Text('Delete'),
+                child: const Text('Delete'),
                 onPressed: () {
                   Navigator.of(context).pop(true); // Confirm deletion
                 },
@@ -204,7 +204,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Book Details',
           style: TextStyle(
             color: Colors.white,
@@ -214,7 +214,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: ModalProgressHUD(
         inAsyncCall: _isDeleting, // Show loading indicator if true
@@ -228,27 +228,27 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 width: size.width,
                 height: size.height / 2,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 widget.title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Roboto',
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   widget.category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontFamily: 'Roboto',
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               InkWell(
                 onTap: () => startDownload(),
                 child: Container(
@@ -257,7 +257,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(15)),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       'Download',
                       style: TextStyle(
@@ -270,7 +270,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               if (widget.email == email)
                 InkWell(
                   onTap: () => deleteBook(),
@@ -281,7 +281,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       color: Colors.redAccent,
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         'Delete',
                         style: TextStyle(
