@@ -111,7 +111,24 @@ class _EditRememberPageState extends State<EditRememberPage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _updateRoutine,
+                onPressed: () {
+                  if (_time != null &&
+                      _subject.isNotEmpty &&
+                      _days.isNotEmpty) {
+                    _updateRoutine();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.redAccent,
+                        content: Text(
+                          'All Fields Are Required to Update Reminder',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Roboto',
+                          ),
+                        )));
+                  }
+                },
                 child: Text('Update'),
               ),
             ],

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
+import 'userProfilePage.dart';
+
 class SentRequestPage extends StatefulWidget {
   const SentRequestPage({Key? key});
 
@@ -113,6 +115,19 @@ class _SentRequestPageState extends State<SentRequestPage> {
                       return Card(
                         margin: EdgeInsets.only(left: 10, right: 10, top: 10),
                         child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UserProfilePage(
+                                      profileImage: friend['profileImage'],
+                                      name: friend['name'],
+                                      email: friend['email'],
+                                      bio: friend['bio'],
+                                      university: friend['university'],
+                                      city: friend['city'])),
+                            );
+                          },
                           title: Text(
                             friend['name'],
                             maxLines: 1,

@@ -377,9 +377,9 @@ class _ExamRoutinePageState extends State<ExamRoutinePage> {
                       }
 
                       _saveExamRoutine();
+                      Navigator.of(context).pop();
                     }
                   });
-                  Navigator.of(context).pop();
                 },
               ),
             ],

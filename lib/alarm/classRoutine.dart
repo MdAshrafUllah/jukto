@@ -348,10 +348,10 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                         }
 
                         _saveClassRoutine();
+                        Navigator.of(context).pop();
                       }
                     }
                   });
-                  Navigator.of(context).pop();
                 },
               ),
             ],

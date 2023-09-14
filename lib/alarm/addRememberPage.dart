@@ -97,7 +97,24 @@ class _AddRememberPageState extends State<AddRememberPage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _submitClassRoutine,
+                onPressed: () {
+                  if (_selectedTime != null &&
+                      _subject.isNotEmpty &&
+                      _selectedDays.isNotEmpty) {
+                    _submitAddReminder();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: Colors.redAccent,
+                        content: Text(
+                          'All Fields Are Required to set Reminder',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Roboto',
+                          ),
+                        )));
+                  }
+                },
                 child: Text('Submit'),
               ),
             ],
@@ -107,18 +124,18 @@ class _AddRememberPageState extends State<AddRememberPage> {
     );
   }
 
-  void _submitClassRoutine() {
-    final newRoutine = ClassRoutine(
+  void _submitAddReminder() {
+    final newRoutine = AddReminder(
         days: _selectedDays.toList(), time: _selectedTime, subject: _subject);
 
     Navigator.pop(context, newRoutine);
   }
 }
 
-class ClassRoutine {
+class AddReminder {
   final List<String> days;
   final TimeOfDay? time;
   final String subject;
 
-  ClassRoutine({required this.days, required this.time, required this.subject});
+  AddReminder({required this.days, required this.time, required this.subject});
 }

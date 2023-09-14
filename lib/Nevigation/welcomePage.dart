@@ -85,24 +85,10 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
     }
 
     // Check if audio permission is already granted
-    PermissionStatus audioStatus = await Permission.audio.status;
-    if (!audioStatus.isGranted) {
-      // Request notification permission
-      await Permission.audio.request();
-    }
-
-    // Check if audio permission is already granted
     PermissionStatus photoStatus = await Permission.photos.status;
     if (!photoStatus.isGranted) {
       // Request notification permission
       await Permission.photos.request();
-    }
-
-    // Check if audio permission is already granted
-    PermissionStatus videoStatus = await Permission.videos.status;
-    if (!videoStatus.isGranted) {
-      // Request notification permission
-      await Permission.videos.request();
     }
   }
 

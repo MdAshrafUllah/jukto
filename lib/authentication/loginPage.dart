@@ -301,6 +301,8 @@ class _LoginPageState extends State<LoginPage> {
                                       const welcomePage()),
                             );
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                duration:
+                                    Duration(seconds: 1, milliseconds: 500),
                                 behavior: SnackBarBehavior.floating,
                                 backgroundColor: Colors.green,
                                 content: Text(
