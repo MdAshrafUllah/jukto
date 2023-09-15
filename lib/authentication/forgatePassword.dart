@@ -93,6 +93,7 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
       inAsyncCall: showSpinner,
       child: Scaffold(
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
               height: 15,
@@ -194,7 +195,19 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
                     ),
                   ),
                 ),
-                onTap: passwordReset)
+                onTap: passwordReset),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontFamily: 'Roboto',
+                    color: Colors.redAccent,
+                    fontSize: 18,
+                  ),
+                ))
           ],
         ),
       ),

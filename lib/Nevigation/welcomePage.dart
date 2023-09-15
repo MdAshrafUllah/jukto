@@ -148,7 +148,6 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
     return WillPopScope(
       onWillPop: () async => _onBackbuttonpressed(context),
       child: Scaffold(
-        /* app bar here */
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text(
