@@ -11,7 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jukto/Nevigation/notification_page.dart';
 import 'package:jukto/alarm/event_calendar.dart';
 import 'package:jukto/info/about.dart';
-import 'package:jukto/info/termsand_conditions.dart';
+import 'package:jukto/info/terms_and_conditions.dart';
 import 'package:jukto/Nevigation/message_page.dart';
 import 'package:jukto/useruse/ebooks_page.dart';
 import 'package:jukto/useruse/friend_list.dart';
