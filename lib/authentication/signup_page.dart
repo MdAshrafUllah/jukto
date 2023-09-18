@@ -1,23 +1,24 @@
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jukto/Nevigation/welcomePage.dart';
-import 'package:jukto/info/TermsandConditions.dart';
+import 'package:jukto/Nevigation/welcome_page.dart';
+import 'package:jukto/info/termsand_conditions.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
-import 'loginPage.dart';
 
-class signupPage extends StatefulWidget {
-  const signupPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<signupPage> createState() => _signupPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _signupPageState extends State<signupPage> {
+class _SignupPageState extends State<SignupPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -52,15 +53,15 @@ class _signupPageState extends State<signupPage> {
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: SingleChildScrollView(
-          child: Container(
+          child: SizedBox(
             height: size.height,
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
-                  Center(
+                  const Center(
                     child: Text(
                       "Jukto",
                       style: TextStyle(
@@ -71,10 +72,10 @@ class _signupPageState extends State<signupPage> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  Center(
+                  const Center(
                     child: Text(
                       "Have a Nice Journey",
                       style: TextStyle(
@@ -85,8 +86,10 @@ class _signupPageState extends State<signupPage> {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Text(
+                    margin: const EdgeInsets.only(top: 20),
+                    alignment: Alignment.topLeft,
+                    padding: const EdgeInsets.only(left: 30),
+                    child: const Text(
                       'Create your Account',
                       style: TextStyle(
                         fontFamily: 'Roboto',
@@ -94,21 +97,19 @@ class _signupPageState extends State<signupPage> {
                         fontSize: 18,
                       ),
                     ),
-                    alignment: Alignment.topLeft,
-                    padding: EdgeInsets.only(left: 30),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    padding: EdgeInsets.only(left: 20, right: 20),
+                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
                     height: 70,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         width: 2,
-                        color: Color.fromRGBO(162, 158, 158, 1),
+                        color: const Color.fromRGBO(162, 158, 158, 1),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -126,8 +127,8 @@ class _signupPageState extends State<signupPage> {
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp('[A-Za-z ]'))
                       ],
-                      cursorColor: Color.fromRGBO(58, 150, 255, 1),
-                      decoration: InputDecoration(
+                      cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+                      decoration: const InputDecoration(
                         hintText: 'Name',
                         hintStyle: TextStyle(
                           fontFamily: 'Roboto',
@@ -139,18 +140,18 @@ class _signupPageState extends State<signupPage> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    padding: EdgeInsets.only(left: 20, right: 20),
+                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
                     height: 70,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         width: 2,
-                        color: Color.fromRGBO(162, 158, 158, 1),
+                        color: const Color.fromRGBO(162, 158, 158, 1),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -165,8 +166,8 @@ class _signupPageState extends State<signupPage> {
                         fontWeight: FontWeight.bold,
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      cursorColor: Color.fromRGBO(58, 150, 255, 1),
-                      decoration: InputDecoration(
+                      cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+                      decoration: const InputDecoration(
                         hintText: 'Email',
                         hintStyle: TextStyle(
                           fontFamily: 'Roboto',
@@ -186,18 +187,18 @@ class _signupPageState extends State<signupPage> {
                       },
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    padding: EdgeInsets.only(left: 20, right: 20),
+                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
                     height: 70,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         width: 2,
-                        color: Color.fromRGBO(162, 158, 158, 1),
+                        color: const Color.fromRGBO(162, 158, 158, 1),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -212,11 +213,11 @@ class _signupPageState extends State<signupPage> {
                         fontWeight: FontWeight.bold,
                       ),
                       keyboardType: TextInputType.visiblePassword,
-                      cursorColor: Color.fromRGBO(58, 150, 255, 1),
+                      cursorColor: const Color.fromRGBO(58, 150, 255, 1),
                       obscureText: _passwordVisible,
                       decoration: InputDecoration(
                         hintText: 'Password',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           fontFamily: 'Roboto',
                           color: Color.fromRGBO(162, 158, 158, 1),
                           fontSize: 18,
@@ -238,18 +239,18 @@ class _signupPageState extends State<signupPage> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 20, right: 20),
-                    padding: EdgeInsets.only(left: 20, right: 20),
+                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
                     height: 70,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         width: 2,
-                        color: Color.fromRGBO(162, 158, 158, 1),
+                        color: const Color.fromRGBO(162, 158, 158, 1),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -264,11 +265,11 @@ class _signupPageState extends State<signupPage> {
                         fontWeight: FontWeight.bold,
                       ),
                       keyboardType: TextInputType.visiblePassword,
-                      cursorColor: Color.fromRGBO(58, 150, 255, 1),
+                      cursorColor: const Color.fromRGBO(58, 150, 255, 1),
                       obscureText: _passwordVisible2,
                       decoration: InputDecoration(
                         hintText: 'Conform Password',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           fontFamily: 'Roboto',
                           color: Color.fromRGBO(162, 158, 158, 1),
                           fontSize: 18,
@@ -291,22 +292,20 @@ class _signupPageState extends State<signupPage> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.only(left: 15, top: 10),
+                    padding: const EdgeInsets.only(left: 15, top: 10),
                     alignment: Alignment.topLeft,
                     child: Row(
                       children: [
+                        Checkbox(
+                            activeColor: const Color.fromRGBO(58, 150, 255, 1),
+                            value: isChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                isChecked = value!;
+                              });
+                            }),
                         Container(
-                          child: Checkbox(
-                              activeColor: Color.fromRGBO(58, 150, 255, 1),
-                              value: isChecked,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  isChecked = value!;
-                                });
-                              }),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(top: 10, bottom: 1),
+                          padding: const EdgeInsets.only(top: 10, bottom: 1),
                           width: size.width / 1.29,
                           child: RichText(
                             text: TextSpan(children: <TextSpan>[
@@ -322,7 +321,7 @@ class _signupPageState extends State<signupPage> {
                               ),
                               TextSpan(
                                 text: " terms of use",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Roboto',
                                   color: Color.fromRGBO(58, 150, 255, 1),
                                   fontSize: 16,
@@ -334,7 +333,7 @@ class _signupPageState extends State<signupPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            TermsandConditions(),
+                                            const TermsandConditions(),
                                       ),
                                     );
                                   },
@@ -350,7 +349,7 @@ class _signupPageState extends State<signupPage> {
                               ),
                               TextSpan(
                                 text: " privacy policy",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Roboto',
                                   color: Color.fromRGBO(58, 150, 255, 1),
                                   fontSize: 16,
@@ -362,7 +361,7 @@ class _signupPageState extends State<signupPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            TermsandConditions(),
+                                            const TermsandConditions(),
                                       ),
                                     );
                                   },
@@ -373,20 +372,20 @@ class _signupPageState extends State<signupPage> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   InkWell(
                     child: Container(
-                      margin: EdgeInsets.only(left: 20, right: 20),
-                      padding: EdgeInsets.only(left: 20, right: 20),
+                      margin: const EdgeInsets.only(left: 20, right: 20),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
                       height: 60,
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(58, 150, 255, 1),
+                        color: const Color.fromRGBO(58, 150, 255, 1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       alignment: Alignment.center,
-                      child: Text(
+                      child: const Text(
                         'Sign up',
                         style: TextStyle(
                           fontFamily: 'Roboto',
@@ -398,16 +397,17 @@ class _signupPageState extends State<signupPage> {
                     ),
                     onTap: () async {
                       if (isChecked == false) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.redAccent,
-                            content: Text(
-                              'Agree With Our terms and conditions',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Roboto',
-                              ),
-                            )));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'Agree With Our terms and conditions',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
                       } else if (_nameController.text != "" &&
                           _emailController.text != "" &&
                           _passwordController.text != "" &&
@@ -437,14 +437,15 @@ class _signupPageState extends State<signupPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (Context) => welcomePage()));
+                                      builder: (Context) =>
+                                          const WelcomePage()));
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                       behavior: SnackBarBehavior.floating,
                                       backgroundColor: Colors.green,
                                       content: Text(
                                         '${user!.displayName} Welcome To Jukto',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontFamily: 'Roboto',
                                         ),
@@ -459,7 +460,7 @@ class _signupPageState extends State<signupPage> {
                                 showSpinner = false;
                               });
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
+                                  .showSnackBar(const SnackBar(
                                       behavior: SnackBarBehavior.floating,
                                       backgroundColor: Colors.redAccent,
                                       content: Text(
@@ -474,7 +475,7 @@ class _signupPageState extends State<signupPage> {
                                 showSpinner = false;
                               });
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
+                                  .showSnackBar(const SnackBar(
                                       behavior: SnackBarBehavior.floating,
                                       backgroundColor: Colors.redAccent,
                                       content: Text(
@@ -485,70 +486,70 @@ class _signupPageState extends State<signupPage> {
                                         ),
                                       )));
                             }
-                          } catch (e) {}
+                          }
                         } else {
                           setState(() {
                             showSpinner = false;
                           });
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.redAccent,
-                              content: Text(
-                                'password does not match each other',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Roboto',
-                                ),
-                              )));
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.redAccent,
+                                  content: Text(
+                                    'password does not match each other',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Roboto',
+                                    ),
+                                  )));
                         }
                       } else {
                         setState(() {
                           showSpinner = false;
                         });
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.redAccent,
-                            content: Text(
-                              'All field required',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Roboto',
-                              ),
-                            )));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'All field required',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
                       }
                     },
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
-                  Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            "Already have Account?",
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text(
+                          "Already have Account?",
+                          style: TextStyle(
+                            fontFamily: 'Roboto',
+                            color: Color.fromRGBO(162, 158, 158, 1),
+                            fontSize: 18,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            ' Sign in',
                             style: TextStyle(
-                              fontFamily: 'Roboto',
-                              color: Color.fromRGBO(162, 158, 158, 1),
-                              fontSize: 18,
-                            ),
+                                fontFamily: 'Roboto',
+                                color: Color.fromRGBO(58, 150, 255, 1),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              ' Sign in',
-                              style: TextStyle(
-                                  fontFamily: 'Roboto',
-                                  color: Color.fromRGBO(58, 150, 255, 1),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ]),
-                  ),
-                  SizedBox(
+                        ),
+                      ]),
+                  const SizedBox(
                     height: 25,
                   ),
                 ]),

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,10 +13,10 @@ class TotalPayments extends StatefulWidget {
   const TotalPayments({Key? key}) : super(key: key);
 
   @override
-  _TotalPaymentsState createState() => _TotalPaymentsState();
+  TotalPaymentsState createState() => TotalPaymentsState();
 }
 
-class _TotalPaymentsState extends State<TotalPayments> {
+class TotalPaymentsState extends State<TotalPayments> {
   FirebaseAuth auth = FirebaseAuth.instance;
   User? user;
   String userID = '';
@@ -75,7 +77,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
       _prefs ??= await SharedPreferences.getInstance();
       _prefs!.setStringList(_cacheKey, paymentListToJson(payments));
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.green,
           content: Text(
@@ -86,7 +88,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
             ),
           )));
     }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
           content: Text(
@@ -105,7 +107,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
     final result = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddPaymentDialog();
+        return const AddPaymentDialog();
       },
     );
 
@@ -134,7 +136,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
         }
       ])
     }).then((value) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
           content: Text(
@@ -145,7 +147,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
             ),
           )));
     }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.red,
           content: Text(
@@ -171,7 +173,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Total Payments',
           style: TextStyle(
             color: Colors.white,
@@ -180,7 +182,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Column(
         children: [
@@ -190,7 +192,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
               itemBuilder: (context, index) {
                 Payment payment = payments[index];
                 return Card(
-                  margin: EdgeInsets.only(left: 20, right: 20, top: 20),
+                  margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
                   color: themeProvider.isDarkMode
                       ? Colors.black12
                       : Colors.blueGrey[50],
@@ -210,7 +212,7 @@ class _TotalPaymentsState extends State<TotalPayments> {
                               : Colors.black),
                     ),
                     trailing: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.red,
                       ),
@@ -223,20 +225,20 @@ class _TotalPaymentsState extends State<TotalPayments> {
               },
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
             'Total Amount: ${calculateTotalAmount().toStringAsFixed(2)} TK',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
         onPressed: () {
           addPaymentDialog(context);
         },
@@ -283,11 +285,13 @@ class Payment {
 }
 
 class AddPaymentDialog extends StatefulWidget {
+  const AddPaymentDialog({super.key});
+
   @override
-  _AddPaymentDialogState createState() => _AddPaymentDialogState();
+  AddPaymentDialogState createState() => AddPaymentDialogState();
 }
 
-class _AddPaymentDialogState extends State<AddPaymentDialog> {
+class AddPaymentDialogState extends State<AddPaymentDialog> {
   double amount = 0.0;
   String date = '';
 
@@ -305,7 +309,7 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
             style: TextStyle(
                 color: themeProvider.isDarkMode ? Colors.white : Colors.black),
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Amount',
             ),
             onChanged: (value) {
@@ -328,7 +332,7 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
               });
             },
             child: InputDecorator(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Date',
               ),
               child: Row(
@@ -339,7 +343,7 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
                           color: themeProvider.isDarkMode
                               ? Colors.white
                               : Colors.black)),
-                  Icon(Icons.calendar_today),
+                  const Icon(Icons.calendar_today),
                 ],
               ),
             ),
@@ -351,7 +355,7 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text(
+          child: const Text(
             'Cancel',
             style: TextStyle(color: Colors.redAccent),
           ),
@@ -362,7 +366,7 @@ class _AddPaymentDialogState extends State<AddPaymentDialog> {
               Navigator.pop(context, Payment(date: date, amount: amount));
             }
           },
-          child: Text('Add'),
+          child: const Text('Add'),
         ),
       ],
     );

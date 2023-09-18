@@ -48,12 +48,12 @@ class _NotificationPageState extends State<NotificationPage> {
           .where('email', isEqualTo: _user?.email)
           .get();
 
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         final documentId = doc.id;
         setState(() {
           _userID = documentId;
         });
-      });
+      }
     }
   }
 
@@ -68,9 +68,7 @@ class _NotificationPageState extends State<NotificationPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center();
           } else {
             var userData =
                 snapshot.data?.docs.first.data() as Map<String, dynamic>;
@@ -97,9 +95,7 @@ class _NotificationPageState extends State<NotificationPage> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                return const Center();
                               } else {
                                 var friendData = snapshot.data?.docs.first
                                     .data() as Map<String, dynamic>;
@@ -153,7 +149,8 @@ class _NotificationPageState extends State<NotificationPage> {
                                                 .get()
                                                 .then((QuerySnapshot
                                                     querySnapshot) {
-                                              querySnapshot.docs.forEach((doc) {
+                                              for (var doc
+                                                  in querySnapshot.docs) {
                                                 FirebaseFirestore.instance
                                                     .collection('users')
                                                     .doc(doc.id)
@@ -175,12 +172,12 @@ class _NotificationPageState extends State<NotificationPage> {
                                                     }
                                                   ])
                                                 });
-                                              });
+                                              }
                                             });
                                           },
-                                          child: Text('Accept'),
+                                          child: const Text('Accept'),
                                         ),
-                                        SizedBox(width: 8),
+                                        const SizedBox(width: 8),
                                         ElevatedButton(
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: Colors.red,
@@ -207,7 +204,8 @@ class _NotificationPageState extends State<NotificationPage> {
                                                 .get()
                                                 .then((QuerySnapshot
                                                     querySnapshot) {
-                                              querySnapshot.docs.forEach((doc) {
+                                              for (var doc
+                                                  in querySnapshot.docs) {
                                                 FirebaseFirestore.instance
                                                     .collection('users')
                                                     .doc(doc.id)
@@ -221,10 +219,10 @@ class _NotificationPageState extends State<NotificationPage> {
                                                     }
                                                   ])
                                                 });
-                                              });
+                                              }
                                             });
                                           },
-                                          child: Text('Cancel'),
+                                          child: const Text('Cancel'),
                                         ),
                                       ],
                                     ),
@@ -250,15 +248,11 @@ class _NotificationPageState extends State<NotificationPage> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
+                        return const Center();
                       }
 
                       if (snapshot.hasError) {
-                        return Center(
-                          child: Text("Error: ${snapshot.error}"),
-                        );
+                        return Container();
                       }
 
                       final querySnapshot = snapshot.data;
@@ -297,13 +291,11 @@ class _NotificationPageState extends State<NotificationPage> {
       future: fetchLikedUsersData(likesList, _user?.email ?? ''),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center();
         }
 
         if (snapshot.hasError || snapshot.data == null) {
-          return Text("Error: Unable to fetch user data.");
+          return Container();
         }
 
         final likedUsersData = snapshot.data!;
@@ -312,13 +304,11 @@ class _NotificationPageState extends State<NotificationPage> {
           future: fetchCommentersData(postId, _user?.email ?? ''),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center();
             }
 
             if (snapshot.hasError || snapshot.data == null) {
-              return Text("Error: Unable to fetch comment data.");
+              return Container();
             }
 
             final commentersData = snapshot.data!;
@@ -335,7 +325,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     children: [
                       ListView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: likedUsersData.length,
                         itemBuilder: (context, index) {
                           final user = likedUsersData[index];
@@ -367,7 +357,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     children: [
                       ListView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: commentersData.length,
                         itemBuilder: (context, index) {
                           final commenterData = commentersData[index];
@@ -404,24 +394,22 @@ Future<List<UserModel>> fetchLikedUsersData(
     List<dynamic> likesList, String currentUserEmail) async {
   final usersData = <UserModel>[];
 
-  try {
-    final userSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', whereIn: likesList)
-        .get();
+  final userSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .where('email', whereIn: likesList)
+      .get();
 
-    userSnapshot.docs.forEach((userDoc) {
-      final userData = userDoc.data();
-      final userName = userData['name'] as String;
-      final profileImageUrl = userData['profileImage'] as String;
-      final userEmail = userData['email'] as String;
+  for (var userDoc in userSnapshot.docs) {
+    final userData = userDoc.data();
+    final userName = userData['name'] as String;
+    final profileImageUrl = userData['profileImage'] as String;
+    final userEmail = userData['email'] as String;
 
-      if (userEmail != currentUserEmail) {
-        usersData
-            .add(UserModel(name: userName, profileImageUrl: profileImageUrl));
-      }
-    });
-  } catch (error) {}
+    if (userEmail != currentUserEmail) {
+      usersData
+          .add(UserModel(name: userName, profileImageUrl: profileImageUrl));
+    }
+  }
 
   return usersData;
 }
@@ -430,27 +418,25 @@ Future<List<CommenterModel>> fetchCommentersData(
     String postId, String currentUserEmail) async {
   final commentersData = <CommenterModel>[];
 
-  try {
-    final commentsSnapshot = await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(postId)
-        .collection('comments')
-        .get();
+  final commentsSnapshot = await FirebaseFirestore.instance
+      .collection('posts')
+      .doc(postId)
+      .collection('comments')
+      .get();
 
-    commentersData.addAll(commentsSnapshot.docs.map((commentDoc) {
-      final commentData = commentDoc.data();
-      final commenterName = commentData['commenterName'] as String;
-      final commenterProfileImageUrl =
-          commentData['commenterProfileImage'] as String;
-      if (commentData['commenterEmail'] != currentUserEmail) {
-        return CommenterModel(
-          name: commenterName,
-          profileImageUrl: commenterProfileImageUrl,
-        );
-      }
-      return null;
-    }).whereType<CommenterModel>());
-  } catch (error) {}
+  commentersData.addAll(commentsSnapshot.docs.map((commentDoc) {
+    final commentData = commentDoc.data();
+    final commenterName = commentData['commenterName'] as String;
+    final commenterProfileImageUrl =
+        commentData['commenterProfileImage'] as String;
+    if (commentData['commenterEmail'] != currentUserEmail) {
+      return CommenterModel(
+        name: commenterName,
+        profileImageUrl: commenterProfileImageUrl,
+      );
+    }
+    return null;
+  }).whereType<CommenterModel>());
 
   return commentersData;
 }

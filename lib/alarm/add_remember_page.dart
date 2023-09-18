@@ -3,11 +3,13 @@ import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
 class AddRememberPage extends StatefulWidget {
+  const AddRememberPage({super.key});
+
   @override
-  _AddRememberPageState createState() => _AddRememberPageState();
+  AddRememberPageState createState() => AddRememberPageState();
 }
 
-class _AddRememberPageState extends State<AddRememberPage> {
+class AddRememberPageState extends State<AddRememberPage> {
   final List<String> _daysOfWeek = [
     "Saturday",
     "Sunday",
@@ -26,7 +28,7 @@ class _AddRememberPageState extends State<AddRememberPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Add Reminder',
           style: TextStyle(
             color: Colors.white,
@@ -35,7 +37,7 @@ class _AddRememberPageState extends State<AddRememberPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -49,7 +51,7 @@ class _AddRememberPageState extends State<AddRememberPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
-                        activeColor: Color.fromRGBO(58, 150, 255, 1),
+                        activeColor: const Color.fromRGBO(58, 150, 255, 1),
                         value: _selectedDays.contains(day),
                         onChanged: (checked) {
                           setState(() {
@@ -70,7 +72,7 @@ class _AddRememberPageState extends State<AddRememberPage> {
                 style: TextStyle(
                     color:
                         themeProvider.isDarkMode ? Colors.white : Colors.black),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Subject',
                   border: OutlineInputBorder(),
                 ),
@@ -95,7 +97,7 @@ class _AddRememberPageState extends State<AddRememberPage> {
                     ? 'Time: ${_selectedTime!.format(context)}'
                     : 'Select Time'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_selectedTime != null &&
@@ -115,7 +117,7 @@ class _AddRememberPageState extends State<AddRememberPage> {
                         )));
                   }
                 },
-                child: Text('Submit'),
+                child: const Text('Submit'),
               ),
             ],
           ),

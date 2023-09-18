@@ -1,5 +1,13 @@
 {
   "cmake.sourceDirectory": "D:/App devlopment/MyApp/jukto/linux",
-  "cSpell.words": ["CGPA"],
+  "cSpell.words": [
+    "CGPA",
+    "firestore",
+    "jukto",
+    "membername",
+    "memberpic",
+    "RGBO",
+    "sendby"
+  ],
   "java.configuration.updateBuildConfiguration": "interactive"
 }

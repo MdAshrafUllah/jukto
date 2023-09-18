@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, no_leading_underscores_for_local_identifiers, unused_element
+
 import 'dart:io';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
@@ -6,28 +8,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:jukto/Nevigation/notificationPage.dart';
+import 'package:jukto/Nevigation/notification_page.dart';
 import 'package:jukto/alarm/event_calendar.dart';
-import 'package:jukto/info/About.dart';
-import 'package:jukto/info/TermsandConditions.dart';
-import 'package:jukto/Nevigation/messagePage.dart';
-import 'package:jukto/useruse/EbooksPage.dart';
-import 'package:jukto/useruse/friendList.dart';
-import 'package:jukto/useruse/sentRequestList.dart';
+import 'package:jukto/info/about.dart';
+import 'package:jukto/info/termsand_conditions.dart';
+import 'package:jukto/Nevigation/message_page.dart';
+import 'package:jukto/useruse/ebooks_page.dart';
+import 'package:jukto/useruse/friend_list.dart';
+import 'package:jukto/useruse/sent_request_list.dart';
 import 'package:jukto/useruse/settings.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../theme/theme.dart';
-import 'homePage.dart';
-import 'profilePage.dart';
-import 'searchPage.dart';
+import 'home_page.dart';
+import 'profile_page.dart';
+import 'search_page.dart';
 
-class welcomePage extends StatefulWidget {
-  const welcomePage({super.key});
+class WelcomePage extends StatefulWidget {
+  const WelcomePage({super.key});
 
   @override
-  State<welcomePage> createState() => _welcomePageState();
+  State<WelcomePage> createState() => _WelcomePageState();
 
   static void setStatus(String s) {}
 }
@@ -35,7 +38,7 @@ class welcomePage extends StatefulWidget {
 IconData _iconLight = Icons.light_mode;
 IconData _iconDark = Icons.dark_mode;
 
-class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
+class _WelcomePageState extends State<WelcomePage> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   FirebaseAuth auth = FirebaseAuth.instance;
   User? user;
@@ -52,11 +55,11 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
           .where('email', isEqualTo: user?.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
           userID = documentId;
           setStatus("Online");
-        });
+        }
       });
     }
     requestAndCheckPermissions();
@@ -84,18 +87,12 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
       await Permission.notification.request();
     }
 
-    // Check if audio permission is already granted
+    // Check if photo permission is already granted
     PermissionStatus photoStatus = await Permission.photos.status;
     if (!photoStatus.isGranted) {
       // Request notification permission
       await Permission.photos.request();
     }
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 
   void setStatus(String status) async {
@@ -135,11 +132,11 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
   ];
 
   final List<Widget> _pages = [
-    HomePage(),
-    MessagePage(),
-    SearchPerson(),
-    NotificationPage(),
-    ProfilePage(),
+    const HomePage(),
+    const MessagePage(),
+    const SearchPerson(),
+    const NotificationPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -161,12 +158,12 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
           ),
           centerTitle: true,
           backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-          iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+          iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
           actions: <Widget>[
             Builder(
               builder: (BuildContext context) {
                 return IconButton(
-                  icon: Icon(Icons.menu),
+                  icon: const Icon(Icons.menu),
                   color: Colors.white,
                   onPressed: () {
                     Scaffold.of(context).openEndDrawer();
@@ -194,10 +191,10 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                               : Colors.black,
                         ),
                       ),
-                      trailing: ChangeThemeButtonWidget(),
+                      trailing: const ChangeThemeButtonWidget(),
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.people,
                       ),
                       title: Text(
@@ -212,7 +209,8 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => FriendList(),
+                            builder: (BuildContext context) =>
+                                const FriendList(),
                           ),
                         ).then((_) {
                           Navigator.pop(
@@ -221,7 +219,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.arrow_upward_rounded,
                       ),
                       title: Text(
@@ -237,7 +235,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                SentRequestPage(),
+                                const SentRequestPage(),
                           ),
                         ).then((_) {
                           Navigator.pop(
@@ -246,7 +244,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.event,
                       ),
                       title: Text(
@@ -262,7 +260,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                EventSchedulerPage(),
+                                const EventSchedulerPage(),
                           ),
                         ).then((_) {
                           Navigator.pop(
@@ -271,7 +269,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.book_online,
                       ),
                       title: Text(
@@ -286,7 +284,8 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => EbooksPage(),
+                            builder: (BuildContext context) =>
+                                const EbooksPage(),
                           ),
                         ).then((_) {
                           Navigator.pop(
@@ -295,7 +294,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.settings,
                       ),
                       title: Text(
@@ -310,7 +309,8 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => SettingsPage(),
+                            builder: (BuildContext context) =>
+                                const SettingsPage(),
                           ),
                         ).then((_) {
                           Navigator.pop(
@@ -319,7 +319,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.newspaper,
                       ),
                       title: Text(
@@ -335,7 +335,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                TermsandConditions(),
+                                const TermsandConditions(),
                           ),
                         ).then((_) {
                           Navigator.pop(
@@ -344,7 +344,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                       },
                     ),
                     ListTile(
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.info,
                       ),
                       title: Text(
@@ -359,7 +359,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => AboutApp(),
+                            builder: (BuildContext context) => const AboutApp(),
                           ),
                         ).then((_) {
                           Navigator.pop(
@@ -372,7 +372,7 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
               ),
               ListTile(
                 splashColor: Colors.red,
-                leading: Icon(
+                leading: const Icon(
                   Icons.logout,
                   color: Colors.red,
                 ),
@@ -386,6 +386,15 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
                 ),
                 onTap: () async {
                   setStatus("Offline");
+                  Future<void> _deleteAppDir() async {
+                    Directory appDocDir =
+                        await getApplicationDocumentsDirectory();
+
+                    if (appDocDir.existsSync()) {
+                      appDocDir.deleteSync(recursive: true);
+                    }
+                  }
+
                   await FirebaseAuth.instance.signOut();
                   Navigator.pushNamed(context, '/');
                 },
@@ -398,22 +407,19 @@ class _welcomePageState extends State<welcomePage> with WidgetsBindingObserver {
         body: Center(
           child: _pages[_selectedIndex],
         ),
-        bottomNavigationBar: Container(
-          child: BottomBarInspiredOutside(
-            items: items,
-            backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-            color: Colors.white,
-            colorSelected: Colors.white,
-            indexSelected: _selectedIndex,
-            onTap: (int index) => setState(() {
-              _selectedIndex = index;
-            }),
-            top: -25,
-            animated: true,
-            itemStyle: ItemStyle.circle,
-            chipStyle:
-                const ChipStyle(notchSmoothness: NotchSmoothness.softEdge),
-          ),
+        bottomNavigationBar: BottomBarInspiredOutside(
+          items: items,
+          backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+          color: Colors.white,
+          colorSelected: Colors.white,
+          indexSelected: _selectedIndex,
+          onTap: (int index) => setState(() {
+            _selectedIndex = index;
+          }),
+          top: -25,
+          animated: true,
+          itemStyle: ItemStyle.circle,
+          chipStyle: const ChipStyle(notchSmoothness: NotchSmoothness.softEdge),
         ),
       ),
     );

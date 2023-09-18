@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, depend_on_referenced_packages, use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,7 +17,7 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
 String? postimg;
@@ -69,7 +71,7 @@ class Comment {
   });
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   final postController = TextEditingController();
   final commentController = TextEditingController();
   final CollectionReference postsCollection =
@@ -239,9 +241,9 @@ class _HomePageState extends State<HomePage> {
       CollectionReference commentsCollection =
           postsCollection.doc(postId).collection('comments');
       QuerySnapshot commentsSnapshot = await commentsCollection.get();
-      commentsSnapshot.docs.forEach((commentDoc) {
+      for (var commentDoc in commentsSnapshot.docs) {
         commentDoc.reference.delete();
-      });
+      }
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
@@ -403,9 +405,12 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.redAccent),
+              ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 deletePost(postId);
                 Navigator.pop(context);
@@ -438,9 +443,10 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancel'),
+              child: const Text('Cancel',
+                  style: TextStyle(color: Colors.redAccent)),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 deleteComment(post, comment);
                 Navigator.pop(context);
@@ -920,13 +926,13 @@ class FullScreenImagePage extends StatelessWidget {
       ),
       body: Center(
         child: Container(
+            color: themeProvider.isDarkMode ? Colors.white : Colors.black,
             child: CachedNetworkImage(
               imageUrl: imageUrl!,
               fit: BoxFit.contain,
               height: double.infinity,
               width: double.infinity,
-            ),
-            color: themeProvider.isDarkMode ? Colors.white : Colors.black),
+            )),
       ),
     );
   }

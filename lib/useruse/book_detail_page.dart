@@ -1,3 +1,5 @@
+// ignore_for_file: unrelated_type_equality_checks, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,13 +16,16 @@ class BookDetailPage extends StatefulWidget {
   final String category;
   final String email;
   final String fileUrl;
+  final bool license;
 
-  BookDetailPage({
+  const BookDetailPage({
+    super.key,
     required this.coverUrl,
     required this.title,
     required this.category,
     required this.email,
     required this.fileUrl,
+    required this.license,
   });
 
   @override
@@ -30,11 +35,8 @@ class BookDetailPage extends StatefulWidget {
 class _BookDetailPageState extends State<BookDetailPage> {
   FirebaseAuth auth = FirebaseAuth.instance;
   User? user;
-
   String email = '';
   bool _isDeleting = false;
-  bool _isDownloading = false;
-  String _downloadProgress = '';
 
   @override
   void initState() {
@@ -59,41 +61,27 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 
   Future<void> startDownload() async {
-    try {
-      final externalDir = await getExternalStorageDirectory();
-      final taskId = await FlutterDownloader.enqueue(
-        url: widget.fileUrl, // The URL of the file to download
-        savedDir: externalDir!.path,
-        showNotification: true, // Show download progress notification
-        openFileFromNotification: true,
-      );
+    final externalDir = await getExternalStorageDirectory();
+    final taskId = await FlutterDownloader.enqueue(
+      url: widget.fileUrl, // The URL of the file to download
+      savedDir: externalDir!.path,
+      showNotification: true, // Show download progress notification
+      openFileFromNotification: true,
+    );
 
-      FlutterDownloader.registerCallback((id, status, progress) {
-        if (id == taskId) {
-          setState(() {
-            _downloadProgress = '$progress%';
-          });
+    FlutterDownloader.registerCallback((id, status, progress) {
+      if (id == taskId) {
+        setState(() {});
 
-          if (status == DownloadTaskStatus.complete) {
-            setState(() {
-              _isDownloading = false;
-              _downloadProgress = 'Downloaded';
-            });
-          } else if (status == DownloadTaskStatus.failed) {
-            setState(() {
-              _isDownloading = false;
-              _downloadProgress = 'Failed';
-            });
-          }
+        if (status == DownloadTaskStatus.complete) {
+          setState(() {});
+        } else if (status == DownloadTaskStatus.failed) {
+          setState(() {});
         }
-      });
+      }
+    });
 
-      setState(() {
-        _isDownloading = true;
-      });
-    } catch (error) {
-      print('Error starting download: $error');
-    }
+    setState(() {});
   }
 
   // Function to delete the book
@@ -148,8 +136,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
             .where('title', isEqualTo: widget.title)
             .where('email', isEqualTo: widget.email)
             .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) async {
+            .then((querySnapshot) async {
+          for (var doc in querySnapshot.docs) {
             // Delete book details from Firestore
             await FirebaseFirestore.instance
                 .collection('books')
@@ -159,7 +147,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
             // Delete book cover and file from Firebase Storage
             await FirebaseStorage.instance.refFromURL(widget.coverUrl).delete();
             await FirebaseStorage.instance.refFromURL(widget.fileUrl).delete();
-          });
+          }
         });
 
         // Inform the user about successful deletion
@@ -294,6 +282,28 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     ),
                   ),
                 ),
+              if (widget.license == true)
+                Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  width: size.width,
+                  child: const Text(
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    'This Book Uploader has the License. But only for reading and sharing but book Selling Is Prohibited.',
+                  ),
+                )
+              else
+                Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  width: size.width,
+                  child: const Text(
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    'This book uploader has no license. This book will be removed at any time if copyright claims are received. Reading and sharing is OK, but book selling is prohibited.',
+                  ),
+                )
             ],
           ),
         ),

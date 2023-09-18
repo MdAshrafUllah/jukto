@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -8,7 +10,7 @@ import 'package:timezone/data/latest_10y.dart' as tz;
 
 import 'package:jukto/theme/theme.dart';
 
-import 'authentication/loginPage.dart';
+import 'authentication/login_page.dart';
 
 FlutterLocalNotificationsPlugin notificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -20,7 +22,7 @@ void main() async {
   FlutterLocalNotificationsPlugin notificationsPlugin =
       FlutterLocalNotificationsPlugin();
   AndroidInitializationSettings androidSetting =
-      AndroidInitializationSettings("@mipmap/ic_launcher");
+      const AndroidInitializationSettings("@mipmap/ic_launcher");
 
   InitializationSettings initializationSettings = InitializationSettings(
     android: androidSetting,
@@ -34,10 +36,10 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
   final themeProvider = ThemeProvider();
 
   @override
@@ -56,7 +58,7 @@ class _MyAppState extends State<MyApp> {
             theme: ThemeData(
               brightness: Brightness.light,
               textTheme: GoogleFonts.robotoTextTheme(textTheme).copyWith(
-                bodyMedium: TextStyle(
+                bodyMedium: const TextStyle(
                   color: Colors.black, // Change text color based on theme mode
                 ),
               ),
@@ -64,7 +66,7 @@ class _MyAppState extends State<MyApp> {
             darkTheme: ThemeData(
               brightness: Brightness.dark,
               textTheme: GoogleFonts.robotoTextTheme(textTheme).copyWith(
-                bodyMedium: TextStyle(
+                bodyMedium: const TextStyle(
                   color: Colors.white, // Change text color based on theme mode
                 ),
               ),

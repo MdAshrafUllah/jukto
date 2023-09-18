@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously, depend_on_referenced_packages
+
 import 'dart:convert';
-import 'package:flutter/material.dart';
+
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 
 import '../theme/theme.dart';
 
@@ -42,11 +45,13 @@ class ClassRoutine {
 }
 
 class ClassRoutinePage extends StatefulWidget {
+  const ClassRoutinePage({super.key});
+
   @override
-  _ClassRoutinePageState createState() => _ClassRoutinePageState();
+  ClassRoutinePageState createState() => ClassRoutinePageState();
 }
 
-class _ClassRoutinePageState extends State<ClassRoutinePage> {
+class ClassRoutinePageState extends State<ClassRoutinePage> {
   List<ClassRoutine> classRoutine = [];
 
   List<String> weekDays = [
@@ -80,7 +85,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Class Routine',
           style: TextStyle(
             color: Colors.white,
@@ -89,7 +94,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -128,7 +133,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
               DataCell(Row(
                 children: [
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.edit,
                       color: Color.fromRGBO(58, 150, 255, 1),
                     ),
@@ -137,7 +142,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                     },
                   ),
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delete,
                       color: Colors.red,
                     ),
@@ -160,7 +165,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                                 )),
                             actions: <Widget>[
                               TextButton(
-                                child: Text(
+                                child: const Text(
                                   'No',
                                   style: TextStyle(color: Colors.redAccent),
                                 ),
@@ -169,11 +174,11 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                                 },
                               ),
                               ElevatedButton(
-                                child: Text('Yes'),
+                                child: const Text('Yes'),
                                 onPressed: () async {
                                   _deleteSubject(routine);
                                   ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
+                                      .showSnackBar(const SnackBar(
                                           behavior: SnackBarBehavior.floating,
                                           backgroundColor: Colors.redAccent,
                                           content: Text(
@@ -199,11 +204,11 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
         onPressed: () {
           _showAddSubjectDialog(context);
         },
-        child: Icon(
+        child: const Icon(
           Icons.add,
           color: Colors.white,
         ),
@@ -247,7 +252,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                       newDay = value!;
                     });
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Select day',
                     hintText: 'Select a day',
@@ -258,7 +263,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                       color: Provider.of<ThemeProvider>(context).isDarkMode
                           ? Colors.white
                           : Colors.black),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Enter subject',
                   ),
@@ -279,7 +284,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                               ? Colors.white
                               : Colors.black)),
                   onTap: () async {
-                    FocusScope.of(context).requestFocus(new FocusNode());
+                    FocusScope.of(context).requestFocus(FocusNode());
                     final pickedTime = await showTimePicker(
                       context: context,
                       initialTime: newTime,
@@ -295,7 +300,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text(
+                child: const Text(
                   'Cancel',
                   style: TextStyle(color: Colors.redAccent),
                 ),
@@ -304,7 +309,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                 },
               ),
               ElevatedButton(
-                child: Text('Add'),
+                child: const Text('Add'),
                 onPressed: () {
                   setState(() {
                     if (newDay != null && newSubject.isNotEmpty) {
@@ -323,9 +328,9 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                             .toList();
 
                         if (sameNamedSubjects.isNotEmpty) {
-                          sameNamedSubjects.forEach((subject) {
-                            subject.day = subject.day + "\n" + newDay!;
-                          });
+                          for (var subject in sameNamedSubjects) {
+                            subject.day = "${subject.day}\n${newDay!}";
+                          }
                           classRoutine.add(ClassRoutine(
                             day: newDay!,
                             subject: newSubject,
@@ -387,7 +392,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                 onChanged: (value) {
                   updatedSubject = value;
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter subject',
                   border: OutlineInputBorder(),
                 ),
@@ -406,7 +411,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                             ? Colors.white
                             : Colors.black)),
                 onTap: () async {
-                  FocusScope.of(context).requestFocus(new FocusNode());
+                  FocusScope.of(context).requestFocus(FocusNode());
                   final pickedTime = await showTimePicker(
                     context: context,
                     initialTime: updatedTime,
@@ -422,13 +427,14 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel', style: TextStyle(color: Colors.redAccent)),
+              child: const Text('Cancel',
+                  style: TextStyle(color: Colors.redAccent)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: Text('Update'),
+              child: const Text('Update'),
               onPressed: () {
                 setState(() {
                   routine.subject = updatedSubject;
@@ -436,7 +442,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
                 });
 
                 _saveClassRoutine();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     behavior: SnackBarBehavior.floating,
                     backgroundColor: Colors.green,
                     content: Text(
@@ -487,7 +493,7 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
           classRoutine = loadedClassRoutine;
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.redAccent,
             content: Text(

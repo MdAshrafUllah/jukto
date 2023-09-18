@@ -1,16 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:jukto/Nevigation/welcomePage.dart';
-import 'package:jukto/authentication/forgatePassword.dart';
+import 'package:jukto/Nevigation/welcome_page.dart';
+import 'package:jukto/authentication/forgate_password.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'signupPage.dart';
+import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -50,10 +52,9 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) => const welcomePage()),
+                builder: (BuildContext context) => const WelcomePage()),
           );
         }
-      } catch (e) {
       } finally {
         setState(() {
           showSpinner = false;
@@ -72,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         body: ModalProgressHUD(
           inAsyncCall: showSpinner,
           child: SingleChildScrollView(
-            child: Container(
+            child: SizedBox(
               height: size.height,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -103,6 +104,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 60),
+                    alignment: Alignment.topLeft,
+                    padding: const EdgeInsets.only(left: 30),
                     child: const Text(
                       'Login to your Account',
                       style: TextStyle(
@@ -111,8 +114,6 @@ class _LoginPageState extends State<LoginPage> {
                         fontSize: 18,
                       ),
                     ),
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.only(left: 30),
                   ),
                   const SizedBox(
                     height: 25,
@@ -221,6 +222,8 @@ class _LoginPageState extends State<LoginPage> {
                     height: 10,
                   ),
                   Container(
+                    alignment: Alignment.topLeft,
+                    padding: const EdgeInsets.only(left: 30),
                     child: Row(
                       children: <Widget>[
                         const Text(
@@ -253,8 +256,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.only(left: 30),
                   ),
                   const SizedBox(
                     height: 10,
@@ -303,11 +304,11 @@ class _LoginPageState extends State<LoginPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        const welcomePage()),
+                                        const WelcomePage()),
                               );
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      duration: Duration(
+                                      duration: const Duration(
                                           seconds: 1, milliseconds: 500),
                                       behavior: SnackBarBehavior.floating,
                                       backgroundColor: Colors.green,
@@ -354,7 +355,7 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                       )));
                             }
-                          } catch (e) {}
+                          }
                         } else {
                           setState(() {
                             showSpinner = false;
@@ -390,39 +391,37 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(
                     height: 40,
                   ),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        const Text(
-                          "Don't have an account?",
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text(
+                        "Don't have an account?",
+                        style: TextStyle(
+                          fontFamily: 'Roboto',
+                          color: Color.fromRGBO(162, 158, 158, 1),
+                          fontSize: 18,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const SignupPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          ' Sign Up',
                           style: TextStyle(
-                            fontFamily: 'Roboto',
-                            color: Color.fromRGBO(162, 158, 158, 1),
-                            fontSize: 18,
-                          ),
+                              fontFamily: 'Roboto',
+                              color: Color.fromRGBO(58, 150, 255, 1),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const signupPage(),
-                              ),
-                            );
-                          },
-                          child: const Text(
-                            ' Sign Up',
-                            style: TextStyle(
-                                fontFamily: 'Roboto',
-                                color: Color.fromRGBO(58, 150, 255, 1),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -473,7 +472,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-void nouserAlertDialog(BuildContext context) {
+void noUserAlertDialog(BuildContext context) {
   Widget okButton = TextButton(
     child: Text(
       "OK",
@@ -512,7 +511,7 @@ void nouserAlertDialog(BuildContext context) {
   );
 }
 
-void wrongpassAlertDialog(BuildContext context) {
+void wrongPassAlertDialog(BuildContext context) {
   Widget okButton = TextButton(
     child: Text(
       "OK",

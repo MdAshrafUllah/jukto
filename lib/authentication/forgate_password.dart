@@ -1,6 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/authentication/loginPage.dart';
+import 'package:jukto/authentication/login_page.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +39,7 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
           showSpinner = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.green,
           content: Text(
@@ -51,7 +53,7 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (BuildContext context) => LoginPage(),
+            builder: (BuildContext context) => const LoginPage(),
           ),
         );
       } catch (e) {
@@ -59,7 +61,7 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
           showSpinner = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
           content: Text(
@@ -72,7 +74,7 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
         ));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.redAccent,
         content: Text(
@@ -95,10 +97,10 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
-            Center(
+            const Center(
               child: Text(
                 "Jukto",
                 style: TextStyle(
@@ -109,10 +111,10 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            Center(
+            const Center(
               child: Text(
                 "Reset Password",
                 style: TextStyle(
@@ -123,8 +125,10 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 60),
-              child: Text(
+              margin: const EdgeInsets.only(top: 60),
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 30),
+              child: const Text(
                 'Enter Your Email Address',
                 style: TextStyle(
                   fontFamily: 'Roboto',
@@ -132,21 +136,19 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
                   fontSize: 18,
                 ),
               ),
-              alignment: Alignment.topLeft,
-              padding: EdgeInsets.only(left: 30),
             ),
-            SizedBox(
+            const SizedBox(
               height: 25,
             ),
             Container(
-              margin: EdgeInsets.only(left: 20, right: 20),
-              padding: EdgeInsets.only(left: 20, right: 20),
+              margin: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20, right: 20),
               height: 70,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   width: 2,
-                  color: Color.fromRGBO(162, 158, 158, 1),
+                  color: const Color.fromRGBO(162, 158, 158, 1),
                 ),
               ),
               alignment: Alignment.center,
@@ -159,8 +161,8 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
                   fontWeight: FontWeight.bold,
                 ),
                 keyboardType: TextInputType.emailAddress,
-                cursorColor: Color.fromRGBO(58, 150, 255, 1),
-                decoration: InputDecoration(
+                cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+                decoration: const InputDecoration(
                   hintText: 'Email',
                   hintStyle: TextStyle(
                     fontFamily: 'Roboto',
@@ -172,20 +174,21 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 25,
             ),
             InkWell(
+                onTap: passwordReset,
                 child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20),
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Color.fromRGBO(58, 150, 255, 1),
+                    color: const Color.fromRGBO(58, 150, 255, 1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
+                  child: const Text(
                     'Reset',
                     style: TextStyle(
                       fontFamily: 'Roboto',
@@ -194,13 +197,12 @@ class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
                       color: Colors.white,
                     ),
                   ),
-                ),
-                onTap: passwordReset),
+                )),
             TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text(
+                child: const Text(
                   'Cancel',
                   style: TextStyle(
                     fontFamily: 'Roboto',

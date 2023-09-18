@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'BookDetailPage.dart';
+import 'book_detail_page.dart';
 import 'upload_books_page.dart';
 
 class EbooksPage extends StatefulWidget {
+  const EbooksPage({super.key});
+
   @override
-  _EbooksPageState createState() => _EbooksPageState();
+  EbooksPageState createState() => EbooksPageState();
 }
 
-class _EbooksPageState extends State<EbooksPage> {
+class EbooksPageState extends State<EbooksPage> {
   String searchQuery = '';
 
   @override
@@ -20,7 +22,7 @@ class _EbooksPageState extends State<EbooksPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Ebook App',
           style: TextStyle(
             color: Colors.white,
@@ -29,7 +31,7 @@ class _EbooksPageState extends State<EbooksPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: RefreshIndicator(
         color: const Color.fromRGBO(58, 150, 255, 1),
@@ -38,18 +40,18 @@ class _EbooksPageState extends State<EbooksPage> {
         },
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
-              margin: EdgeInsets.only(left: 20, right: 20),
-              padding: EdgeInsets.only(left: 20, right: 20),
+              margin: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20, right: 20),
               height: 60,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   width: 2,
-                  color: Color.fromRGBO(162, 158, 158, 1),
+                  color: const Color.fromRGBO(162, 158, 158, 1),
                 ),
               ),
               alignment: Alignment.center,
@@ -61,8 +63,8 @@ class _EbooksPageState extends State<EbooksPage> {
                   fontWeight: FontWeight.bold,
                 ),
                 keyboardType: TextInputType.name,
-                cursorColor: Color.fromRGBO(58, 150, 255, 1),
-                decoration: InputDecoration(
+                cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+                decoration: const InputDecoration(
                   hintText: 'Book Name',
                   hintStyle: TextStyle(
                     fontFamily: 'Roboto',
@@ -80,10 +82,10 @@ class _EbooksPageState extends State<EbooksPage> {
                 },
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
-            Center(
+            const Center(
               child: Text(
                 'Share Your Books, Get your Books',
                 style: TextStyle(
@@ -93,12 +95,17 @@ class _EbooksPageState extends State<EbooksPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             searchQuery.isEmpty
                 ? Container(
-                    child: Text(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width / 18,
+                      top: MediaQuery.of(context).size.height / 130,
+                    ),
+                    child: const Text(
                       'All Books',
                       style: TextStyle(
                         fontFamily: 'Roboto',
@@ -106,25 +113,20 @@ class _EbooksPageState extends State<EbooksPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  )
+                : Container(
                     alignment: Alignment.topLeft,
                     padding: EdgeInsets.only(
                       left: MediaQuery.of(context).size.width / 18,
                       top: MediaQuery.of(context).size.height / 130,
                     ),
-                  )
-                : Container(
-                    child: Text(
+                    child: const Text(
                       'Searching...',
                       style: TextStyle(
                         fontFamily: 'Roboto',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    alignment: Alignment.topLeft,
-                    padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width / 18,
-                      top: MediaQuery.of(context).size.height / 130,
                     ),
                   ),
             Expanded(
@@ -133,7 +135,7 @@ class _EbooksPageState extends State<EbooksPage> {
                     FirebaseFirestore.instance.collection('books').snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
@@ -158,6 +160,7 @@ class _EbooksPageState extends State<EbooksPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => BookDetailPage(
+                                  license: book['hasLicense'],
                                   coverUrl: book['coverUrl'],
                                   title: book['title'],
                                   category: book['category'],
@@ -189,12 +192,13 @@ class _EbooksPageState extends State<EbooksPage> {
                             fit: BoxFit.contain,
                           ),
                           trailing: IconButton(
-                            icon: Icon(Icons.arrow_forward),
+                            icon: const Icon(Icons.arrow_forward),
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => BookDetailPage(
+                                    license: book['hasLicense'],
                                     coverUrl: book['coverUrl'],
                                     title: book['title'],
                                     category: book['category'],
@@ -216,11 +220,11 @@ class _EbooksPageState extends State<EbooksPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => UploadBooksPage()),
+            MaterialPageRoute(builder: (context) => const UploadBooksPage()),
           );
         },
         label: const Text(

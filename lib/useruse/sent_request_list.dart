@@ -5,17 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'userProfilePage.dart';
+import 'user_profile_page.dart';
 
 class SentRequestPage extends StatefulWidget {
-  const SentRequestPage({Key? key});
+  const SentRequestPage({super.key});
 
   @override
   State<SentRequestPage> createState() => _SentRequestPageState();
 }
-
-IconData _iconLight = Icons.light_mode;
-IconData _iconDark = Icons.dark_mode;
 
 class _SentRequestPageState extends State<SentRequestPage> {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -32,10 +29,10 @@ class _SentRequestPageState extends State<SentRequestPage> {
           .where('email', isEqualTo: user?.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
           userID = documentId;
-        });
+        }
       });
     }
   }
@@ -54,7 +51,7 @@ class _SentRequestPageState extends State<SentRequestPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -63,8 +60,8 @@ class _SentRequestPageState extends State<SentRequestPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Container(
+            return const Center(
+              child: SizedBox(
                 width: 36,
                 height: 36,
                 child: CircularProgressIndicator(
@@ -81,7 +78,7 @@ class _SentRequestPageState extends State<SentRequestPage> {
             var friends = userData['sentRequest'] as List<dynamic>?;
 
             if (friends == null || friends.isEmpty) {
-              return Center(
+              return const Center(
                 child: Text("No Sent Request"),
               );
             }
@@ -98,8 +95,8 @@ class _SentRequestPageState extends State<SentRequestPage> {
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: Container(
+                      return const Center(
+                        child: SizedBox(
                           width: 36,
                           height: 36,
                           child: CircularProgressIndicator(
@@ -113,7 +110,8 @@ class _SentRequestPageState extends State<SentRequestPage> {
                       var friend = snapshot.data?.docs.first.data()
                           as Map<String, dynamic>;
                       return Card(
-                        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                        margin:
+                            const EdgeInsets.only(left: 10, right: 10, top: 10),
                         child: ListTile(
                           onTap: () {
                             Navigator.push(
@@ -166,7 +164,7 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                     ),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: Text(
+                                        child: const Text(
                                           'No',
                                           style: TextStyle(
                                               color: Colors.redAccent),
@@ -176,10 +174,10 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                         },
                                       ),
                                       ElevatedButton(
-                                        child: Text('Yes'),
+                                        child: const Text('Yes'),
                                         onPressed: () async {
                                           ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
+                                              .showSnackBar(const SnackBar(
                                                   behavior:
                                                       SnackBarBehavior.floating,
                                                   backgroundColor:
@@ -212,7 +210,8 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                               .get()
                                               .then((QuerySnapshot
                                                   querySnapshot) {
-                                            querySnapshot.docs.forEach((doc) {
+                                            for (var doc
+                                                in querySnapshot.docs) {
                                               FirebaseFirestore.instance
                                                   .collection('users')
                                                   .doc(doc.id)
@@ -225,7 +224,7 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                                   }
                                                 ])
                                               });
-                                            });
+                                            }
                                           });
                                         },
                                       ),
@@ -234,11 +233,11 @@ class _SentRequestPageState extends State<SentRequestPage> {
                                 },
                               );
                             },
-                            child: Text(
+                            color: Colors.red,
+                            child: const Text(
                               'Cancel Request',
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Colors.red,
                           ),
                         ),
                       );

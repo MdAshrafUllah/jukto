@@ -16,18 +16,20 @@ class MyThemes {
   static final darkTheme = ThemeData(
     scaffoldBackgroundColor: Colors.grey.shade900,
     primaryColor: Colors.grey.shade900,
-    colorScheme: ColorScheme.dark(),
+    colorScheme: const ColorScheme.dark(),
     iconTheme: IconThemeData(color: Colors.grey.shade50),
   );
   static final lightTheme = ThemeData(
     scaffoldBackgroundColor: Colors.white,
     primaryColor: Colors.white,
-    colorScheme: ColorScheme.light(),
+    colorScheme: const ColorScheme.light(),
     iconTheme: IconThemeData(color: Colors.grey.shade900),
   );
 }
 
 class ChangeThemeButtonWidget extends StatelessWidget {
+  const ChangeThemeButtonWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -39,7 +41,7 @@ class ChangeThemeButtonWidget extends StatelessWidget {
         provider.toggleTheme(value);
       },
       activeTrackColor: Colors.blueAccent,
-      activeColor: Color.fromRGBO(58, 150, 255, 1),
+      activeColor: const Color.fromRGBO(58, 150, 255, 1),
     );
   }
 }

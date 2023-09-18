@@ -7,15 +7,17 @@ import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'addRememberPage.dart';
-import 'editRememberPage.dart';
+import 'add_remember_page.dart';
+import 'edit_remember_page.dart';
 
 class ReminderPage extends StatefulWidget {
+  const ReminderPage({super.key});
+
   @override
-  _ReminderPageState createState() => _ReminderPageState();
+  ReminderPageState createState() => ReminderPageState();
 }
 
-class _ReminderPageState extends State<ReminderPage> {
+class ReminderPageState extends State<ReminderPage> {
   final List<ClassRoutine> _submittedRoutines = [];
   final List<String> _daysOfWeek = [
     "Saturday",
@@ -61,7 +63,7 @@ class _ReminderPageState extends State<ReminderPage> {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings =
+    const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -72,7 +74,7 @@ class _ReminderPageState extends State<ReminderPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Reminder Setup',
           style: TextStyle(
             color: Colors.white,
@@ -81,7 +83,7 @@ class _ReminderPageState extends State<ReminderPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Column(
         children: [
@@ -113,7 +115,7 @@ class _ReminderPageState extends State<ReminderPage> {
                       ),
                     ),
                     trailing: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.redAccent,
                       ),
@@ -141,17 +143,17 @@ class _ReminderPageState extends State<ReminderPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddRememberPage()),
+            MaterialPageRoute(builder: (context) => const AddRememberPage()),
           );
           if (result != null) {
             _submitRoutine(result.days, result.time, result.subject);
           }
         },
-        child: Icon(
+        child: const Icon(
           Icons.add,
           color: Colors.white,
         ),
@@ -246,6 +248,7 @@ class _ReminderPageState extends State<ReminderPage> {
           'It\'s time for ${routine.subject}.',
           scheduledTime,
           platformChannelSpecifics,
+          // ignore: deprecated_member_use
           androidAllowWhileIdle: true,
           payload: 'class_payload_${id + selectedDay}',
           uiLocalNotificationDateInterpretation:

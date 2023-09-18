@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/Nevigation/profilePage.dart';
+import 'package:jukto/Nevigation/profile_page.dart';
 import 'package:jukto/message/group_chats/group_chat_screen.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
@@ -42,11 +42,11 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
           .where('email', isEqualTo: user?.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
           userID = documentId;
           currentPic = doc['profileImage'];
-        });
+        }
       });
     }
   }
@@ -99,7 +99,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
           .where('email', isEqualTo: member['email'])
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('users')
               .doc(doc.id)
@@ -109,7 +109,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
             "name": widget.name,
             "id": widget.groupChatId,
           });
-        });
+        }
       });
     }
 
@@ -124,7 +124,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Add Members',
           style: TextStyle(
             color: Colors.white,
@@ -132,15 +132,15 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Column(
         children: <Widget>[
           ListView.builder(
             itemCount: newMembersList.length,
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               // Skip displaying current user's data in the list
               if (newMembersList[index]['email'] == user?.email) {
@@ -172,7 +172,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
                         themeProvider.isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
-                trailing: Icon(
+                trailing: const Icon(
                   Icons.close,
                   color: Colors.redAccent,
                 ),
@@ -183,14 +183,14 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
             height: size.height / 20,
           ),
           Container(
-            margin: EdgeInsets.only(left: 20, right: 20),
-            padding: EdgeInsets.only(left: 20, right: 20),
+            margin: const EdgeInsets.only(left: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             height: size.height / 12,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 width: 2,
-                color: Color.fromRGBO(162, 158, 158, 1),
+                color: const Color.fromRGBO(162, 158, 158, 1),
               ),
             ),
             alignment: Alignment.center,
@@ -202,8 +202,8 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
                 fontWeight: FontWeight.bold,
               ),
               keyboardType: TextInputType.name,
-              cursorColor: Color.fromRGBO(58, 150, 255, 1),
-              decoration: InputDecoration(
+              cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+              decoration: const InputDecoration(
                 hintText: 'User Name',
                 hintStyle: TextStyle(
                   fontFamily: 'Roboto',
@@ -221,7 +221,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
               },
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Expanded(
@@ -230,7 +230,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
                   FirebaseFirestore.instance.collection('users').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else {
@@ -290,7 +290,7 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
                                 data['profileImage'] ?? ' ',
                               ),
                             ),
-                            trailing: Icon(
+                            trailing: const Icon(
                               Icons.add,
                               color: Colors.blue,
                             ),
@@ -306,21 +306,22 @@ class _AddMoreMembersState extends State<AddMoreMembers> {
           ),
         ],
       ),
-      floatingActionButton: newMembersList.length >= 1
+      floatingActionButton: newMembersList.isNotEmpty
           ? FloatingActionButton(
-              backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-              child: Icon(
+              backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+              child: const Icon(
                 Icons.group_add,
                 color: Colors.white,
               ),
               onPressed: () {
                 onAddMembers();
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => GroupChatHomeScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const GroupChatHomeScreen()),
                 );
               },
             )
-          : SizedBox(),
+          : const SizedBox(),
     );
   }
 }

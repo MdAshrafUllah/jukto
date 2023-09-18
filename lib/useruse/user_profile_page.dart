@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -145,7 +147,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               GestureDetector(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
@@ -160,7 +162,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       CachedNetworkImageProvider(widget.profileImage),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 widget.name,
                 style: TextStyle(
@@ -192,9 +194,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'University: ',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Roboto',
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -218,9 +220,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           'From: ',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Roboto',
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -239,7 +241,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ],
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               if (isFriend == true)
                 Center(
                   child: Container(
@@ -248,7 +250,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(5)),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Friend",
                         style: TextStyle(
@@ -275,7 +277,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             .where('email', isEqualTo: email)
                             .get()
                             .then((QuerySnapshot querySnapshot) {
-                          querySnapshot.docs.forEach((doc) {
+                          for (var doc in querySnapshot.docs) {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(doc.id)
@@ -293,7 +295,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 }
                               ])
                             });
-                          });
+                          }
                         });
 
                         await FirebaseFirestore.instance
@@ -301,7 +303,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             .where('email', isEqualTo: widget.email)
                             .get()
                             .then((QuerySnapshot querySnapshot) {
-                          querySnapshot.docs.forEach((doc) {
+                          for (var doc in querySnapshot.docs) {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(doc.id)
@@ -319,7 +321,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 }
                               ])
                             });
-                          });
+                          }
                         });
 
                         await checkFriendshipStatus().then((result) {
@@ -340,7 +342,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             backgroundColor: Colors.green,
                             content: Text(
                               '${widget.name} is Now your Friend',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Roboto',
                               ),
@@ -350,9 +352,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         height: 50,
                         width: 120,
                         decoration: BoxDecoration(
-                            color: Color.fromRGBO(58, 150, 255, 1),
+                            color: const Color.fromRGBO(58, 150, 255, 1),
                             borderRadius: BorderRadius.circular(5)),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Confirm",
                             style: TextStyle(
@@ -365,7 +367,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     GestureDetector(
@@ -378,7 +380,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             .where('email', isEqualTo: email)
                             .get()
                             .then((QuerySnapshot querySnapshot) {
-                          querySnapshot.docs.forEach((doc) {
+                          for (var doc in querySnapshot.docs) {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(doc.id)
@@ -390,7 +392,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 }
                               ])
                             });
-                          });
+                          }
                         });
 
                         await FirebaseFirestore.instance
@@ -398,7 +400,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             .where('email', isEqualTo: widget.email)
                             .get()
                             .then((QuerySnapshot querySnapshot) {
-                          querySnapshot.docs.forEach((doc) {
+                          for (var doc in querySnapshot.docs) {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(doc.id)
@@ -410,7 +412,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 }
                               ])
                             });
-                          });
+                          }
                         });
                         await checkFriendshipStatus().then((result) {
                           setState(() {
@@ -423,16 +425,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           isLoading = false;
                         });
                         await fetchData();
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.redAccent,
-                            content: Text(
-                              'Friend Request Cancel',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Roboto',
-                              ),
-                            )));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'Friend Request Cancel',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
                       },
                       child: Container(
                         height: 50,
@@ -440,7 +443,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(5)),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Cancel",
                             style: TextStyle(
@@ -465,7 +468,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       decoration: BoxDecoration(
                           color: Colors.grey,
                           borderRadius: BorderRadius.circular(5)),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           "Request Sent",
                           style: TextStyle(
@@ -477,7 +480,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     GestureDetector(
@@ -490,7 +493,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             .where('email', isEqualTo: email)
                             .get()
                             .then((QuerySnapshot querySnapshot) {
-                          querySnapshot.docs.forEach((doc) {
+                          for (var doc in querySnapshot.docs) {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(doc.id)
@@ -502,7 +505,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 }
                               ])
                             });
-                          });
+                          }
                         });
 
                         await FirebaseFirestore.instance
@@ -510,7 +513,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             .where('email', isEqualTo: widget.email)
                             .get()
                             .then((QuerySnapshot querySnapshot) {
-                          querySnapshot.docs.forEach((doc) {
+                          for (var doc in querySnapshot.docs) {
                             FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(doc.id)
@@ -522,7 +525,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 }
                               ])
                             });
-                          });
+                          }
                         });
 
                         await checkFriendshipStatus().then((result) {
@@ -537,16 +540,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         });
                         await fetchData();
 
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: Colors.redAccent,
-                            content: Text(
-                              'Friend Request Cancel',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Roboto',
-                              ),
-                            )));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'Friend Request Cancel',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                )));
                       },
                       child: Container(
                         height: 50,
@@ -554,7 +558,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(5)),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Cancel",
                             style: TextStyle(
@@ -580,7 +584,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         .where('email', isEqualTo: widget.email)
                         .get()
                         .then((QuerySnapshot querySnapshot) {
-                      querySnapshot.docs.forEach((doc) {
+                      for (var doc in querySnapshot.docs) {
                         FirebaseFirestore.instance
                             .collection('users')
                             .doc(doc.id)
@@ -592,14 +596,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             }
                           ])
                         });
-                      });
+                      }
                     });
                     await FirebaseFirestore.instance
                         .collection('users')
                         .where('email', isEqualTo: email)
                         .get()
                         .then((QuerySnapshot querySnapshot) {
-                      querySnapshot.docs.forEach((doc) {
+                      for (var doc in querySnapshot.docs) {
                         FirebaseFirestore.instance
                             .collection('users')
                             .doc(doc.id)
@@ -608,7 +612,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             {'name': widget.name, 'email': widget.email}
                           ])
                         });
-                      });
+                      }
                     });
                     await checkFriendshipStatus().then((result) {
                       setState(() {
@@ -624,7 +628,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
                     await fetchData();
 
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         behavior: SnackBarBehavior.floating,
                         backgroundColor: Colors.green,
                         content: Text(
@@ -639,9 +643,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     height: 50,
                     width: 130,
                     decoration: BoxDecoration(
-                        color: Color.fromRGBO(58, 150, 255, 1),
+                        color: const Color.fromRGBO(58, 150, 255, 1),
                         borderRadius: BorderRadius.circular(5)),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Add Friend",
                         style: TextStyle(

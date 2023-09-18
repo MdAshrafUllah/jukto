@@ -2,11 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/useruse/userProfilePage.dart';
+import 'package:jukto/useruse/user_profile_page.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
 class SearchPerson extends StatefulWidget {
+  const SearchPerson({super.key});
+
   @override
   State<SearchPerson> createState() => _SearchPersonState();
 }
@@ -31,10 +33,10 @@ class _SearchPersonState extends State<SearchPerson> {
           .where('email', isEqualTo: user?.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
           userID = documentId;
-        });
+        }
       });
     }
     addFriendMap = {};
@@ -46,18 +48,18 @@ class _SearchPersonState extends State<SearchPerson> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             height: 25,
           ),
           Container(
-            margin: EdgeInsets.only(left: 20, right: 20),
-            padding: EdgeInsets.only(left: 20, right: 20),
+            margin: const EdgeInsets.only(left: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             height: 60,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 width: 2,
-                color: Color.fromRGBO(162, 158, 158, 1),
+                color: const Color.fromRGBO(162, 158, 158, 1),
               ),
             ),
             alignment: Alignment.center,
@@ -69,8 +71,8 @@ class _SearchPersonState extends State<SearchPerson> {
                 fontWeight: FontWeight.bold,
               ),
               keyboardType: TextInputType.name,
-              cursorColor: Color.fromRGBO(58, 150, 255, 1),
-              decoration: InputDecoration(
+              cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+              decoration: const InputDecoration(
                 hintText: 'User Name',
                 hintStyle: TextStyle(
                   fontFamily: 'Roboto',
@@ -88,7 +90,7 @@ class _SearchPersonState extends State<SearchPerson> {
               },
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Expanded(
@@ -97,7 +99,7 @@ class _SearchPersonState extends State<SearchPerson> {
                   FirebaseFirestore.instance.collection('users').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else {
@@ -220,7 +222,8 @@ class _SearchPersonState extends State<SearchPerson> {
                                               .get()
                                               .then((QuerySnapshot
                                                   querySnapshot) {
-                                            querySnapshot.docs.forEach((doc) {
+                                            for (var doc
+                                                in querySnapshot.docs) {
                                               FirebaseFirestore.instance
                                                   .collection('users')
                                                   .doc(doc.id)
@@ -233,7 +236,7 @@ class _SearchPersonState extends State<SearchPerson> {
                                                   }
                                                 ])
                                               });
-                                            });
+                                            }
                                           });
                                           FirebaseFirestore.instance
                                               .collection('users')
@@ -249,7 +252,7 @@ class _SearchPersonState extends State<SearchPerson> {
                                             ])
                                           });
                                           ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
+                                              .showSnackBar(const SnackBar(
                                                   behavior:
                                                       SnackBarBehavior.floating,
                                                   backgroundColor: Colors.green,

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'reminederPage.dart';
+import 'package:jukto/theme/theme.dart';
+
+import 'remineder_page.dart';
 
 class EditRememberPage extends StatefulWidget {
   final ClassRoutine routine;
 
-  EditRememberPage({required this.routine});
+  const EditRememberPage({super.key, required this.routine});
 
   @override
-  _EditRememberPageState createState() => _EditRememberPageState();
+  EditRememberPageState createState() => EditRememberPageState();
 }
 
-class _EditRememberPageState extends State<EditRememberPage> {
+class EditRememberPageState extends State<EditRememberPage> {
   late List<String> _days;
   late TimeOfDay _time;
   late String _subject;
@@ -41,7 +42,7 @@ class _EditRememberPageState extends State<EditRememberPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Edit Reminder',
           style: TextStyle(
             color: Colors.white,
@@ -50,7 +51,7 @@ class _EditRememberPageState extends State<EditRememberPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -64,7 +65,7 @@ class _EditRememberPageState extends State<EditRememberPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
-                        activeColor: Color.fromRGBO(58, 150, 255, 1),
+                        activeColor: const Color.fromRGBO(58, 150, 255, 1),
                         value: _days.contains(day),
                         onChanged: (checked) {
                           setState(() {
@@ -86,7 +87,7 @@ class _EditRememberPageState extends State<EditRememberPage> {
                     color:
                         themeProvider.isDarkMode ? Colors.white : Colors.black),
                 initialValue: _subject,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Subject',
                   border: OutlineInputBorder(),
                 ),
@@ -109,12 +110,10 @@ class _EditRememberPageState extends State<EditRememberPage> {
                 },
                 child: Text('Time: ${_time.format(context)}'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  if (_time != null &&
-                      _subject.isNotEmpty &&
-                      _days.isNotEmpty) {
+                  if (_subject.isNotEmpty && _days.isNotEmpty) {
                     _updateRoutine();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -129,7 +128,7 @@ class _EditRememberPageState extends State<EditRememberPage> {
                         )));
                   }
                 },
-                child: Text('Update'),
+                child: const Text('Update'),
               ),
             ],
           ),

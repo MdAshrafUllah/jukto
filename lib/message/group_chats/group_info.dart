@@ -1,8 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/Nevigation/welcomePage.dart';
+import 'package:jukto/Nevigation/welcome_page.dart';
 import 'package:jukto/message/group_chats/add_members.dart';
 
 import 'package:jukto/theme/theme.dart';
@@ -26,8 +28,8 @@ class _GroupInfoState extends State<GroupInfo> {
   List membersList = [];
   bool isLoading = true;
 
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -57,10 +59,10 @@ class _GroupInfoState extends State<GroupInfo> {
 
     if (!currentUserFound) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => welcomePage()),
+        MaterialPageRoute(builder: (_) => const WelcomePage()),
         (route) => false,
       );
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
           content: Text(
@@ -84,11 +86,11 @@ class _GroupInfoState extends State<GroupInfo> {
   bool checkAdmin() {
     bool isAdmin = false;
 
-    membersList.forEach((element) {
+    for (var element in membersList) {
       if (element['uid'] == _auth.currentUser!.uid) {
         isAdmin = element['isAdmin'];
       }
-    });
+    }
     return isAdmin;
   }
 
@@ -108,14 +110,14 @@ class _GroupInfoState extends State<GroupInfo> {
           .where('uid', isEqualTo: uid)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('users')
               .doc(doc.id)
               .collection('groups')
               .doc(widget.groupId)
               .delete();
-        });
+        }
       });
 
       setState(() {
@@ -148,14 +150,14 @@ class _GroupInfoState extends State<GroupInfo> {
             .where('uid', isEqualTo: uid)
             .get()
             .then((QuerySnapshot querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
+          for (var doc in querySnapshot.docs) {
             FirebaseFirestore.instance
                 .collection('users')
                 .doc(doc.id)
                 .collection('groups')
                 .doc(widget.groupId)
                 .delete();
-          });
+          }
         });
       }
 
@@ -168,10 +170,10 @@ class _GroupInfoState extends State<GroupInfo> {
       if (isCurrentUserMember) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => welcomePage()),
+          MaterialPageRoute(builder: (context) => const WelcomePage()),
           (route) => false,
         );
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
           content: Text(
@@ -186,7 +188,7 @@ class _GroupInfoState extends State<GroupInfo> {
         // Redirect to welcomePage if the current user was an admin but not a member of this group
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => welcomePage()),
+          MaterialPageRoute(builder: (context) => const WelcomePage()),
           (route) => false,
         );
       }
@@ -214,7 +216,7 @@ class _GroupInfoState extends State<GroupInfo> {
                   )),
               actions: <Widget>[
                 TextButton(
-                  child: Text(
+                  child: const Text(
                     'No',
                     style: TextStyle(color: Colors.redAccent),
                   ),
@@ -223,7 +225,7 @@ class _GroupInfoState extends State<GroupInfo> {
                   },
                 ),
                 ElevatedButton(
-                  child: Text('Yes'),
+                  child: const Text('Yes'),
                   onPressed: () {
                     removeMembers(index);
                     Navigator.of(context).pop();
@@ -257,7 +259,7 @@ class _GroupInfoState extends State<GroupInfo> {
                 )),
             actions: <Widget>[
               TextButton(
-                child: Text(
+                child: const Text(
                   'No',
                   style: TextStyle(color: Colors.redAccent),
                 ),
@@ -266,7 +268,7 @@ class _GroupInfoState extends State<GroupInfo> {
                 },
               ),
               ElevatedButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () {
                   deletedGroup();
                   Navigator.of(context).pop();
@@ -300,18 +302,18 @@ class _GroupInfoState extends State<GroupInfo> {
           .where('email', isEqualTo: _auth.currentUser!.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('users')
               .doc(doc.id)
               .collection('groups')
               .doc(widget.groupId)
               .delete();
-        });
+        }
       });
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => welcomePage()),
+        MaterialPageRoute(builder: (_) => const WelcomePage()),
         (route) => false,
       );
     }
@@ -329,17 +331,17 @@ class _GroupInfoState extends State<GroupInfo> {
                 height: size.height,
                 width: size.width,
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(),
+                child: const CircularProgressIndicator(),
               )
             : SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Align(
+                    const Align(
                       alignment: Alignment.centerLeft,
                       child: BackButton(),
                     ),
-                    Container(
+                    SizedBox(
                       height: size.height / 8,
                       width: size.width / 1.1,
                       child: Row(
@@ -347,7 +349,7 @@ class _GroupInfoState extends State<GroupInfo> {
                           Container(
                             height: size.height / 11,
                             width: size.height / 11,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.grey,
                             ),
@@ -361,14 +363,12 @@ class _GroupInfoState extends State<GroupInfo> {
                             width: size.width / 20,
                           ),
                           Expanded(
-                            child: Container(
-                              child: Text(
-                                widget.groupName,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: size.width / 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            child: Text(
+                              widget.groupName,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: size.width / 16,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -382,7 +382,7 @@ class _GroupInfoState extends State<GroupInfo> {
                       height: size.height / 20,
                     ),
 
-                    Container(
+                    SizedBox(
                       width: size.width / 1.1,
                       child: Text(
                         "${membersList.length} Members",
@@ -410,7 +410,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                 ),
                               ),
                             ),
-                            leading: Icon(
+                            leading: const Icon(
                               Icons.add,
                             ),
                             title: Text(
@@ -424,13 +424,13 @@ class _GroupInfoState extends State<GroupInfo> {
                               ),
                             ),
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
 
                     Flexible(
                       child: ListView.builder(
                         itemCount: membersList.length,
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           return ListTile(
                             onTap: () => showDialogBox(index),
@@ -483,7 +483,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                   )),
                               actions: <Widget>[
                                 TextButton(
-                                  child: Text(
+                                  child: const Text(
                                     'No',
                                     style: TextStyle(color: Colors.redAccent),
                                   ),
@@ -492,7 +492,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                   },
                                 ),
                                 ElevatedButton(
-                                  child: Text('Yes'),
+                                  child: const Text('Yes'),
                                   onPressed: () {
                                     onLeaveGroup();
                                     Navigator.of(context).pop();
@@ -503,7 +503,7 @@ class _GroupInfoState extends State<GroupInfo> {
                           },
                         );
                       },
-                      leading: Icon(
+                      leading: const Icon(
                         Icons.logout,
                         color: Colors.redAccent,
                       ),
@@ -520,19 +520,20 @@ class _GroupInfoState extends State<GroupInfo> {
                     checkAdmin()
                         ? GestureDetector(
                             child: Container(
-                              margin: EdgeInsets.only(left: 20, right: 20),
-                              padding: EdgeInsets.all(15),
+                              margin:
+                                  const EdgeInsets.only(left: 20, right: 20),
+                              padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                   color: Colors.red,
                                   borderRadius: BorderRadius.circular(10)),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.delete_forever,
                                     color: Colors.white,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
                                   Text(
@@ -550,7 +551,7 @@ class _GroupInfoState extends State<GroupInfo> {
                               groupDelete();
                             },
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ],
                 ),
               ),

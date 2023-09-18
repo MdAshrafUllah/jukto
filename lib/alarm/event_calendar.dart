@@ -13,11 +13,13 @@ class Event {
 }
 
 class EventSchedulerPage extends StatefulWidget {
+  const EventSchedulerPage({super.key});
+
   @override
-  _EventSchedulerPageState createState() => _EventSchedulerPageState();
+  EventSchedulerPageState createState() => EventSchedulerPageState();
 }
 
-class _EventSchedulerPageState extends State<EventSchedulerPage> {
+class EventSchedulerPageState extends State<EventSchedulerPage> {
   List<Event> events = [];
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -94,7 +96,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
                     color: Provider.of<ThemeProvider>(context).isDarkMode
                         ? Colors.white
                         : Colors.black),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Title',
                   border: OutlineInputBorder(),
                 ),
@@ -105,7 +107,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
                     color: Provider.of<ThemeProvider>(context).isDarkMode
                         ? Colors.white
                         : Colors.black),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Description',
                   border: OutlineInputBorder(),
                 ),
@@ -113,7 +115,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
               ),
               GestureDetector(
                 child: InputDecorator(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
                   child: Row(
@@ -125,12 +127,12 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
                                   Provider.of<ThemeProvider>(context).isDarkMode
                                       ? Colors.white
                                       : Colors.black)),
-                      Icon(Icons.calendar_today),
+                      const Icon(Icons.calendar_today),
                     ],
                   ),
                 ),
                 onTap: () async {
-                  FocusScope.of(context).requestFocus(new FocusNode());
+                  FocusScope.of(context).requestFocus(FocusNode());
                   DateTime? pickedDate = await showDatePicker(
                     context: context,
                     initialDate: newDay.isNotEmpty
@@ -166,7 +168,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
                     _descriptionController.clear();
                     Navigator.of(context).pop();
                   },
-                  child: Text(
+                  child: const Text(
                     'Cancel',
                     style: TextStyle(color: Colors.redAccent),
                   ),
@@ -182,7 +184,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
                       Navigator.of(context).pop();
                     }
                   },
-                  child: Text('Add'),
+                  child: const Text('Add'),
                 ),
               ],
             )
@@ -196,7 +198,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Event Scheduler',
           style: TextStyle(
             color: Colors.white,
@@ -205,7 +207,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Column(
         children: [
@@ -233,11 +235,11 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
                                       ? Colors.white
                                       : Colors.black),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 5,
                         ),
-                        Text('|'),
-                        SizedBox(
+                        const Text('|'),
+                        const SizedBox(
                           width: 5,
                         ),
                         Text(
@@ -254,7 +256,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
                       ],
                     ),
                     trailing: IconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.redAccent,
                       ),
@@ -268,7 +270,7 @@ class _EventSchedulerPageState extends State<EventSchedulerPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
         onPressed: () => _showAddEventDialog(context),
         label: const Text(
           'Add Event',

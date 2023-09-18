@@ -10,10 +10,10 @@ class GroupChatHomeScreen extends StatefulWidget {
   const GroupChatHomeScreen({Key? key}) : super(key: key);
 
   @override
-  _GroupChatHomeScreenState createState() => _GroupChatHomeScreenState();
+  GroupChatHomeScreenState createState() => GroupChatHomeScreenState();
 }
 
-class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
+class GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool isLoading = true;
@@ -34,7 +34,7 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
         .where('uid', isEqualTo: uid)
         .get()
         .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         FirebaseFirestore.instance
             .collection('users')
             .doc(doc.id)
@@ -46,7 +46,7 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
             isLoading = false;
           });
         });
-      });
+      }
     });
   }
 
@@ -56,20 +56,20 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Groups"),
+        title: const Text("Groups"),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: isLoading
           ? Container(
               height: size.height,
               width: size.width,
               alignment: Alignment.center,
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             )
           : RefreshIndicator(
-              color: Color.fromRGBO(58, 150, 255, 1),
+              color: const Color.fromRGBO(58, 150, 255, 1),
               onRefresh: () {
                 getAvailableGroups();
                 return Future<void>.delayed(const Duration(seconds: 1));
@@ -86,7 +86,7 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
                         ),
                       ),
                     ),
-                    leading: Icon(Icons.group),
+                    leading: const Icon(Icons.group),
                     title: Text(
                       groupList[index]['name'],
                       style: TextStyle(
@@ -99,17 +99,17 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-        child: Icon(
-          Icons.create,
-          color: Colors.white,
-        ),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => AddMembersInGroup(),
+            builder: (_) => const AddMembersInGroup(),
           ),
         ),
         tooltip: "Create Group",
+        child: const Icon(
+          Icons.create,
+          color: Colors.white,
+        ),
       ),
     );
   }

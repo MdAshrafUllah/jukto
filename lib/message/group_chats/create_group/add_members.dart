@@ -2,12 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/Nevigation/profilePage.dart';
+import 'package:jukto/Nevigation/profile_page.dart';
 import 'package:jukto/message/group_chats/create_group/create_group.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 
 class AddMembersInGroup extends StatefulWidget {
+  const AddMembersInGroup({super.key});
+
   @override
   State<AddMembersInGroup> createState() => _AddMembersInGroupState();
 }
@@ -35,11 +37,11 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
           .where('email', isEqualTo: user?.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
           userID = documentId;
           currentPic = doc['profileImage'];
-        });
+        }
       });
     }
     addFriendMap = {};
@@ -98,7 +100,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Add Members',
           style: TextStyle(
             color: Colors.white,
@@ -106,15 +108,15 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: Column(
         children: <Widget>[
           ListView.builder(
             itemCount: membersList.length,
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               // Skip displaying current user's data in the list
               if (membersList[index]['email'] == user?.email) {
@@ -142,7 +144,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
                         themeProvider.isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
-                trailing: Icon(
+                trailing: const Icon(
                   Icons.close,
                   color: Colors.redAccent,
                 ),
@@ -153,14 +155,14 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
             height: size.height / 20,
           ),
           Container(
-            margin: EdgeInsets.only(left: 20, right: 20),
-            padding: EdgeInsets.only(left: 20, right: 20),
+            margin: const EdgeInsets.only(left: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             height: size.height / 12,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 width: 2,
-                color: Color.fromRGBO(162, 158, 158, 1),
+                color: const Color.fromRGBO(162, 158, 158, 1),
               ),
             ),
             alignment: Alignment.center,
@@ -172,8 +174,8 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
                 fontWeight: FontWeight.bold,
               ),
               keyboardType: TextInputType.name,
-              cursorColor: Color.fromRGBO(58, 150, 255, 1),
-              decoration: InputDecoration(
+              cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+              decoration: const InputDecoration(
                 hintText: 'User Name',
                 hintStyle: TextStyle(
                   fontFamily: 'Roboto',
@@ -191,7 +193,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
               },
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Expanded(
@@ -200,7 +202,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
                   FirebaseFirestore.instance.collection('users').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else {
@@ -317,7 +319,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
                                             .get()
                                             .then(
                                                 (QuerySnapshot querySnapshot) {
-                                          querySnapshot.docs.forEach((doc) {
+                                          for (var doc in querySnapshot.docs) {
                                             FirebaseFirestore.instance
                                                 .collection('users')
                                                 .doc(doc.id)
@@ -330,7 +332,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
                                                 }
                                               ])
                                             });
-                                          });
+                                          }
                                         });
                                         FirebaseFirestore.instance
                                             .collection('users')
@@ -345,7 +347,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
                                           ])
                                         });
                                         ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
+                                            .showSnackBar(const SnackBar(
                                                 behavior:
                                                     SnackBarBehavior.floating,
                                                 backgroundColor: Colors.green,
@@ -374,8 +376,8 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
       ),
       floatingActionButton: membersList.length >= 2
           ? FloatingActionButton(
-              backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-              child: Icon(
+              backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+              child: const Icon(
                 Icons.forward,
                 color: Colors.white,
               ),
@@ -387,7 +389,7 @@ class _AddMembersInGroupState extends State<AddMembersInGroup> {
                 ),
               ),
             )
-          : SizedBox(),
+          : const SizedBox(),
     );
   }
 }

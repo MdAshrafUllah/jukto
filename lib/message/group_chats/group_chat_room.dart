@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -16,14 +18,15 @@ import 'package:path_provider/path_provider.dart';
 class GroupChatRoom extends StatefulWidget {
   final String groupChatId, groupName;
 
-  GroupChatRoom({required this.groupName, required this.groupChatId, Key? key})
+  const GroupChatRoom(
+      {required this.groupName, required this.groupChatId, Key? key})
       : super(key: key);
 
   @override
   State<GroupChatRoom> createState() => _GroupChatRoomState();
 }
 
-String CurrentPic = ' ';
+String currentPic = ' ';
 String name = '';
 
 class _GroupChatRoomState extends State<GroupChatRoom> {
@@ -51,7 +54,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
 
       for (var doc in querySnapshot.docs) {
         setState(() {
-          CurrentPic = doc["profileImage"];
+          currentPic = doc["profileImage"];
           name = doc['name'];
         });
       }
@@ -59,7 +62,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
   }
 
   Future<void> updateOldImage() async {
-    String currentemail = _auth.currentUser!.email.toString();
+    String currentEmail = _auth.currentUser!.email.toString();
     QuerySnapshot oldMessagesSnapshot = await _firestore
         .collection('groups')
         .doc(widget.groupChatId)
@@ -69,7 +72,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
 
     for (var messageDoc in oldMessagesSnapshot.docs) {
       await messageDoc.reference.update({
-        'profileImage': CurrentPic,
+        'profileImage': currentPic,
         'sendBy': name,
       });
     }
@@ -178,7 +181,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
           .collection('chats')
           .doc(fileName)
           .set({
-        "sendby": _auth.currentUser!.displayName,
+        "sendBy": _auth.currentUser!.displayName,
         "profileImage": userDataMap['profileImage'],
         "email": _auth.currentUser!.email,
         "message": "",
@@ -231,7 +234,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                       builder: (_) => GroupInfo(
                         groupName: widget.groupName,
                         groupId: widget.groupChatId,
-                        memberpic: CurrentPic,
+                        memberpic: currentPic,
                         membername: name,
                       ),
                     ),
@@ -243,9 +246,10 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
+        controller: scrollController,
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: size.height / 1.27,
               width: size.width,
               child: StreamBuilder<QuerySnapshot>(
@@ -253,12 +257,12 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                     .collection('groups')
                     .doc(widget.groupChatId)
                     .collection('chats')
-                    .orderBy('time')
+                    .orderBy('time', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (snapshot.data!.docs.length > 0) {
+                      if (snapshot.data!.docs.isNotEmpty) {
                         scrollController.animateTo(
                           scrollController.position.maxScrollExtent,
                           duration: const Duration(milliseconds: 300),
@@ -267,14 +271,17 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                       }
                     });
                     return ListView.builder(
-                      controller: scrollController,
+                      reverse: true,
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         Map<String, dynamic> chatMap =
                             snapshot.data!.docs[index].data()
                                 as Map<String, dynamic>;
 
-                        return messageTile(size, chatMap);
+                        return messageTile(
+                          size,
+                          chatMap,
+                        );
                       },
                     );
                   } else {
@@ -287,13 +294,13 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
               height: size.height / 10,
               width: size.width,
               alignment: Alignment.center,
-              child: Container(
+              child: SizedBox(
                 height: size.height / 12,
                 width: size.width / 1.1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
+                    SizedBox(
                       height: size.height / 15,
                       width: size.width / 1.3,
                       child: TextField(
@@ -455,7 +462,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                     padding:
                         const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     alignment:
-                        chatMap['sendby'] == _auth.currentUser!.displayName
+                        chatMap['sendBy'] == _auth.currentUser!.displayName
                             ? Alignment.centerRight
                             : Alignment.centerLeft,
                     child: InkWell(
@@ -468,7 +475,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                         height: size.height / 22,
                         width: size.width / 2,
                         decoration:
-                            chatMap['sendby'] == _auth.currentUser!.displayName
+                            chatMap['sendBy'] == _auth.currentUser!.displayName
                                 ? const BoxDecoration(
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(15),
@@ -503,10 +510,10 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                                   )
                                 ],
                               ) // Display file icon
-                            : Container(
+                            : const SizedBox(
                                 height: 24, // Adjust the height as needed
                                 width: 24, // Adjust the width as needed
-                                child: const CircularProgressIndicator(
+                                child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                 ),
                               ),
@@ -573,7 +580,7 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 5, horizontal: 5),
                       alignment:
-                          chatMap['sendby'] == _auth.currentUser!.displayName
+                          chatMap['sendBy'] == _auth.currentUser!.displayName
                               ? Alignment.centerRight
                               : Alignment.centerLeft,
                       child: Container(
@@ -634,18 +641,13 @@ class _GroupChatRoomState extends State<GroupChatRoom> {
       savedDir.createSync(recursive: true);
     }
 
-    try {
-      final taskId = await FlutterDownloader.enqueue(
-        url: fileUrl,
-        savedDir: savePath,
-        fileName: 'Downloaded File',
-        showNotification: true,
-        openFileFromNotification: true,
-      );
-    } catch (error, stackTrace) {
-      print('Error downloading file: $error');
-      print('Stack Trace: $stackTrace');
-    }
+    final taskId = await FlutterDownloader.enqueue(
+      url: fileUrl,
+      savedDir: savePath,
+      fileName: 'Downloaded File',
+      showNotification: true,
+      openFileFromNotification: true,
+    );
   }
 }
 

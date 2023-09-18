@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,14 +36,14 @@ class _SettingsPageState extends State<SettingsPage> {
           .where('email', isEqualTo: user?.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
           userID = documentId;
           nameCngController.text = doc["name"];
           bioCngController.text = doc['bio'];
           universityController.text = doc['university'];
           cityController.text = doc['city'];
-        });
+        }
       });
     }
   }
@@ -65,12 +67,12 @@ class _SettingsPageState extends State<SettingsPage> {
             .where('userId', isEqualTo: user?.uid)
             .get()
             .then((QuerySnapshot postQuerySnapshot) {
-          postQuerySnapshot.docs.forEach((postDoc) {
+          for (var postDoc in postQuerySnapshot.docs) {
             FirebaseFirestore.instance
                 .collection('posts')
                 .doc(postDoc.id)
                 .update({'name': nameCngController.text});
-          });
+          }
         });
 
         // Update user's name in the 'posts' collection
@@ -79,7 +81,7 @@ class _SettingsPageState extends State<SettingsPage> {
             .where('userId', isEqualTo: user?.uid)
             .get()
             .then((QuerySnapshot postQuerySnapshot) {
-          postQuerySnapshot.docs.forEach((postDoc) {
+          for (var postDoc in postQuerySnapshot.docs) {
             FirebaseFirestore.instance
                 .collection('posts')
                 .doc(postDoc.id)
@@ -92,7 +94,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 .collection('comments')
                 .get()
                 .then((QuerySnapshot commentQuerySnapshot) {
-              commentQuerySnapshot.docs.forEach((commentDoc) {
+              for (var commentDoc in commentQuerySnapshot.docs) {
                 if (commentDoc["commenterEmail"] == user?.email) {
                   FirebaseFirestore.instance
                       .collection('posts')
@@ -101,9 +103,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       .doc(commentDoc.id)
                       .update({'commenterName': nameCngController.text});
                 }
-              });
+              }
             });
-          });
+          }
         });
 
         // Update commenter's name in the 'comments' subcollection
@@ -111,7 +113,7 @@ class _SettingsPageState extends State<SettingsPage> {
             .collection('posts')
             .get()
             .then((QuerySnapshot postQuerySnapshot) {
-          postQuerySnapshot.docs.forEach((postDoc) {
+          for (var postDoc in postQuerySnapshot.docs) {
             FirebaseFirestore.instance
                 .collection('posts')
                 .doc(postDoc.id)
@@ -119,20 +121,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 .where('commenterEmail', isEqualTo: user?.email)
                 .get()
                 .then((QuerySnapshot commentQuerySnapshot) {
-              commentQuerySnapshot.docs.forEach((commentDoc) {
+              for (var commentDoc in commentQuerySnapshot.docs) {
                 FirebaseFirestore.instance
                     .collection('posts')
                     .doc(postDoc.id)
                     .collection('comments')
                     .doc(commentDoc.id)
                     .update({'commenterName': nameCngController.text});
-              });
+              }
             });
-          });
+          }
         });
 
         // Show a success message to the user
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.green,
             content: Text(
@@ -145,7 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     } catch (e) {
       // Show an error message if something goes wrong
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
           content: Text(
@@ -163,7 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Settings',
           style: TextStyle(
             color: Colors.white,
@@ -172,14 +174,14 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Proifle Information",
               style: TextStyle(
                 fontSize: 20,
@@ -187,17 +189,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 fontFamily: 'Roboto',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            Text(
+            const Text(
               "Name",
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'Roboto',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             TextField(
@@ -205,23 +207,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   color:
                       themeProvider.isDarkMode ? Colors.white : Colors.black),
               controller: nameCngController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Your Name",
                   suffixIcon:
                       Icon(Icons.edit, color: Color.fromRGBO(58, 150, 255, 1))),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Text(
+            const Text(
               "Bio",
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'Roboto',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             TextField(
@@ -230,42 +232,42 @@ class _SettingsPageState extends State<SettingsPage> {
                       themeProvider.isDarkMode ? Colors.white : Colors.black),
               maxLength: 50,
               controller: bioCngController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Your Bio",
                   suffixIcon:
                       Icon(Icons.edit, color: Color.fromRGBO(58, 150, 255, 1))),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Text(
+            const Text(
               "Email",
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'Roboto',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             TextField(
                 enabled: false,
                 decoration: InputDecoration(
                   hintText: user?.email,
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 )),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Text(
+            const Text(
               "Your University",
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'Roboto',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             TextField(
@@ -274,23 +276,23 @@ class _SettingsPageState extends State<SettingsPage> {
                       themeProvider.isDarkMode ? Colors.white : Colors.black),
               maxLength: 100,
               controller: universityController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Your University Name",
                   suffixIcon:
                       Icon(Icons.edit, color: Color.fromRGBO(58, 150, 255, 1))),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Text(
+            const Text(
               "Your City",
               style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'Roboto',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             TextField(
@@ -299,7 +301,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       themeProvider.isDarkMode ? Colors.white : Colors.black),
               maxLength: 50,
               controller: cityController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Your City",
                   suffixIcon: Icon(
@@ -307,7 +309,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Color.fromRGBO(58, 150, 255, 1),
                   )),
             ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
             Center(
@@ -318,7 +320,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: () async {
                   await updateProfile();
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ),
           ],

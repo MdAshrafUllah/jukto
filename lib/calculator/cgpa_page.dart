@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -15,10 +17,10 @@ class CGPAPage extends StatefulWidget {
   const CGPAPage({Key? key}) : super(key: key);
 
   @override
-  _CGPAPageState createState() => _CGPAPageState();
+  CGPAPageState createState() => CGPAPageState();
 }
 
-class _CGPAPageState extends State<CGPAPage> {
+class CGPAPageState extends State<CGPAPage> {
   Map<String, List<Map<String, dynamic>>> semesterData = {};
 
   final List<Map<String, dynamic>> cgpaList = [
@@ -50,10 +52,10 @@ class _CGPAPageState extends State<CGPAPage> {
           .where('email', isEqualTo: user?.email)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           String documentId = doc.id;
           userID = documentId;
-        });
+        }
       });
     }
   }
@@ -75,18 +77,18 @@ class _CGPAPageState extends State<CGPAPage> {
               .where('email', isEqualTo: user.email)
               .get()
               .then((QuerySnapshot querySnapshot) {
-            querySnapshot.docs.forEach((doc) {
+            for (var doc in querySnapshot.docs) {
               Map<String, dynamic>? userData =
                   doc.data() as Map<String, dynamic>?;
               setState(() {
                 semesterData = convertDataFormat(userData!['CGPA'] ?? {});
               });
-            });
+            }
           });
         }
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
           content: Text(
@@ -139,13 +141,13 @@ class _CGPAPageState extends State<CGPAPage> {
       double semesterCredit = 0.0;
       double semesterGpa = 0.0;
 
-      subjects.forEach((subject) {
+      for (var subject in subjects) {
         double credit = subject['credit'];
         double gpa = subject['gpa'];
 
         semesterCredit += credit;
         semesterGpa += (credit * gpa);
-      });
+      }
 
       totalCreditGpa += semesterGpa;
       totalCredit += semesterCredit;
@@ -164,7 +166,7 @@ class _CGPAPageState extends State<CGPAPage> {
     bool isSemesterDataEmpty = semesterData.isEmpty;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'CGPA',
           style: TextStyle(
             color: Colors.white,
@@ -172,11 +174,11 @@ class _CGPAPageState extends State<CGPAPage> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
         actions: [
           IconButton(
-            icon: Icon(Icons.picture_as_pdf),
+            icon: const Icon(Icons.picture_as_pdf),
             onPressed: () {
               generatePDF();
             },
@@ -224,7 +226,7 @@ class _CGPAPageState extends State<CGPAPage> {
                                     ? Colors.white
                                     : Colors.black))
                       ]),
-                  childrenPadding: EdgeInsets.all(10),
+                  childrenPadding: const EdgeInsets.all(10),
                   controlAffinity: ListTileControlAffinity.leading,
                   backgroundColor: themeProvider.isDarkMode
                       ? Colors.black12
@@ -239,7 +241,7 @@ class _CGPAPageState extends State<CGPAPage> {
                   children: [
                     ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: subjects.length,
                       itemBuilder: (context, subjectIndex) {
                         final subject = subjects[subjectIndex];
@@ -262,7 +264,7 @@ class _CGPAPageState extends State<CGPAPage> {
                               ),
                             ),
                             trailing: IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.delete,
                                 color: Colors.redAccent,
                               ),
@@ -286,7 +288,7 @@ class _CGPAPageState extends State<CGPAPage> {
                                           )),
                                       actions: <Widget>[
                                         TextButton(
-                                          child: Text(
+                                          child: const Text(
                                             'No',
                                             style: TextStyle(
                                                 color: Colors.redAccent),
@@ -296,12 +298,12 @@ class _CGPAPageState extends State<CGPAPage> {
                                           },
                                         ),
                                         ElevatedButton(
-                                          child: Text('Yes'),
+                                          child: const Text('Yes'),
                                           onPressed: () async {
                                             _deleteSubject(
                                                 semesterName, subjectIndex);
                                             ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
+                                                .showSnackBar(const SnackBar(
                                                     behavior: SnackBarBehavior
                                                         .floating,
                                                     backgroundColor:
@@ -330,19 +332,20 @@ class _CGPAPageState extends State<CGPAPage> {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+                            backgroundColor:
+                                const Color.fromRGBO(58, 150, 255, 1),
                           ),
                           onPressed: () {
                             _showAddSubjectDialog(semesterName);
                           },
-                          child: Text(
+                          child: const Text(
                             'Add Subject',
                             style: TextStyle(
                               fontFamily: 'Roboto',
                             ),
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.redAccent,
@@ -367,7 +370,7 @@ class _CGPAPageState extends State<CGPAPage> {
                                       )),
                                   actions: <Widget>[
                                     TextButton(
-                                      child: Text(
+                                      child: const Text(
                                         'No',
                                         style:
                                             TextStyle(color: Colors.redAccent),
@@ -377,7 +380,7 @@ class _CGPAPageState extends State<CGPAPage> {
                                       },
                                     ),
                                     ElevatedButton(
-                                      child: Text('Yes'),
+                                      child: const Text('Yes'),
                                       onPressed: () async {
                                         _deleteSemester(semesterName);
                                         ScaffoldMessenger.of(context)
@@ -388,7 +391,7 @@ class _CGPAPageState extends State<CGPAPage> {
                                                     Colors.redAccent,
                                                 content: Text(
                                                   'Semester $semesterName is deleted',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     color: Colors.white,
                                                     fontFamily: 'Roboto',
                                                   ),
@@ -401,7 +404,7 @@ class _CGPAPageState extends State<CGPAPage> {
                               },
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Delete Semester',
                             style: TextStyle(
                               fontFamily: 'Roboto',
@@ -428,23 +431,29 @@ class _CGPAPageState extends State<CGPAPage> {
                   border: Border.all(
                     color: themeProvider.isDarkMode
                         ? Colors.white
-                        : Color.fromRGBO(58, 150, 255, 1),
+                        : const Color.fromRGBO(58, 150, 255, 1),
                     width: 3.0,
                   ),
                 ),
                 child: FloatingActionButton(
                   onPressed: null,
+                  backgroundColor: themeProvider.isDarkMode
+                      ? const Color.fromRGBO(58, 150, 255, 1)
+                      : Colors.white,
+                  foregroundColor:
+                      themeProvider.isDarkMode ? Colors.white : Colors.black,
+                  elevation: 0,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         calculateTotalCGPA().toStringAsFixed(2),
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontFamily: 'Roboto',
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
                       ),
-                      Text(
+                      const Text(
                         "Total CGPA",
                         style: TextStyle(
                             fontFamily: 'Roboto',
@@ -453,12 +462,6 @@ class _CGPAPageState extends State<CGPAPage> {
                       ),
                     ],
                   ),
-                  backgroundColor: themeProvider.isDarkMode
-                      ? Color.fromRGBO(58, 150, 255, 1)
-                      : Colors.white,
-                  foregroundColor:
-                      themeProvider.isDarkMode ? Colors.white : Colors.black,
-                  elevation: 0,
                 ),
               ),
             ),
@@ -475,7 +478,7 @@ class _CGPAPageState extends State<CGPAPage> {
                     saveData();
                   });
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.check,
                   color: Colors.white,
                   size: 28,
@@ -487,11 +490,11 @@ class _CGPAPageState extends State<CGPAPage> {
             bottom: 16.0,
             right: 16.0,
             child: FloatingActionButton(
-              backgroundColor: Color.fromRGBO(58, 150, 255, 1),
+              backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
               onPressed: () {
                 _showAddSemesterDialog();
               },
-              child: Icon(
+              child: const Icon(
                 Icons.add,
                 color: Colors.white,
               ),
@@ -524,7 +527,7 @@ class _CGPAPageState extends State<CGPAPage> {
             onChanged: (value) {
               semesterName = value;
             },
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Semester Name',
             ),
@@ -534,7 +537,7 @@ class _CGPAPageState extends State<CGPAPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text(
+              child: const Text(
                 'Cancel',
                 style: TextStyle(color: Colors.redAccent),
               ),
@@ -548,7 +551,7 @@ class _CGPAPageState extends State<CGPAPage> {
                   Navigator.pop(context);
                 }
               },
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -561,38 +564,36 @@ class _CGPAPageState extends State<CGPAPage> {
       semesterData.remove(semesterName);
     });
 
-    try {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userID)
-          .update({"CGPA": semesterData}).then((value) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              'Data Delete',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Roboto',
-              ),
-            )));
-      }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              'Failed to Delete data',
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'Roboto',
-              ),
-            )));
-      });
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .update({"CGPA": semesterData}).then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'Data Delete',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'Failed to Delete data',
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'Roboto',
+            ),
+          )));
+    });
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String semesterDataJson = json.encode(semesterData);
-      await prefs.setString('semesterData', semesterDataJson);
-    } catch (error) {}
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String semesterDataJson = json.encode(semesterData);
+    await prefs.setString('semesterData', semesterDataJson);
   }
 
   void _deleteSubject(String semesterName, int subjectIndex) async {
@@ -600,16 +601,14 @@ class _CGPAPageState extends State<CGPAPage> {
       semesterData[semesterName]?.removeAt(subjectIndex);
     });
 
-    try {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userID)
-          .update({"CGPA": semesterData}).then((value) {});
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .update({"CGPA": semesterData}).then((value) {});
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String semesterDataJson = json.encode(semesterData);
-      await prefs.setString('semesterData', semesterDataJson);
-    } catch (error) {}
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String semesterDataJson = json.encode(semesterData);
+    await prefs.setString('semesterData', semesterDataJson);
   }
 
   void _showAddSubjectDialog(String semesterName) {
@@ -631,7 +630,7 @@ class _CGPAPageState extends State<CGPAPage> {
                   : Colors.black,
             ),
           ),
-          content: Container(
+          content: SizedBox(
             height: size.height / 3.18,
             child: SingleChildScrollView(
               child: Column(
@@ -645,12 +644,12 @@ class _CGPAPageState extends State<CGPAPage> {
                     onChanged: (value) {
                       subjectName = value;
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Subject Name',
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextField(
                     style: TextStyle(
                       color: Provider.of<ThemeProvider>(context).isDarkMode
@@ -660,13 +659,13 @@ class _CGPAPageState extends State<CGPAPage> {
                     onChanged: (value) {
                       credit = double.tryParse(value) ?? 0;
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Credit',
                     ),
                     keyboardType: TextInputType.number,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   DropdownButtonFormField<Map<String, dynamic>>(
                     value: selectedCGPA,
                     items: cgpaList.map((gradeData) {
@@ -689,7 +688,7 @@ class _CGPAPageState extends State<CGPAPage> {
                         selectedCGPA = value!;
                       });
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'GPA Grade',
                     ),
@@ -703,7 +702,7 @@ class _CGPAPageState extends State<CGPAPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text(
+              child: const Text(
                 'Cancel',
                 style: TextStyle(color: Colors.redAccent),
               ),
@@ -724,7 +723,7 @@ class _CGPAPageState extends State<CGPAPage> {
 
                     Navigator.pop(context);
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         behavior: SnackBarBehavior.floating,
                         backgroundColor: Colors.redAccent,
                         content: Text(
@@ -737,7 +736,7 @@ class _CGPAPageState extends State<CGPAPage> {
                   }
                 }
               },
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -746,39 +745,38 @@ class _CGPAPageState extends State<CGPAPage> {
   }
 
   void saveData() async {
-    try {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userID)
-          .update({
-            "CGPA": semesterData,
-          })
-          .then((value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Colors.green,
-              content: Text(
-                'Data saved successfully',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Roboto',
-                ),
-              ))))
-          .catchError(
-              (error) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Colors.redAccent,
-                  content: Text(
-                    'Failed to save data',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Roboto',
-                    ),
-                  ))));
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .update({
+          "CGPA": semesterData,
+        })
+        .then((value) =>
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.green,
+                content: Text(
+                  'Data saved successfully',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Roboto',
+                  ),
+                ))))
+        .catchError((error) =>
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.redAccent,
+                content: Text(
+                  'Failed to save data',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Roboto',
+                  ),
+                ))));
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String semesterDataJson = json.encode(semesterData);
-      await prefs.setString('semesterData', semesterDataJson);
-    } catch (error) {}
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String semesterDataJson = json.encode(semesterData);
+    await prefs.setString('semesterData', semesterDataJson);
   }
 
   Future<void> generatePDF() async {
@@ -789,7 +787,7 @@ class _CGPAPageState extends State<CGPAPage> {
 
     if (directory == null) {
       // Handle the case where external storage is not available
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.redAccent,
         content: Text(
@@ -804,12 +802,12 @@ class _CGPAPageState extends State<CGPAPage> {
     }
 
     // Construct the file path in the app's private storage
-    final fileName = 'total_cgpa_list.pdf';
+    const fileName = 'total_cgpa_list.pdf';
     final filePath = '${directory.path}/$fileName';
 
     // Divide the semesters into chunks of two per page
     final semesters = semesterData.entries.toList();
-    final chunkSize = 2;
+    const chunkSize = 1;
     final totalChunks = (semesters.length / chunkSize).ceil();
 
     for (var chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
@@ -886,7 +884,7 @@ class _CGPAPageState extends State<CGPAPage> {
                   : Colors.black,
             ),
           ),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             height: 400, // Adjust the height as needed
             child: PDFView(
@@ -901,7 +899,7 @@ class _CGPAPageState extends State<CGPAPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -914,7 +912,7 @@ class _CGPAPageState extends State<CGPAPage> {
       backgroundColor: Colors.green,
       content: Text(
         'PDF generated successfully and saved to $filePath',
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontFamily: 'Roboto',
         ),

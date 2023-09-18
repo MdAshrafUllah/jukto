@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -5,15 +7,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:jukto/alarm/examRoutine.dart';
-import 'package:jukto/alarm/reminederPage.dart';
-import 'package:jukto/alarm/classRoutine.dart';
-import 'package:jukto/calculator/CGPA.dart';
+import 'package:jukto/alarm/exam_routine.dart';
+import 'package:jukto/alarm/remineder_page.dart';
+import 'package:jukto/alarm/class_routine.dart';
+import 'package:jukto/calculator/cgpa_page.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
-import '../calculator/totalPayment.dart';
+import '../calculator/total_payment.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -22,7 +24,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-String imageurl = ' ';
+String imageUrl = ' ';
 String currentPic = ' ';
 String bio = '';
 String name = '';
@@ -81,16 +83,14 @@ class _ProfilePageState extends State<ProfilePage> {
       });
 
       final image = await ImagePicker().pickImage(source: ImageSource.camera);
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
-          '_' +
-          Random().nextInt(10000).toString() +
-          '.jpg';
+      String fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}.jpg';
       Reference ref = FirebaseStorage.instance.ref().child(fileName);
       await ref.putFile(File(image!.path));
       String downloadUrl = await ref.getDownloadURL();
       ref.getDownloadURL().then((pImage) {
         setState(() {
-          imageurl = pImage;
+          imageUrl = pImage;
         });
       });
 
@@ -99,14 +99,14 @@ class _ProfilePageState extends State<ProfilePage> {
           .collection('users')
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           if (doc["email"] == user?.email) {
             FirebaseFirestore.instance
                 .collection("users")
                 .doc(doc.id)
                 .update({'profileImage': downloadUrl.toString()});
           }
-        });
+        }
       });
 
       // Update user's profile image in the 'posts' collection
@@ -115,20 +115,20 @@ class _ProfilePageState extends State<ProfilePage> {
           .where('userId', isEqualTo: user?.uid)
           .get()
           .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
+        for (var postDoc in postQuerySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('posts')
               .doc(postDoc.id)
               .update({'profileImage': downloadUrl.toString()});
 
-          // Update commenter's profile image in the 'comments' subcollection
+          // Update commenter's profile image in the 'comments' subCollection
           FirebaseFirestore.instance
               .collection('posts')
               .doc(postDoc.id)
               .collection('comments')
               .get()
               .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
+            for (var commentDoc in commentQuerySnapshot.docs) {
               if (commentDoc["commenterEmail"] == user?.email) {
                 FirebaseFirestore.instance
                     .collection('posts')
@@ -137,17 +137,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     .doc(commentDoc.id)
                     .update({'commenterProfileUrl': downloadUrl.toString()});
               }
-            });
+            }
           });
-        });
+        }
       });
 
-      // Update commenter's profile image in the 'comments' subcollection
+      // Update commenter's profile image in the 'comments' subCollection
       FirebaseFirestore.instance
           .collection('posts')
           .get()
           .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
+        for (var postDoc in postQuerySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('posts')
               .doc(postDoc.id)
@@ -155,16 +155,16 @@ class _ProfilePageState extends State<ProfilePage> {
               .where('commenterEmail', isEqualTo: user?.email)
               .get()
               .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
+            for (var commentDoc in commentQuerySnapshot.docs) {
               FirebaseFirestore.instance
                   .collection('posts')
                   .doc(postDoc.id)
                   .collection('comments')
                   .doc(commentDoc.id)
                   .update({'commenterProfileImage': downloadUrl.toString()});
-            });
+            }
           });
-        });
+        }
       });
 
       setState(() {
@@ -207,16 +207,14 @@ class _ProfilePageState extends State<ProfilePage> {
       });
 
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString() +
-          '_' +
-          Random().nextInt(10000).toString() +
-          '.jpg';
+      String fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}.jpg';
       Reference ref = FirebaseStorage.instance.ref().child(fileName);
       await ref.putFile(File(image!.path));
       String downloadUrl = await ref.getDownloadURL();
       ref.getDownloadURL().then((pImage) {
         setState(() {
-          imageurl = pImage;
+          imageUrl = pImage;
         });
       });
 
@@ -225,14 +223,14 @@ class _ProfilePageState extends State<ProfilePage> {
           .collection('users')
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           if (doc["email"] == user?.email) {
             FirebaseFirestore.instance
                 .collection("users")
                 .doc(doc.id)
                 .update({'profileImage': downloadUrl.toString()});
           }
-        });
+        }
       });
 
       // Update user's profile image in the 'posts' collection
@@ -241,20 +239,20 @@ class _ProfilePageState extends State<ProfilePage> {
           .where('userId', isEqualTo: user?.uid)
           .get()
           .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
+        for (var postDoc in postQuerySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('posts')
               .doc(postDoc.id)
               .update({'profileImage': downloadUrl.toString()});
 
-          // Update commenter's profile image in the 'comments' subcollection
+          // Update commenter's profile image in the 'comments' subCollection
           FirebaseFirestore.instance
               .collection('posts')
               .doc(postDoc.id)
               .collection('comments')
               .get()
               .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
+            for (var commentDoc in commentQuerySnapshot.docs) {
               if (commentDoc["commenterEmail"] == user?.email) {
                 FirebaseFirestore.instance
                     .collection('posts')
@@ -263,17 +261,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     .doc(commentDoc.id)
                     .update({'commenterProfileUrl': downloadUrl.toString()});
               }
-            });
+            }
           });
-        });
+        }
       });
 
-      // Update commenter's profile image in the 'comments' subcollection
+      // Update commenter's profile image in the 'comments' subCollection
       FirebaseFirestore.instance
           .collection('posts')
           .get()
           .then((QuerySnapshot postQuerySnapshot) {
-        postQuerySnapshot.docs.forEach((postDoc) {
+        for (var postDoc in postQuerySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('posts')
               .doc(postDoc.id)
@@ -281,16 +279,16 @@ class _ProfilePageState extends State<ProfilePage> {
               .where('commenterEmail', isEqualTo: user?.email)
               .get()
               .then((QuerySnapshot commentQuerySnapshot) {
-            commentQuerySnapshot.docs.forEach((commentDoc) {
+            for (var commentDoc in commentQuerySnapshot.docs) {
               FirebaseFirestore.instance
                   .collection('posts')
                   .doc(postDoc.id)
                   .collection('comments')
                   .doc(commentDoc.id)
                   .update({'commenterProfileImage': downloadUrl.toString()});
-            });
+            }
           });
-        });
+        }
       });
 
       setState(() {
@@ -353,8 +351,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: CircleAvatar(
                     radius: 48.0,
-                    backgroundImage: imageurl != " "
-                        ? CachedNetworkImageProvider(imageurl)
+                    backgroundImage: imageUrl != " "
+                        ? CachedNetworkImageProvider(imageUrl)
                         : CachedNetworkImageProvider(currentPic),
                     child: Transform.translate(
                       offset: const Offset(30, 35),
@@ -364,7 +362,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  content: Container(
+                                  content: SizedBox(
                                     height: 120,
                                     child: Column(
                                       children: [
@@ -430,7 +428,7 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 20),
               Center(
                 child: Text(
-                  '$name',
+                  name,
                   style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontSize: 24,
@@ -441,7 +439,7 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 10),
               Center(
                 child: Text(
-                  '$bio',
+                  bio,
                   style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontSize: 18,
@@ -460,9 +458,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'University: ',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Roboto',
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -470,7 +468,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           Expanded(
                             child: Text(
-                              '$university',
+                              university,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               style: const TextStyle(
@@ -486,16 +484,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Text(
+                        const Text(
                           'From: ',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Roboto',
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          '$city',
+                          city,
                           style: const TextStyle(
                             fontFamily: 'Roboto',
                             fontSize: 18,
@@ -518,7 +516,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (Context) => const CGPAPage()));
+                                builder: (context) => const CGPAPage()));
                       },
                       child: Container(
                         margin: const EdgeInsets.only(left: 20, right: 20),
@@ -550,7 +548,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (Context) => const TotalPayments()));
+                                builder: (context) => const TotalPayments()));
                       },
                       child: Container(
                         margin: const EdgeInsets.only(left: 20, right: 20),
@@ -586,7 +584,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (Context) => ClassRoutinePage()));
+                          builder: (context) => const ClassRoutinePage()));
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 20, right: 20),
@@ -616,7 +614,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (Context) => ExamRoutinePage()));
+                          builder: (context) => const ExamRoutinePage()));
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 20, right: 20),
@@ -643,8 +641,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (Context) => ReminderPage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ReminderPage()));
                 },
                 child: Container(
                   margin: const EdgeInsets.only(left: 20, right: 20),

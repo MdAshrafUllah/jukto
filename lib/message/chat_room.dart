@@ -17,7 +17,7 @@ class ChatRoom extends StatefulWidget {
   final Map<String, dynamic> userMap;
   final String chatRoomId;
 
-  ChatRoom({required this.chatRoomId, required this.userMap});
+  const ChatRoom({super.key, required this.chatRoomId, required this.userMap});
 
   @override
   ChatRoomState createState() => ChatRoomState();
@@ -270,13 +270,13 @@ class ChatRoomState extends State<ChatRoom> {
               height: size.height / 10,
               width: size.width,
               alignment: Alignment.center,
-              child: Container(
+              child: SizedBox(
                 height: size.height / 12,
                 width: size.width / 1.1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
+                    SizedBox(
                       height: size.height / 15,
                       width: size.width / 1.3,
                       child: TextField(
@@ -400,7 +400,7 @@ class ChatRoomState extends State<ChatRoom> {
                       )
                     ],
                   ) // Display file icon
-                : Container(
+                : const SizedBox(
                     height: 24, // Adjust the height as needed
                     width: 24, // Adjust the width as needed
                     child: CircularProgressIndicator(
@@ -455,18 +455,13 @@ class ChatRoomState extends State<ChatRoom> {
       savedDir.createSync(recursive: true);
     }
 
-    try {
-      final taskId = await FlutterDownloader.enqueue(
-        url: fileUrl,
-        savedDir: savePath,
-        fileName: 'Downloaded File',
-        showNotification: true,
-        openFileFromNotification: true,
-      );
-    } catch (error, stackTrace) {
-      print('Error downloading file: $error');
-      print('Stack Trace: $stackTrace');
-    }
+    await FlutterDownloader.enqueue(
+      url: fileUrl,
+      savedDir: savePath,
+      fileName: 'Downloaded File',
+      showNotification: true,
+      openFileFromNotification: true,
+    );
   }
 }
 

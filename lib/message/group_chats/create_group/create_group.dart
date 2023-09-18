@@ -1,7 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:jukto/Nevigation/welcomePage.dart';
+import 'package:jukto/Nevigation/welcome_page.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -26,7 +28,7 @@ class _CreateGroupState extends State<CreateGroup> {
       isLoading = true;
     });
 
-    String groupId = Uuid().v1();
+    String groupId = const Uuid().v1();
 
     await _firestore.collection('groups').doc(groupId).set({
       "members": widget.membersList,
@@ -42,7 +44,7 @@ class _CreateGroupState extends State<CreateGroup> {
           .where('uid', isEqualTo: uid)
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+        for (var doc in querySnapshot.docs) {
           FirebaseFirestore.instance
               .collection('users')
               .doc(doc.id)
@@ -52,7 +54,7 @@ class _CreateGroupState extends State<CreateGroup> {
             "name": _groupName.text,
             "id": groupId,
           });
-        });
+        }
       });
     }
 
@@ -62,7 +64,8 @@ class _CreateGroupState extends State<CreateGroup> {
     });
 
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => welcomePage()), (route) => false);
+        MaterialPageRoute(builder: (_) => const WelcomePage()),
+        (route) => false);
   }
 
   @override
@@ -71,17 +74,17 @@ class _CreateGroupState extends State<CreateGroup> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Group Name"),
+        title: const Text("Group Name"),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(58, 150, 255, 1),
-        iconTheme: IconThemeData(color: Colors.white, size: 35.0),
+        iconTheme: const IconThemeData(color: Colors.white, size: 35.0),
       ),
       body: isLoading
           ? Container(
               height: size.height,
               width: size.width,
               alignment: Alignment.center,
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             )
           : Column(
               children: [
@@ -89,15 +92,15 @@ class _CreateGroupState extends State<CreateGroup> {
                   height: size.height / 10,
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 20, right: 20),
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20),
                   height: size.height / 12,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       width: 2,
-                      color: Color.fromRGBO(162, 158, 158, 1),
+                      color: const Color.fromRGBO(162, 158, 158, 1),
                     ),
                   ),
                   child: TextField(
@@ -110,8 +113,8 @@ class _CreateGroupState extends State<CreateGroup> {
                       fontWeight: FontWeight.bold,
                     ),
                     keyboardType: TextInputType.name,
-                    cursorColor: Color.fromRGBO(58, 150, 255, 1),
-                    decoration: InputDecoration(
+                    cursorColor: const Color.fromRGBO(58, 150, 255, 1),
+                    decoration: const InputDecoration(
                       hintText: 'Enter Group Name',
                       hintStyle: TextStyle(
                         fontFamily: 'Roboto',
@@ -129,7 +132,7 @@ class _CreateGroupState extends State<CreateGroup> {
                 ),
                 ElevatedButton(
                   onPressed: createGroup,
-                  child: Text("Create Group"),
+                  child: const Text("Create Group"),
                 ),
               ],
             ),
