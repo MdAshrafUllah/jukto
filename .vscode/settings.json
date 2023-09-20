@@ -3,11 +3,13 @@
   "cSpell.words": [
     "CGPA",
     "firestore",
+    "Forgate",
     "jukto",
     "membername",
     "memberpic",
     "RGBO",
-    "sendby"
+    "sendby",
+    "signup"
   ],
   "java.configuration.updateBuildConfiguration": "interactive"
 }

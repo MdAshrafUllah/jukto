@@ -11,14 +11,14 @@ import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -32,11 +32,11 @@ class _SignupPageState extends State<SignupPage> {
   FirebaseAuth auth = FirebaseAuth.instance;
   User? user;
 
-  Future userdata(String name, String email) async {
+  Future userData(String name, String email) async {
     await FirebaseFirestore.instance.collection("users").add({
       'name': name,
       'email': email,
-      'status': 'Unavalible',
+      'status': 'Unavailable',
       'uid': auth.currentUser?.uid,
       'profileImage': 'https://i.stack.imgur.com/YaL3s.jpg',
       'bio': '',
@@ -424,7 +424,7 @@ class _SignupPageState extends State<SignupPage> {
                               email: _emailController.text,
                               password: _passwordController.text,
                             );
-                            userdata(
+                            userData(
                               _nameController.text.trim(),
                               _emailController.text.trim(),
                             );

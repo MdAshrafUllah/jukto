@@ -7,14 +7,14 @@ import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
-class ForgatePasswordPage extends StatefulWidget {
-  const ForgatePasswordPage({super.key});
+class ForgetPasswordPage extends StatefulWidget {
+  const ForgetPasswordPage({super.key});
 
   @override
-  State<ForgatePasswordPage> createState() => _ForgatePasswordPageState();
+  State<ForgetPasswordPage> createState() => _ForgetPasswordPageState();
 }
 
-class _ForgatePasswordPageState extends State<ForgatePasswordPage> {
+class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
   bool showSpinner = false;
 

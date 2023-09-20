@@ -6,13 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:jukto/Nevigation/welcome_page.dart';
 import 'package:jukto/authentication/forgate_password.dart';
+import 'package:jukto/authentication/signup_page.dart';
 import 'package:jukto/theme/theme.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'signup_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -240,7 +241,7 @@ class _LoginPageState extends State<LoginPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                    const ForgatePasswordPage(),
+                                    const ForgetPasswordPage(),
                               ),
                             );
                           },
@@ -408,7 +409,7 @@ class _LoginPageState extends State<LoginPage> {
                             context,
                             MaterialPageRoute(
                               builder: (BuildContext context) =>
-                                  const SignupPage(),
+                                  const SignUpPage(),
                             ),
                           );
                         },
