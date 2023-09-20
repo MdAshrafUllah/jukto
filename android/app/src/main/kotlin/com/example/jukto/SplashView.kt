@@ -1,4 +1,4 @@
-package com.example.jukto
+package com.jukto.student
 
 import android.content.Context
 import android.os.Bundle

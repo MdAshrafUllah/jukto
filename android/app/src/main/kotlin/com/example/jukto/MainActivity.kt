@@ -1,4 +1,4 @@
-package com.example.jukto
+package com.jukto.student
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.SplashScreen
