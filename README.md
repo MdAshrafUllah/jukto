@@ -12,3 +12,14 @@ They can add Class and exam routines on different pages. They can set an alarm f
 
 
 With this app, you can also use Dark Mood.
+
+<h1>App Preview</h1>
+
+<table>
+  <tr>
+    <th>Slpash Screen</th>
+  </tr>
+  <tr>
+    <td>![image](https://github.com/MdAshrafUllah/jukto/assets/96839511/0c2335e5-8a15-4678-8c79-b13541b18b7d)</td>
+  </tr>
+</table>
