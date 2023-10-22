@@ -21,7 +21,7 @@ With this app, you can also use Dark Mood.
     <th>Splash Screen</th>
     <th>Login Screen</th>
     <th>Signup Screen</th>
-    <th>Forgate password Screen</th>
+    <th>Forget password Screen</th>
   </tr>
   <tr>
     <td><img src="https://github.com/MdAshrafUllah/jukto/assets/96839511/4b5e85f0-c814-468d-821b-f646fa9f60bf.jpg" width="200" height="380"></td>
